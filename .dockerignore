@@ -1,0 +1,11 @@
+.git
+tools
+results
+presentation
+dataset
+final_research_package
+examples
+*.pdf
+*.png
+*.csv
+**/__pycache__

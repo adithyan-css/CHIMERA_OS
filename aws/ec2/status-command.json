@@ -1,0 +1,5 @@
+{
+  "commands": [
+    "test -f /var/lib/chimera-ready && echo READY || tail -n 2 /var/log/chimera-bootstrap.log"
+  ]
+}

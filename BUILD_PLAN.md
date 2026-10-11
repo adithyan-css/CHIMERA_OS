@@ -99,7 +99,8 @@ Amazon ECR.
 
 Prepared in `aws/`:
 
-- `aws/cluster.yaml` - eksctl cluster definition (2 x t3.xlarge, Kubernetes 1.33);
+- `aws/cluster.yaml` - eksctl cluster definition (1 x t3.xlarge, Kubernetes 1.33; fits the
+  5-vCPU default quota of a new account);
 - `aws/autoscaler-eks.yaml` - the demo autoscaler sized for those nodes;
 - `aws/deploy.sh` - create the ECR repository, build and push the image, create the
   cluster, apply the same manifests as the kind run;
@@ -109,11 +110,11 @@ What only you can do:
 
 1. Have an AWS account with billing enabled.
 2. Install the AWS CLI and `eksctl`.
-3. Run `aws configure` yourself with your own access key. Credentials are never typed
-   into this session.
+3. Run `aws login` (browser sign-in) or `aws configure` yourself. Credentials are never
+   typed into this session.
 4. Choose the region and accept the spend. As a rough guide, the EKS control plane is
-   about 0.10 USD/hour and two t3.xlarge nodes about 0.35 USD/hour together, so around
-   11 USD per day while the cluster is up. Check current prices for your region first.
+   about 0.10 USD/hour and one t3.xlarge node about 0.18 USD/hour, so around 7 USD per day
+   while the cluster is up. Check current prices for your region first.
 
 Then:
 

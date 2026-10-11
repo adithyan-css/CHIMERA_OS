@@ -1,0 +1,249 @@
+=== 1. Creating kind cluster chimera-cluster (kindest/node:v1.33.1) ===
+No kind clusters found.
+Creating cluster "chimera-cluster" ...
+ • Ensuring node image (kindest/node:v1.33.1) 🖼  ...
+ ✓ Ensuring node image (kindest/node:v1.33.1) 🖼
+ • Preparing nodes 📦   ...
+ ✓ Preparing nodes 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+Set kubectl context to "kind-chimera-cluster"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-chimera-cluster
+
+Thanks for using kind! 😊
+=== 2. Installing minimal Prometheus (cAdvisor metrics) ===
+namespace/monitoring created
+serviceaccount/prometheus created
+clusterrole.rbac.authorization.k8s.io/chimera-prometheus created
+clusterrolebinding.rbac.authorization.k8s.io/chimera-prometheus created
+configmap/prometheus-config created
+deployment.apps/prometheus created
+service/prometheus created
+Waiting for deployment "prometheus" rollout to finish: 0 of 1 updated replicas are available...
+deployment "prometheus" successfully rolled out
+=== 3. Building the CHIMERA operator image ===
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 30B 0.1s
+#1 transferring dockerfile: 520B 0.1s done
+#1 DONE 0.2s
+
+#2 [internal] load metadata for docker.io/library/python:3.10-slim
+#2 DONE 8.7s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 145B 0.1s done
+#3 DONE 0.2s
+
+#4 [1/7] FROM docker.io/library/python:3.10-slim@sha256:6ff506466f8b1e981719b468cc0023b8ef000b983cdec0eafe119d01f379e31d
+#4 resolve docker.io/library/python:3.10-slim@sha256:6ff506466f8b1e981719b468cc0023b8ef000b983cdec0eafe119d01f379e31d 0.1s done
+#4 ...
+
+#5 [internal] load build context
+#5 transferring context: 604.54kB 0.3s done
+#5 DONE 0.4s
+
+#4 [1/7] FROM docker.io/library/python:3.10-slim@sha256:6ff506466f8b1e981719b468cc0023b8ef000b983cdec0eafe119d01f379e31d
+#4 sha256:cc1cbe171e30bea48715fd96ecf842ad9fae425ce5a18917bee871684eb836f1 0B / 249B 0.3s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 0B / 13.92MB 0.2s
+#4 sha256:1189ef607cc64ff2e2a214c12e5f46402dc316a1a62cc5adb7071616882df7ee 0B / 1.29MB 0.2s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 0B / 29.84MB 0.2s
+#4 sha256:cc1cbe171e30bea48715fd96ecf842ad9fae425ce5a18917bee871684eb836f1 249B / 249B 0.5s done
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 1.05MB / 13.92MB 3.0s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 2.10MB / 13.92MB 3.5s
+#4 sha256:1189ef607cc64ff2e2a214c12e5f46402dc316a1a62cc5adb7071616882df7ee 1.05MB / 1.29MB 3.9s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 3.15MB / 13.92MB 4.5s
+#4 sha256:1189ef607cc64ff2e2a214c12e5f46402dc316a1a62cc5adb7071616882df7ee 1.29MB / 1.29MB 4.5s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 4.19MB / 13.92MB 5.3s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 1.05MB / 29.84MB 5.3s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 5.24MB / 13.92MB 6.2s
+#4 sha256:1189ef607cc64ff2e2a214c12e5f46402dc316a1a62cc5adb7071616882df7ee 1.29MB / 1.29MB 6.3s done
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 6.29MB / 13.92MB 6.8s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 7.34MB / 13.92MB 7.1s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 8.39MB / 13.92MB 7.5s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 3.15MB / 29.84MB 7.5s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 9.44MB / 13.92MB 8.0s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 10.49MB / 13.92MB 8.6s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 11.53MB / 13.92MB 9.2s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 12.58MB / 13.92MB 9.5s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 13.92MB / 13.92MB 9.6s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 5.24MB / 29.84MB 9.5s
+#4 sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 13.92MB / 13.92MB 9.7s done
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 7.34MB / 29.84MB 11.1s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 9.44MB / 29.84MB 12.7s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 11.53MB / 29.84MB 14.2s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 13.63MB / 29.84MB 15.6s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 15.73MB / 29.84MB 16.9s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 17.83MB / 29.84MB 18.3s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 19.92MB / 29.84MB 19.3s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 22.02MB / 29.84MB 20.1s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 24.12MB / 29.84MB 21.3s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 26.21MB / 29.84MB 22.0s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 28.31MB / 29.84MB 22.6s
+#4 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 29.84MB / 29.84MB 23.5s done
+#4 extracting sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e
+#4 extracting sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 1.3s done
+#4 DONE 25.1s
+
+#4 [1/7] FROM docker.io/library/python:3.10-slim@sha256:6ff506466f8b1e981719b468cc0023b8ef000b983cdec0eafe119d01f379e31d
+#4 extracting sha256:1189ef607cc64ff2e2a214c12e5f46402dc316a1a62cc5adb7071616882df7ee
+#4 extracting sha256:1189ef607cc64ff2e2a214c12e5f46402dc316a1a62cc5adb7071616882df7ee 0.2s done
+#4 extracting sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca
+#4 extracting sha256:79f4247a2db52342f23c9ff6911633949443ca83b454d185a05ed6fc8689ffca 0.9s done
+#4 DONE 26.2s
+
+#4 [1/7] FROM docker.io/library/python:3.10-slim@sha256:6ff506466f8b1e981719b468cc0023b8ef000b983cdec0eafe119d01f379e31d
+#4 extracting sha256:cc1cbe171e30bea48715fd96ecf842ad9fae425ce5a18917bee871684eb836f1 0.0s done
+#4 DONE 26.2s
+
+#6 [2/7] WORKDIR /app
+#6 DONE 0.5s
+
+#7 [3/7] COPY k8s/requirements-operator.txt .
+#7 DONE 0.1s
+
+#8 [4/7] RUN pip install --no-cache-dir -r requirements-operator.txt
+#8 7.363 Collecting numpy>=1.21.0
+#8 8.576   Downloading numpy-2.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.8 MB)
+#8 16.90      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.8/16.8 MB 3.0 MB/s eta 0:00:00
+#8 18.12 Collecting scipy>=1.7.0
+#8 18.51   Downloading scipy-1.15.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (37.7 MB)
+#8 31.16      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 37.7/37.7 MB 2.1 MB/s eta 0:00:00
+#8 31.56 Collecting kubernetes>=33.1.0
+#8 31.73   Downloading kubernetes-37.0.1-py2.py3-none-any.whl (7.5 MB)
+#8 34.23      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.5/7.5 MB 3.1 MB/s eta 0:00:00
+#8 34.73 Collecting aiohttp-retry>=2.9.1
+#8 34.96   Downloading aiohttp_retry-2.9.1-py3-none-any.whl (10.0 kB)
+#8 35.94 Collecting pydantic>=2.13.5
+#8 36.25   Downloading pydantic-2.14.0-py3-none-any.whl (487 kB)
+#8 36.41      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 487.1/487.1 kB 3.2 MB/s eta 0:00:00
+#8 40.32 Collecting aiohttp<4.0.0,>=3.14.3
+#8 40.53   Downloading aiohttp-3.14.5-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.9 MB)
+#8 41.59      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 1.8 MB/s eta 0:00:00
+#8 41.92 Collecting websocket-client!=0.40.0,!=0.41.*,!=0.42.*,>=0.32.0
+#8 42.12   Downloading websocket_client-1.9.2-py3-none-any.whl (95 kB)
+#8 42.14      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 95.8/95.8 kB 6.9 MB/s eta 0:00:00
+#8 42.35 Collecting python-dateutil>=2.8.2
+#8 42.52   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#8 42.58      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 229.9/229.9 kB 3.9 MB/s eta 0:00:00
+#8 42.81 Collecting certifi>=2026.7.22
+#8 43.09   Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+#8 43.16      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 137.0/137.0 kB 2.5 MB/s eta 0:00:00
+#8 43.46 Collecting requests
+#8 43.70   Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+#8 43.75      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.1/73.1 kB 1.4 MB/s eta 0:00:00
+#8 43.94 Collecting requests-oauthlib
+#8 44.11   Downloading requests_oauthlib-2.0.0-py2.py3-none-any.whl (24 kB)
+#8 44.44 Collecting urllib3>=2.8.0
+#8 44.62   Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+#8 44.66      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.7/135.7 kB 4.8 MB/s eta 0:00:00
+#8 44.99 Collecting typing-extensions>=4.16.0
+#8 45.24   Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#8 45.25      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 14.8 MB/s eta 0:00:00
+#8 45.46 Collecting durationpy>=0.11
+#8 45.68   Downloading durationpy-0.11-py3-none-any.whl (4.1 kB)
+#8 46.12 Collecting PyYAML>=6.0.3
+#8 46.47   Downloading pyyaml-6.0.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (770 kB)
+#8 46.69      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 770.3/770.3 kB 3.5 MB/s eta 0:00:00
+#8 47.49 Collecting frozenlist>=1.1.1
+#8 47.66   Downloading frozenlist-1.8.0-cp310-cp310-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (219 kB)
+#8 47.73      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 219.5/219.5 kB 3.3 MB/s eta 0:00:00
+#8 47.95 Collecting aiosignal>=1.4.0
+#8 48.20   Downloading aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+#8 48.41 Collecting attrs>=17.3.0
+#8 48.61   Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+#8 48.65      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 67.5/67.5 kB 2.4 MB/s eta 0:00:00
+#8 49.32 Collecting propcache>=0.2.0
+#8 49.56   Downloading propcache-0.5.4-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (224 kB)
+#8 49.65      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 224.3/224.3 kB 2.8 MB/s eta 0:00:00
+#8 50.07 Collecting async-timeout<6.0,>=4.0
+#8 50.35   Downloading async_timeout-5.0.1-py3-none-any.whl (6.2 kB)
+#8 52.68 Collecting multidict<8.0,>=4.5
+#8 53.31   Downloading multidict-7.1.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (464 kB)
+#8 53.38      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 464.4/464.4 kB 7.4 MB/s eta 0:00:00
+#8 55.48 Collecting yarl<2.0,>=1.25.1
+#8 55.79   Downloading yarl-1.25.1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (118 kB)
+#8 55.87      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 118.1/118.1 kB 1.5 MB/s eta 0:00:00
+#8 56.13 Collecting aiohappyeyeballs>=2.5.0
+#8 56.39   Downloading aiohappyeyeballs-2.7.1-py3-none-any.whl (15 kB)
+#8 56.69 Collecting typing-inspection>=0.4.4
+#8 56.86   Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#8 57.10 Collecting annotated-types>=0.6.0
+#8 57.50   Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#8 62.70 Collecting pydantic-core==2.50.0
+#8 62.86   Downloading pydantic_core-2.50.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.2 MB)
+#8 64.19      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 1.6 MB/s eta 0:00:00
+#8 64.42 Collecting six>=1.5
+#8 64.69   Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#8 65.72 Collecting charset_normalizer<4,>=2
+#8 65.93   Downloading charset_normalizer-3.5.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (271 kB)
+#8 66.13      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 271.1/271.1 kB 1.5 MB/s eta 0:00:00
+#8 66.36 Collecting idna<4,>=2.5
+#8 66.53   Downloading idna-3.20-py3-none-any.whl (69 kB)
+#8 66.57      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.6/69.6 kB 1.6 MB/s eta 0:00:00
+#8 66.94 Collecting oauthlib>=3.0.0
+#8 67.25   Downloading oauthlib-4.0.0-py3-none-any.whl (159 kB)
+#8 67.30      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 159.7/159.7 kB 4.3 MB/s eta 0:00:00
+#8 67.98 Installing collected packages: durationpy, websocket-client, urllib3, typing-extensions, six, PyYAML, propcache, oauthlib, numpy, idna, frozenlist, charset_normalizer, certifi, attrs, async-timeout, annotated-types, aiohappyeyeballs, typing-inspection, scipy, requests, python-dateutil, pydantic-core, multidict, aiosignal, yarl, requests-oauthlib, pydantic, aiohttp, aiohttp-retry, kubernetes
+#8 97.18 Successfully installed PyYAML-6.0.3 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiohttp-retry-2.9.1 aiosignal-1.4.0 annotated-types-0.8.0 async-timeout-5.0.1 attrs-26.1.0 certifi-2026.7.22 charset_normalizer-3.5.2 durationpy-0.11 frozenlist-1.8.0 idna-3.20 kubernetes-37.0.1 multidict-7.1.0 numpy-2.2.6 oauthlib-4.0.0 propcache-0.5.4 pydantic-2.14.0 pydantic-core-2.50.0 python-dateutil-2.9.0.post0 requests-2.34.2 requests-oauthlib-2.0.0 scipy-1.15.3 six-1.17.0 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 websocket-client-1.9.2 yarl-1.25.1
+#8 97.18 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#8 98.35 
+#8 98.35 [notice] A new release of pip is available: 23.0.1 -> 26.2.1
+#8 98.35 [notice] To update, run: pip install --upgrade pip
+#8 DONE 100.2s
+
+#9 [5/7] COPY src/ /app/src/
+#9 DONE 0.2s
+
+#10 [6/7] COPY models/ /app/models/
+#10 DONE 0.1s
+
+#11 [7/7] COPY k8s/manager.py k8s/operator_core.py k8s/prom_query.py /app/
+#11 DONE 0.1s
+
+#12 exporting to image
+#12 exporting layers
+#12 exporting layers 23.7s done
+#12 exporting manifest sha256:0e05374ab02ae48fceb1195da2b5c2407bea8cee0c4b01c8b443926004adff68 0.0s done
+#12 exporting config sha256:ed969114497c3040a87334ce7033a658b0666596281c7cbc33b0f584ebfce912 0.0s done
+#12 exporting attestation manifest sha256:eba555caf297691cf623518aa2c09471f9c8e141e996c32c09b6c1e66d2c3089 0.1s done
+#12 exporting manifest list sha256:986a9ca35d320af495e1a4b03df1d6fdc050a3e14bb36d898909f37c7be4ca8b
+#12 exporting manifest list sha256:986a9ca35d320af495e1a4b03df1d6fdc050a3e14bb36d898909f37c7be4ca8b 0.0s done
+#12 naming to docker.io/library/chimera-controller:latest done
+#12 unpacking to docker.io/library/chimera-controller:latest
+#12 unpacking to docker.io/library/chimera-controller:latest 4.8s done
+#12 DONE 28.8s
+=== 4. Loading the image into kind ===
+Image: "chimera-controller:latest" with ID "sha256:986a9ca35d320af495e1a4b03df1d6fdc050a3e14bb36d898909f37c7be4ca8b" not yet present on node "chimera-cluster-control-plane", loading...
+=== 5. Applying the ChimeraAutoscaler CRD ===
+customresourcedefinition.apiextensions.k8s.io/chimeraautoscalers.autoscaling.chimera.io created
+customresourcedefinition.apiextensions.k8s.io/chimeraautoscalers.autoscaling.chimera.io condition met
+=== 6. Deploying the operator (dry-run=0) ===
+serviceaccount/chimera-controller-manager created
+clusterrole.rbac.authorization.k8s.io/chimera-controller-role created
+clusterrolebinding.rbac.authorization.k8s.io/chimera-controller-rolebinding created
+deployment.apps/chimera-controller created
+Waiting for deployment "chimera-controller" rollout to finish: 0 of 1 updated replicas are available...
+deployment "chimera-controller" successfully rolled out
+=== 7. Deploying a CPU-bound demo service and a load generator ===
+deployment.apps/billing-service created
+service/billing-service created
+deployment.apps/load-generator created
+=== 8. Attaching a ChimeraAutoscaler ===
+chimeraautoscaler.autoscaling.chimera.io/billing-service-scaler created
+
+=== Setup complete ===
+Watch decisions:   kubectl -n kube-system logs -f deploy/chimera-controller
+Watch the scaler:  kubectl get chas -w
+Watch pod CPU:     kubectl get pods -l app=billing-service -o custom-columns=NAME:.metadata.name,CPU:.spec.containers[0].resources.limits.cpu
+Scale load up:     kubectl scale deploy/load-generator --replicas=4
+exit=0

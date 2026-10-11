@@ -1,0 +1,16 @@
+# eksctl cluster for the CHIMERA operator. Kubernetes 1.33: in-place pod resize (KEP-1287)
+# is on by default. aws/eks/deploy.sh substitutes REGION before creating the cluster.
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: chimera
+  region: REGION
+  version: "1.33"
+managedNodeGroups:
+  - name: workers
+    # One 4-vCPU node: a new AWS account's default quota is 5 on-demand vCPUs per region
+    instanceType: t3.xlarge
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+    volumeSize: 30

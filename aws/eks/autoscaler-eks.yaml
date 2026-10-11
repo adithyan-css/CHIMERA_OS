@@ -1,0 +1,19 @@
+# Sized for one t3.xlarge (4 vCPU, about 3.1 cores free after system pods): at most
+# 3 pods x 0.9 cores = 2.7 cores, because the operator sets requests = limits.
+apiVersion: autoscaling.chimera.io/v1alpha1
+kind: ChimeraAutoscaler
+metadata:
+  name: billing-service-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: billing-service
+  minReplicas: 2
+  maxReplicas: 3
+  minCPU: "500m"
+  maxCPU: "900m"
+  targetUtilization: 0.7
+  podStartupSeconds: 20
+  resizeMode: InPlace

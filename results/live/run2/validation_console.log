@@ -1,0 +1,137 @@
+[    0s] phase baseline: 1 load generator(s) for 120s
+[    0s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.00013181761069903036 restarts=0 | hold
+[    6s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.10973496210029435 restarts=0 | hold
+[   10s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.12905005361658878 restarts=0 | hold
+[   16s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.11195740256991218 restarts=0 | hold
+[   21s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.116534795335454 restarts=0 | hold
+[   26s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.30775056115454064 restarts=0 | hold
+[   31s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.41571533821766304 restarts=0 | hold
+[   36s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.48673511622993837 restarts=0 | hold
+[   40s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.44715486406472327 restarts=0 | hold
+[   46s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.5586725745140761 restarts=0 | hold
+[   51s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.5586725745140761 restarts=0 | hold
+[   56s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.4518813631797668 restarts=0 | hold
+[   61s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.5773223960047345 restarts=0 | hold
+[   66s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.48881572622220215 restarts=0 | hold
+[   70s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.44188903746695063 restarts=0 | hold
+[   76s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.568139815020134 restarts=0 | hold
+[   81s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.47778915862403526 restarts=0 | hold
+[   86s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.49965208742764733 restarts=0 | hold
+[   90s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.4811039251629086 restarts=0 | hold
+[   96s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.5161529045717453 restarts=0 | hold
+[  100s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.48410945083495416 restarts=0 | hold
+[  106s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.5481858086045737 restarts=0 | hold
+[  111s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.4997643737600297 restarts=0 | hold
+[  116s] baseline replicas=2 ready=2 cpu/pod=0.5 used=0.5571136952743793 restarts=0 | hold
+[  120s] phase surge: 6 load generator(s) for 300s
+[  121s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.4396607711056928 restarts=0 | hold
+[  126s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.5023990481332062 restarts=0 | hold
+[  131s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.5278558288311263 restarts=0 | hold
+[  136s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.5035873922228843 restarts=0 | hold
+[  141s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.6571760710743952 restarts=0 | hold
+[  146s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.6410643778196745 restarts=0 | hold
+[  151s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.5705789352601136 restarts=0 | hold
+[  156s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.7211406855094491 restarts=0 | hold
+[  161s] surge    replicas=2 ready=2 cpu/pod=0.5 used=0.665061819275693 restarts=0 | fast: cpu 0.50->0.57
+[  166s] surge    replicas=2 ready=2 cpu/pod=0.574 used=0.6216385048556038 restarts=0 | fast: cpu 0.50->0.57
+[  171s] surge    replicas=2 ready=2 cpu/pod=0.574 used=0.7932511482143384 restarts=0 | hold
+[  176s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.8040232470032127 restarts=0 | fast: cpu 0.57->0.65
+[  181s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.663845932815936 restarts=0 | fast: cpu 0.57->0.65
+[  186s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.673303624963897 restarts=0 | hold
+[  191s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.8660352026499365 restarts=0 | hold
+[  196s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.8846592818140748 restarts=0 | hold
+[  201s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.9105699269759999 restarts=0 | hold
+[  206s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.7311973674363405 restarts=0 | hold
+[  211s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.9525859274304489 restarts=0 | hold
+[  216s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.9525859274304489 restarts=0 | hold
+[  221s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.9735331981630063 restarts=0 | hold
+[  226s] surge    replicas=2 ready=2 cpu/pod=0.652 used=0.9261034731225006 restarts=0 | fast: cpu 0.65->0.74
+[  231s] surge    replicas=2 ready=2 cpu/pod=0.74 used=0.9466478249041281 restarts=0 | hold
+[  236s] surge    replicas=2 ready=2 cpu/pod=0.74 used=0.9048872121250358 restarts=0 | hold
+[  241s] surge    replicas=2 ready=2 cpu/pod=0.74 used=1.0252969495658262 restarts=0 | hold
+[  246s] surge    replicas=2 ready=2 cpu/pod=0.74 used=0.9229995993054542 restarts=0 | hold
+[  251s] surge    replicas=2 ready=2 cpu/pod=0.74 used=1.1285717523917997 restarts=0 | hold
+[  256s] surge    replicas=2 ready=2 cpu/pod=0.74 used=1.0098372886483638 restarts=0 | hold
+[  261s] surge    replicas=2 ready=2 cpu/pod=0.74 used=1.1706248271322237 restarts=0 | hold
+[  266s] surge    replicas=2 ready=2 cpu/pod=0.74 used=1.0585127727519466 restarts=0 | fast: cpu 0.74->0.83
+[  271s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.0100739630206688 restarts=0 | fast: cpu 0.74->0.83
+[  276s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.1823588596350267 restarts=0 | hold
+[  281s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.1322570291644345 restarts=0 | hold
+[  286s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.0490252141101977 restarts=0 | hold
+[  291s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.1833951886620167 restarts=0 | hold
+[  296s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.0688262544126332 restarts=0 | hold
+[  301s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.005480843199893 restarts=0 | hold
+[  306s] surge    replicas=2 ready=2 cpu/pod=0.825 used=0.908101994707552 restarts=0 | hold
+[  311s] surge    replicas=2 ready=2 cpu/pod=0.825 used=0.7721453915540848 restarts=0 | hold
+[  316s] surge    replicas=2 ready=2 cpu/pod=0.825 used=1.2598715043945545 restarts=0 | hold
+[  321s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.2160339076475686 restarts=0 | hold
+[  326s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.1724864155850245 restarts=0 | hold
+[  331s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.0588534025314877 restarts=0 | hold
+[  336s] surge    replicas=2 ready=2 cpu/pod=0.955 used=0.9293513672905106 restarts=0 | hold
+[  341s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.334661606430982 restarts=0 | hold
+[  346s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.287036085184027 restarts=0 | hold
+[  351s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.0842368592415312 restarts=0 | hold
+[  356s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.0668676911860484 restarts=0 | hold
+[  361s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.3617588892048422 restarts=0 | hold
+[  366s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.4976190096881097 restarts=0 | hold
+[  371s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.4694988648246397 restarts=0 | hold
+[  376s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.212835231229212 restarts=0 | hold
+[  381s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.2602291325585757 restarts=0 | hold
+[  386s] surge    replicas=2 ready=2 cpu/pod=0.955 used=1.4108079082712406 restarts=0 | hold
+[  391s] surge    replicas=2 ready=2 cpu/pod=1.073 used=1.4336913479792495 restarts=0 | fast: cpu 0.95->1.07
+[  396s] surge    replicas=2 ready=2 cpu/pod=1.073 used=1.4949408450633555 restarts=0 | fast: cpu 0.95->1.07
+[  401s] surge    replicas=2 ready=2 cpu/pod=1.073 used=1.3775137628128522 restarts=0 | hold
+[  406s] surge    replicas=2 ready=2 cpu/pod=1.073 used=1.530635438974707 restarts=0 | hold
+[  411s] surge    replicas=2 ready=2 cpu/pod=1.073 used=1.5320465945645976 restarts=0 | hold
+[  416s] surge    replicas=2 ready=2 cpu/pod=1.073 used=1.3423113692675213 restarts=0 | hold
+[  421s] phase relax: 0 load generator(s) for 240s
+[  421s] relax    replicas=2 ready=2 cpu/pod=1.073 used=1.5397192246648432 restarts=0 | hold
+[  426s] relax    replicas=2 ready=2 cpu/pod=1.073 used=1.5081298539642418 restarts=0 | hold
+[  431s] relax    replicas=2 ready=2 cpu/pod=1.073 used=1.7185483752412778 restarts=0 | hold
+[  436s] relax    replicas=2 ready=2 cpu/pod=1.073 used=1.5163614522614628 restarts=0 | hold
+[  441s] relax    replicas=2 ready=2 cpu/pod=1.073 used=1.6343233537129014 restarts=0 | hold
+[  446s] relax    replicas=2 ready=2 cpu/pod=1.226 used=1.6345698111895546 restarts=0 | fast: cpu 1.07->1.23
+[  451s] relax    replicas=2 ready=2 cpu/pod=1.226 used=1.6757964166348491 restarts=0 | fast: cpu 1.07->1.23
+[  456s] relax    replicas=2 ready=2 cpu/pod=1.226 used=1.5472363517971846 restarts=0 | hold
+[  461s] relax    replicas=2 ready=2 cpu/pod=1.226 used=1.6211222376848191 restarts=0 | hold
+[  466s] relax    replicas=2 ready=2 cpu/pod=1.226 used=1.6211222376848196 restarts=0 | hold
+[  471s] relax    replicas=2 ready=2 cpu/pod=1.226 used=0.9933710962455926 restarts=0 | hold
+[  476s] relax    replicas=2 ready=2 cpu/pod=1.226 used=0.8852585578353074 restarts=0 | hold
+[  481s] relax    replicas=2 ready=2 cpu/pod=0.61 used=0.7598925634452962 restarts=0 | fast release: cpu 1.23->0.61
+[  486s] relax    replicas=2 ready=2 cpu/pod=0.61 used=0.5951878983432098 restarts=0 | hold
+[  491s] relax    replicas=2 ready=2 cpu/pod=0.61 used=0.5441343264324727 restarts=0 | hold
+[  496s] relax    replicas=2 ready=2 cpu/pod=0.61 used=0.19324658234590536 restarts=0 | fast release: cpu 0.61->0.50
+[  501s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.0248831330338607 restarts=0 | hold
+[  506s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.02486189402450132 restarts=0 | hold
+[  511s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019362460391268986 restarts=0 | hold
+[  516s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00017482147739224824 restarts=0 | hold
+[  521s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00017693146630491579 restarts=0 | hold
+[  526s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00016073305632433312 restarts=0 | hold
+[  531s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018324091335471975 restarts=0 | hold
+[  536s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018324091335471975 restarts=0 | hold
+[  541s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018874208919181408 restarts=0 | hold
+[  546s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019311759508435416 restarts=0 | hold
+[  551s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019311759508435416 restarts=0 | hold
+[  556s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00017770605663118777 restarts=0 | hold
+[  561s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019321190923704402 restarts=0 | drift detected: margin reset
+[  566s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019080263983209066 restarts=0 | drift detected: margin reset
+[  571s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019178837972441755 restarts=0 | drift detected: margin reset
+[  576s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.0001765982393298963 restarts=0 | hold
+[  581s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00020212815136406677 restarts=0 | hold
+[  586s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019923243397355968 restarts=0 | hold
+[  591s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.0001934502628653547 restarts=0 | hold
+[  596s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.0001934502628653547 restarts=0 | hold
+[  601s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00019762401255363668 restarts=0 | hold
+[  606s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018068889377224358 restarts=0 | hold
+[  611s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018569331791074196 restarts=0 | hold
+[  616s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018569331791074196 restarts=0 | hold
+[  621s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00016642131204866158 restarts=0 | hold
+[  626s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00015955720178816886 restarts=0 | hold
+[  631s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018166126400748672 restarts=0 | hold
+[  636s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00016846985513062823 restarts=0 | hold
+[  641s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018529573447047403 restarts=0 | hold
+[  646s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.0001711517975170928 restarts=0 | hold
+[  651s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00018196436801312348 restarts=0 | hold
+[  656s] relax    replicas=2 ready=2 cpu/pod=0.5 used=0.00015868474015468244 restarts=0 | hold
+report: results/live\LIVE_REPORT.md (all checks passed)
+exit=0
