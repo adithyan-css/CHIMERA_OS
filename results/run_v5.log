@@ -1,0 +1,110 @@
+2026-10-01 23:08:52,899 - __main__ - INFO - Starting CHIMERA evaluation harness...
+2026-10-01 23:08:52,901 - __main__ - INFO - Training CQR model for trace real_kswd_w1...
+2026-10-01 23:08:52,971 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,004 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,004 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,004 - __main__ - INFO - Training CQR model for trace real_kswd_w2...
+2026-10-01 23:08:53,097 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,103 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,103 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,103 - __main__ - INFO - Training CQR model for trace real_kswd_w3...
+2026-10-01 23:08:53,195 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,203 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,203 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,203 - __main__ - INFO - Training CQR model for trace real_kswd_w4...
+2026-10-01 23:08:53,297 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,306 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,306 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,306 - __main__ - INFO - Training CQR model for trace real_kswd_w5...
+2026-10-01 23:08:53,398 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,421 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,421 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,422 - __main__ - INFO - Training CQR model for trace holdout_flash_crowd...
+2026-10-01 23:08:53,548 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,558 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,559 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,559 - __main__ - INFO - Training CQR model for trace holdout_diurnal...
+2026-10-01 23:08:53,649 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,656 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,656 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,656 - __main__ - INFO - Training CQR model for trace holdout_step_down...
+2026-10-01 23:08:53,782 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,789 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,789 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,789 - __main__ - INFO - Training CQR model for trace holdout_on_off...
+2026-10-01 23:08:53,887 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-01 23:08:53,914 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-01 23:08:53,915 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-01 23:08:53,917 - __main__ - INFO - 3510 runs = 39 configs x 9 workloads x 10 seeds, 11 workers
+2026-10-01 23:09:18,629 - __main__ - INFO -   50/3510 runs done (25s)
+2026-10-01 23:09:26,182 - __main__ - INFO -   100/3510 runs done (32s)
+2026-10-01 23:09:30,439 - __main__ - INFO -   150/3510 runs done (37s)
+2026-10-01 23:09:42,200 - __main__ - INFO -   200/3510 runs done (48s)
+2026-10-01 23:09:54,607 - __main__ - INFO -   250/3510 runs done (61s)
+2026-10-01 23:10:06,952 - __main__ - INFO -   300/3510 runs done (73s)
+2026-10-01 23:10:20,221 - __main__ - INFO -   350/3510 runs done (86s)
+2026-10-01 23:10:30,587 - __main__ - INFO -   400/3510 runs done (97s)
+2026-10-01 23:10:38,728 - __main__ - INFO -   450/3510 runs done (105s)
+2026-10-01 23:11:01,681 - __main__ - INFO -   500/3510 runs done (128s)
+2026-10-01 23:11:12,502 - __main__ - INFO -   550/3510 runs done (139s)
+2026-10-01 23:11:37,479 - __main__ - INFO -   600/3510 runs done (164s)
+2026-10-01 23:12:00,318 - __main__ - INFO -   650/3510 runs done (186s)
+2026-10-01 23:12:23,179 - __main__ - INFO -   700/3510 runs done (209s)
+2026-10-01 23:12:45,453 - __main__ - INFO -   750/3510 runs done (232s)
+2026-10-01 23:12:57,868 - __main__ - INFO -   800/3510 runs done (244s)
+2026-10-01 23:13:03,218 - __main__ - INFO -   850/3510 runs done (249s)
+2026-10-01 23:13:12,906 - __main__ - INFO -   900/3510 runs done (259s)
+2026-10-01 23:13:17,325 - __main__ - INFO -   950/3510 runs done (263s)
+2026-10-01 23:13:36,221 - __main__ - INFO -   1000/3510 runs done (282s)
+2026-10-01 23:13:48,488 - __main__ - INFO -   1050/3510 runs done (295s)
+2026-10-01 23:14:00,402 - __main__ - INFO -   1100/3510 runs done (306s)
+2026-10-01 23:14:14,428 - __main__ - INFO -   1150/3510 runs done (321s)
+2026-10-01 23:14:18,360 - __main__ - INFO -   1200/3510 runs done (324s)
+2026-10-01 23:14:22,975 - __main__ - INFO -   1250/3510 runs done (329s)
+2026-10-01 23:14:29,959 - __main__ - INFO -   1300/3510 runs done (336s)
+2026-10-01 23:14:36,577 - __main__ - INFO -   1350/3510 runs done (343s)
+2026-10-01 23:14:48,856 - __main__ - INFO -   1400/3510 runs done (355s)
+2026-10-01 23:14:59,098 - __main__ - INFO -   1450/3510 runs done (365s)
+2026-10-01 23:15:12,092 - __main__ - INFO -   1500/3510 runs done (378s)
+2026-10-01 23:15:23,321 - __main__ - INFO -   1550/3510 runs done (389s)
+2026-10-01 23:15:29,565 - __main__ - INFO -   1600/3510 runs done (396s)
+2026-10-01 23:15:38,655 - __main__ - INFO -   1650/3510 runs done (405s)
+2026-10-01 23:15:47,666 - __main__ - INFO -   1700/3510 runs done (414s)
+2026-10-01 23:15:59,948 - __main__ - INFO -   1750/3510 runs done (426s)
+2026-10-01 23:16:17,243 - __main__ - INFO -   1800/3510 runs done (443s)
+2026-10-01 23:16:32,644 - __main__ - INFO -   1850/3510 runs done (459s)
+2026-10-01 23:16:48,911 - __main__ - INFO -   1900/3510 runs done (475s)
+2026-10-01 23:17:04,659 - __main__ - INFO -   1950/3510 runs done (491s)
+2026-10-01 23:17:08,107 - __main__ - INFO -   2000/3510 runs done (494s)
+2026-10-01 23:17:14,481 - __main__ - INFO -   2050/3510 runs done (501s)
+2026-10-01 23:17:20,316 - __main__ - INFO -   2100/3510 runs done (506s)
+2026-10-01 23:17:33,273 - __main__ - INFO -   2150/3510 runs done (519s)
+2026-10-01 23:17:45,552 - __main__ - INFO -   2200/3510 runs done (532s)
+2026-10-01 23:17:58,220 - __main__ - INFO -   2250/3510 runs done (544s)
+2026-10-01 23:18:12,206 - __main__ - INFO -   2300/3510 runs done (558s)
+2026-10-01 23:18:21,166 - __main__ - INFO -   2350/3510 runs done (567s)
+2026-10-01 23:18:24,989 - __main__ - INFO -   2400/3510 runs done (571s)
+2026-10-01 23:18:32,274 - __main__ - INFO -   2450/3510 runs done (578s)
+2026-10-01 23:18:34,863 - __main__ - INFO -   2500/3510 runs done (581s)
+2026-10-01 23:18:45,698 - __main__ - INFO -   2550/3510 runs done (592s)
+2026-10-01 23:18:55,599 - __main__ - INFO -   2600/3510 runs done (602s)
+2026-10-01 23:19:09,507 - __main__ - INFO -   2650/3510 runs done (616s)
+2026-10-01 23:19:18,220 - __main__ - INFO -   2700/3510 runs done (624s)
+2026-10-01 23:19:24,447 - __main__ - INFO -   2750/3510 runs done (631s)
+2026-10-01 23:19:29,265 - __main__ - INFO -   2800/3510 runs done (635s)
+2026-10-01 23:19:35,746 - __main__ - INFO -   2850/3510 runs done (642s)
+2026-10-01 23:19:40,138 - __main__ - INFO -   2900/3510 runs done (646s)
+2026-10-01 23:19:54,755 - __main__ - INFO -   2950/3510 runs done (661s)
+2026-10-01 23:20:06,201 - __main__ - INFO -   3000/3510 runs done (672s)
+2026-10-01 23:20:17,452 - __main__ - INFO -   3050/3510 runs done (684s)
+2026-10-01 23:20:29,392 - __main__ - INFO -   3100/3510 runs done (695s)
+2026-10-01 23:20:33,648 - __main__ - INFO -   3150/3510 runs done (700s)
+2026-10-01 23:20:38,488 - __main__ - INFO -   3200/3510 runs done (705s)
+2026-10-01 23:20:44,248 - __main__ - INFO -   3250/3510 runs done (710s)
+2026-10-01 23:20:50,114 - __main__ - INFO -   3300/3510 runs done (716s)
+2026-10-01 23:21:01,252 - __main__ - INFO -   3350/3510 runs done (727s)
+2026-10-01 23:21:10,601 - __main__ - INFO -   3400/3510 runs done (737s)
+2026-10-01 23:21:21,356 - __main__ - INFO -   3450/3510 runs done (747s)
+2026-10-01 23:21:31,012 - __main__ - INFO -   3500/3510 runs done (757s)
+2026-10-01 23:21:32,247 - __main__ - INFO -   3510/3510 runs done (758s)
+2026-10-01 23:21:32,392 - __main__ - INFO - Evaluation completed in 758s. Results saved to results\results_v5.csv
