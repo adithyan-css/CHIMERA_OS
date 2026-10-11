@@ -517,6 +517,16 @@ def _private_cqr(cqr_model):
     c.calibration_scores = list(cqr_model.calibration_scores)
     return c
 
+# Service-time distributions, all with mean 0.1 s of CPU. 'exponential' is the reported
+# protocol; the others are for robustness runs under a model CHIMERA does not assume.
+SERVICE_DISTS = {
+    'exponential': lambda: np.random.exponential(0.1),
+    'lognormal':   lambda: np.random.lognormal(np.log(0.1) - 0.5, 1.0),    # heavier tail
+    'gamma4':      lambda: np.random.gamma(4.0, 0.025),                    # lighter tail
+    'bimodal':     lambda: 0.0611 if np.random.random() < 0.9 else 0.45,   # 10 % slow requests
+}
+
+
 def run_simulation(trace: np.ndarray, config_name: str, config: dict, w_type: str, cqr_model, seed: int,
                    return_sim: bool = False, split: str = 'test', warmup: int = 0):
     """One run. Returns JointMetrics, or (metrics, simulator) with return_sim=True.
@@ -634,7 +644,8 @@ def run_simulation(trace: np.ndarray, config_name: str, config: dict, w_type: st
     else:
         raise ValueError(f"unknown controller kind {kind!r} for {config_name}")
 
-    exec_dist = lambda: np.random.exponential(0.1)
+    exec_dist = SERVICE_DISTS[_WORKER_STATE.get('service_dist', 'exponential')]
+    sim.slowdown_model = _WORKER_STATE.get('slowdown_model', 'inverse')
     # Prime load history in RPS
     if warmup:
         sim.load_history = list(trace_rps[max(0, start - 20):start])
@@ -695,6 +706,9 @@ CHIMERA_V4 = dict(CHIMERA_V3, inner_owns_vertical=True, replica_band=0.85, adwin
 CHIMERA_V5 = dict(CHIMERA_V4, risk_sizing=True, inner_up_band=0.10, target_utilization=0.5)
 
 
+KOSMOS_GAINS = dict(DC=0.03, BC=0.15)
+
+
 def build_configs() -> Dict[str, dict]:
     B = lambda **kw: dict(run_type='baseline', **kw)
     A = lambda **kw: dict(CHIMERA_V5, run_type='ablation', **kw)
@@ -705,8 +719,13 @@ def build_configs() -> Dict[str, dict]:
         'HPA+VPA':              B(kind='hpa_vpa', **BOUNDS_JOINT),
         'AAPA':                 B(kind='aapa', **BOUNDS_H_ONLY),
         'MagicScaler-Inspired': B(kind='magic', **BOUNDS_H_ONLY),
-        # KOSMOS PI gains tuned by grid sweep on held-out data (CODE_FIXES_LOG.md item 7)
-        'KOSMOS':               B(kind='kosmos', **BOUNDS_JOINT, DC=0.8, BC=0.15, alpha=0.70),
+        # KOSMOS PI gains re-tuned on the dev split under the current simulator
+        # (src/scripts/kosmos_retune.py, CODE_FIXES_LOG.md item 20). The August gains
+        # (DC=0.8, BC=0.15, alpha=0.70) predate the load-sensor fix and make the vertical loop
+        # bang-bang; they are kept as KOSMOS_AugustGains for reference.
+        'KOSMOS':               B(kind='kosmos', **BOUNDS_JOINT, **KOSMOS_GAINS, alpha=0.25),
+        'KOSMOS_AugustGains':   dict(kind='kosmos', run_type='sensitivity', **BOUNDS_JOINT, DC=0.8, BC=0.15,
+                                     alpha=0.70),
         'CHIMERA_v1':           dict(CHIMERA_V1, run_type='baseline'),
         'CHIMERA_v2':           dict(CHIMERA_V2, run_type='baseline'),
         'CHIMERA_v3':           dict(CHIMERA_V3, run_type='baseline'),
@@ -718,8 +737,8 @@ def build_configs() -> Dict[str, dict]:
         # --- Sensitivity: 3x head-start pods for horizontal-only baselines; no KEP-1287 ---
         'HPA_1.5':              dict(kind='hpa', run_type='sensitivity', v_min=1.5, v_max=1.5, h_min=2, h_max=30),
         'AAPA_1.5':             dict(kind='aapa', run_type='sensitivity', v_min=1.5, v_max=1.5, h_min=2, h_max=30),
-        'KOSMOS_NoInPlace':     dict(kind='kosmos', run_type='sensitivity', **BOUNDS_JOINT, DC=0.8, BC=0.15,
-                                     alpha=0.70, use_inplace_resize=False),
+        'KOSMOS_NoInPlace':     dict(kind='kosmos', run_type='sensitivity', **BOUNDS_JOINT, **KOSMOS_GAINS,
+                                     alpha=0.25, use_inplace_resize=False),
         'CHIMERA_NoInPlace':    dict(CHIMERA_V5, run_type='sensitivity', use_inplace_resize=False),
         # --- Ablation: each removes (w/o) or re-adds (+) exactly one mechanism of CHIMERA v4 ---
         'CHIMERA_Full':                     A(),
@@ -750,7 +769,9 @@ def build_configs() -> Dict[str, dict]:
 # Cost/SLO frontier: every controller swept over its own conservatism knob.
 # Extended to 0.95 for every controller so the cheap end of each frontier is covered.
 SWEEP_UTILS = [0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95]
-SWEEP_KOSMOS_ALPHA = [0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 1.00]   # KOSMOS's setpoint is latency, not utilisation
+# KOSMOS's setpoint is the MEAN response time (alpha x SLO), not utilisation. A per-request
+# SLO needs a mean well below the threshold, so the sweep covers small alpha.
+SWEEP_KOSMOS_ALPHA = [0.15, 0.20, 0.25, 0.30, 0.40, 0.50, 0.70]
 SWEEP_FAMILIES = ['HPA', 'VPA', 'HPA+VPA', 'AAPA', 'MagicScaler-Inspired', 'KOSMOS', 'CHIMERA_v1', 'CHIMERA_v2',
                   'CHIMERA_v3', 'CHIMERA_v4', 'CHIMERA', 'Oracle']
 
@@ -772,8 +793,11 @@ def build_sweep_configs(base: Dict[str, dict]) -> Dict[str, dict]:
 
 _WORKER_STATE: Dict[str, Any] = {}
 
-def _init_worker(workloads, cqr_models, split='test', warmup=0):
+def _init_worker(workloads, cqr_models, split='test', warmup=0, service_dist='exponential',
+                 slowdown_model='inverse'):
     logging.disable(logging.CRITICAL)
+    _WORKER_STATE['service_dist'] = service_dist
+    _WORKER_STATE['slowdown_model'] = slowdown_model
     _WORKER_STATE['workloads'] = {w['id']: w for w in workloads}
     _WORKER_STATE['cqr'] = cqr_models
     _WORKER_STATE['split'] = split
@@ -834,6 +858,10 @@ def main():
                          '--seeds from HOLDOUT_SEEDS)')
     ap.add_argument('--warmup', type=int, default=0,
                     help='unscored warm-up minutes before the window (0 = start cold at the window)')
+    ap.add_argument('--service-dist', choices=sorted(SERVICE_DISTS), default='exponential',
+                    help='per-request CPU service-time distribution (mean 0.1 s in every case)')
+    ap.add_argument('--slowdown-model', choices=['inverse', 'kingman', 'steep'], default='inverse',
+                    help='response-time inflation law; CHIMERA risk sizing assumes inverse')
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -866,7 +894,8 @@ def main():
 
     t0 = time.time()
     results = []
-    with Pool(args.workers, initializer=_init_worker, initargs=(workloads, cqr_models, args.split, args.warmup)) as pool:
+    with Pool(args.workers, initializer=_init_worker, initargs=(workloads, cqr_models, args.split, args.warmup,
+                                                          args.service_dist, args.slowdown_model)) as pool:
         for i, row in enumerate(pool.imap_unordered(_run_one, jobs, chunksize=2), 1):
             results.append(row)
             if i % 50 == 0 or i == len(jobs):

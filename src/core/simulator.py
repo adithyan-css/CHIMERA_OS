@@ -354,6 +354,27 @@ class AAPAAutoscaler(Autoscaler):
         return max(1, desired)
 
 
+def slowdown_factor(utilization: float, model: str = 'inverse') -> float:
+    """Response-time inflation at a given utilisation.
+
+    'inverse' is the model every reported result uses, and the one CHIMERA's risk sizing
+    assumes: 1/(1-u), linear above 0.95. The others exist to test the controllers under a
+    latency law CHIMERA does NOT assume (robustness runs, --slowdown-model):
+      'kingman'  1 + u/(2(1-u))  -- M/D/1-style waiting, about half the queueing of 'inverse'
+      'steep'    1/(1-u^4)       -- hockey stick: flat until high utilisation, then abrupt,
+                                    as for a many-server pool
+    """
+    u = utilization
+    if model == 'kingman':
+        return 1.0 + u / (2.0 * (1.0 - u)) if u < 0.95 else 10.5 + 100.0 * (u - 0.95)
+    if model == 'steep':
+        return 1.0 / (1.0 - u ** 4) if u < 0.98 else 12.88 + 100.0 * (u - 0.98)
+    if u < 0.95:
+        return 1.0 / (1.0 - u)
+    # Saturation region - linear growth to avoid division by zero
+    return 20.0 + 100.0 * (u - 0.95)
+
+
 class ServerlessSimulator:
     """Improved simulation environment with better request handling."""
     
@@ -424,12 +445,8 @@ class ServerlessSimulator:
         capacity_rps = max(0.01, total_cpu / self.cpu_per_request)
         utilization = self.calculate_current_load() / capacity_rps
         
-        if utilization < 0.95:
-            slowdown = 1.0 / (1.0 - utilization)
-        else:
-            # Saturation region - quadratic/linear growth to avoid division by zero
-            slowdown = 20.0 + 100.0 * (utilization - 0.95)
-            
+        slowdown = slowdown_factor(utilization, getattr(self, 'slowdown_model', 'inverse'))
+
         slowed_exec_time = req.execution_time * slowdown
         
         # Execute function
