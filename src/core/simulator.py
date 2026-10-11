@@ -380,7 +380,15 @@ class ServerlessSimulator:
         self.request_buffer_size = 100  # Buffer requests instead of dropping
         
         # Track request arrivals for better load calculation
-        self.recent_arrivals = deque(maxlen=100)
+        # Arrival timestamps, pruned by AGE (see calculate_current_load). This used to be
+        # deque(maxlen=100), which silently capped every load measurement at
+        # 100 / scale_interval req/s (6.7 req/s at a 15 s loop) -- below the peak of most
+        # traces. Both the autoscalers' load sensor and the service-time model read it,
+        # so the cap hid overload from every controller alike.
+        self.recent_arrivals = deque()
+        self.arrival_window = 60.0
+        # Requests arriving before this time are simulated but not scored (warm-up)
+        self.score_from = 0.0
         
     def process_request(self, req):
         """Processes an individual request concurrently."""
@@ -429,12 +437,17 @@ class ServerlessSimulator:
         
         # Calculate total response time
         response_time = self.env.now - req.arrival_time
-        self.metrics.response_times.append(response_time)
-        self.metrics.total_response_time += response_time
-        self.metrics.completed_requests += 1
+        scored = getattr(req, 'scored', True)
+        svc = getattr(self, '_svc', None)
+        if svc is not None:          # CPU service demand of the request, observable as CPU-seconds
+            svc.append(req.execution_time)
+        if scored:
+            self.metrics.response_times.append(response_time)
+            self.metrics.total_response_time += response_time
+            self.metrics.completed_requests += 1
         
         # Check SLO: if completed within threshold, clear the default violation
-        if response_time <= self.slo_threshold:
+        if scored and response_time <= self.slo_threshold:
             self.metrics.slo_violations -= 1
             
         # Update pod state
@@ -458,9 +471,11 @@ class ServerlessSimulator:
                         execution_time=execution_time_dist()
                     )
                     
-                    self.metrics.total_requests += 1
-                    # Default-violation design: assume SLO violation until successfully cleared
-                    self.metrics.slo_violations += 1
+                    req.scored = self.env.now >= self.score_from
+                    if req.scored:
+                        self.metrics.total_requests += 1
+                        # Default-violation design: assume SLO violation until successfully cleared
+                        self.metrics.slo_violations += 1
                     self.recent_arrivals.append(self.env.now)
                     
                     # Spawn request process concurrently
@@ -495,11 +510,25 @@ class ServerlessSimulator:
         """Calculate current load based on recent request arrivals."""
         if not self.recent_arrivals:
             return 0.0
-            
-        # Count requests in last scale_interval seconds
+
         current_time = self.env.now
-        recent_count = sum(1 for t in self.recent_arrivals 
-                          if current_time - t <= self.scale_interval)
+        arrivals = self.recent_arrivals
+        # Drop arrivals too old for any consumer of this buffer
+        while arrivals and current_time - arrivals[0] > self.arrival_window:
+            arrivals.popleft()
+
+        # Count requests in the last scale_interval seconds. Timestamps are appended in
+        # order, so binary-search the cut-off instead of scanning (this is called once
+        # per request by the service model).
+        lo, hi = 0, len(arrivals)
+        cutoff = current_time - self.scale_interval
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if arrivals[mid] < cutoff:
+                lo = mid + 1
+            else:
+                hi = mid
+        recent_count = len(arrivals) - lo
         
         # Requests per second
         return recent_count / self.scale_interval

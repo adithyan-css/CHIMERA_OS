@@ -36,7 +36,11 @@ class ChimeraController:
                  lambda_delay: float = 0.05, # Actuation delay rate
                  use_state_augmentation: bool = True, # DAPCA toggle
                  use_scale_down_guardrail: bool = True, # Anti-chattering toggle
-                 decoupled_safety: bool = False # NEW: true MIMO decoupling (KOSMOS-style independent-loop baseline)
+                 decoupled_safety: bool = False, # NEW: true MIMO decoupling (KOSMOS-style independent-loop baseline)
+                 coupling_mode: str = "opposing", # "opposing": penalise only dv*dh < 0 (the spec);
+                                                  # "absolute": legacy kappa*|dv*dh|, kept for ablation
+                 legacy_delay_model: bool = False, # True: Review-2 buffer (one step too long)
+                 control_interval: float = 15.0
                  ):
         """Initialize controller parameters."""
         self.v_min = v_min
@@ -53,6 +57,12 @@ class ChimeraController:
         self.use_state_augmentation = use_state_augmentation
         self.use_scale_down_guardrail = use_scale_down_guardrail
         self.decoupled_safety = decoupled_safety
+        self.coupling_mode = coupling_mode
+        self.legacy_delay_model = legacy_delay_model
+        self.control_interval = control_interval
+        # Set by project_to_safe_set: True when the Lyapunov constraint changed the chosen action
+        self.last_filter_active = False
+        self._solved_key = None
         if self.decoupled_safety:
             # A truly decoupled controller has no cross-coupling objective by construction.
             self.kappa = 0.0
@@ -78,7 +88,15 @@ class ChimeraController:
         """
         Solve Discrete Algebraic Riccati Equation (DARE) offline for the augmented state-space.
         Implements delay-horizon optimal LQR gains.
+
+        The gain depends only on (tau, Q, R), so it is solved once per delay value and
+        cached; re-solving every control step was pure overhead.
         """
+        key = (float(tau), self.use_state_augmentation, self.legacy_delay_model)
+        if key == self._solved_key:
+            return
+        self._solved_key = key
+
         if not self.use_state_augmentation:
             # Original unaugmented 2D state LQR solver
             B_tau = np.diag([1.0, np.exp(-self.lambda_delay * tau)])
@@ -97,8 +115,17 @@ class ChimeraController:
             self.dh_history = []
             return
 
-        # Determine discrete delay steps based on control interval (15 seconds)
-        d = int(np.ceil(tau / 15.0))
+        # Number of in-flight slots.
+        # A replica ordered at tick k boots after tau seconds and is first OBSERVED at
+        # tick k + D, D = floor(tau / dt) + 1 (tau = 20 s, dt = 15 s -> D = 2). The model
+        # h(k+1) = h(k) + (oldest slot) therefore needs D - 1 slots. The Review-2 model used
+        # ceil(tau / dt) slots, i.e. one step too many: pods that had already booted were
+        # still "in flight", counted twice, and the controller scaled in right after
+        # scaling out.
+        if self.legacy_delay_model:
+            d = int(np.ceil(tau / 15.0))
+        else:
+            d = int(np.floor(tau / self.control_interval)) + 1 - 1
         
         if d == 0:
             self.A_aug = np.eye(2)
@@ -147,18 +174,31 @@ class ChimeraController:
         """
         Compute cross-coupling penalty Psi(v_t, h_t).
         Penalizes simultaneous opposing horizontal-vertical moves and ratio imbalance.
+
+        Accepts a single action of shape (2,) or a batch of shape (N, 2).
+
+        The legacy form kappa*|dv*dh| also penalised SAME-direction moves, which blocks
+        exactly the behaviour the joint design relies on: resizing CPU up while new pods
+        are still booting. "opposing" mode penalises only dv*dh < 0 (the two loops
+        fighting), matching the documented intent.
         """
-        dv, dh = u_t[0], u_t[1]
+        u = np.asarray(u_t, dtype=float)
+        dv, dh = u[..., 0], u[..., 1]
         v_next = x_t[0] + dv
         h_next = x_t[1] + dh
-        
-        coupling = self.kappa * np.abs(dv * dh)
-        
-        ratio_term = 0.0
-        if h_next > 0:
-            ratio_term = self.eta * ((v_next / h_next) - self.gamma_ratio) ** 2
-            
-        return coupling + ratio_term
+
+        if self.coupling_mode == "absolute":
+            coupling = self.kappa * np.abs(dv * dh)
+        else:
+            coupling = self.kappa * np.maximum(0.0, -dv * dh)
+
+        with np.errstate(divide="ignore", invalid="ignore"):
+            ratio_term = np.where(h_next > 0,
+                                  self.eta * ((v_next / np.maximum(h_next, 1e-9)) - self.gamma_ratio) ** 2,
+                                  0.0)
+
+        out = coupling + ratio_term
+        return float(out) if np.ndim(out) == 0 else out
 
     def compute_lyapunov_value(self, e_t: np.ndarray) -> float:
         """Compute Lyapunov candidate function value V(e_t) = e_t^T P e_t."""
@@ -211,45 +251,64 @@ class ChimeraController:
         Project nominal action onto the Lyapunov and physical safety bounds.
         Using grid search over action space for speed & robustness (<0.5ms target latency).
         """
-        best_u = np.zeros(2)
-        min_distance = float('inf')
-        
-        # Search grid
+        # Search grid (same grid as the original loop implementation, evaluated in one shot)
         v_actions = np.linspace(-1.5, 1.5, 31)
         h_actions = np.linspace(-5, 5, 21)
-        
         v_actions = np.unique(np.concatenate([v_actions, [u_nom[0], 0.0]]))
         h_actions = np.unique(np.concatenate([h_actions, [u_nom[1], 0.0]]))
-        
-        for dv in v_actions:
-            for dh in h_actions:
-                u_candidate = np.array([dv, dh])
-                
-                # 1. Physical limits
-                v_next = x_t[0] + dv
-                h_next = x_t[1] + dh
-                if not (self.v_min <= v_next <= self.v_max):
-                    continue
-                if not (self.h_min <= h_next <= self.h_max):
-                    continue
-                
-                # 2. Capacity budget (a truly decoupled controller has no shared visibility
-                #    into the other axis's footprint, so it cannot enforce a joint budget)
-                if not self.decoupled_safety and v_next * h_next > self.C_max:
-                    continue
-                    
-                # 3. Lyapunov stability constraint
-                is_safe, margin = self.verify_lyapunov_drift(e_t, u_candidate, uncertainty_width, tau)
-                if not is_safe:
-                    continue
-                
-                # 4. Objective distance function
-                dist = np.sum((u_candidate - u_nom) ** 2) + self.compute_cross_coupling_penalty(x_t, u_candidate)
-                if dist < min_distance:
-                    min_distance = dist
-                    best_u = u_candidate
-                    
-        return best_u
+        DV, DH = np.meshgrid(v_actions, h_actions, indexing="ij")
+        U = np.stack([DV.ravel(), DH.ravel()], axis=1)            # (N, 2)
+
+        # 1. Physical limits
+        v_next = x_t[0] + U[:, 0]
+        h_next = x_t[1] + U[:, 1]
+        feasible = ((v_next >= self.v_min) & (v_next <= self.v_max) &
+                    (h_next >= self.h_min) & (h_next <= self.h_max))
+        # 2. Capacity budget (a truly decoupled controller has no shared visibility
+        #    into the other axis's footprint, so it cannot enforce a joint budget)
+        if not self.decoupled_safety:
+            feasible &= (v_next * h_next <= self.C_max)
+
+        # 3. Lyapunov stability constraint
+        safe = feasible & self._lyapunov_safe_batch(e_t, U, uncertainty_width)
+
+        # 4. Objective: distance to the nominal LQR action plus the coupling penalty
+        cost = np.sum((U - u_nom) ** 2, axis=1) + self.compute_cross_coupling_penalty(x_t, U)
+
+        def argmin_of(mask):
+            if not mask.any():
+                return None
+            c = np.where(mask, cost, np.inf)
+            return U[int(np.argmin(c))]
+
+        best_physical = argmin_of(feasible)
+        best_safe = argmin_of(safe)
+        best_u = best_safe if best_safe is not None else np.zeros(2)
+        # Filter "activation" = the stability constraint changed the action that would
+        # otherwise have been chosen. Measured here in one pass instead of re-running the
+        # whole controller with the filter disabled.
+        self.last_filter_active = (best_physical is not None and
+                                   not np.allclose(best_u, best_physical, atol=1e-3))
+        return np.array(best_u, dtype=float)
+
+    def _lyapunov_safe_batch(self, e_t: np.ndarray, U: np.ndarray, uncertainty_width: float) -> np.ndarray:
+        """Vectorised verify_lyapunov_drift over a batch of candidate actions U (N, 2)."""
+        if self.sigma >= 10.0:
+            return np.ones(len(U), dtype=bool)
+        E_next = (self.A_aug @ e_t)[None, :] + U @ self.B_aug.T   # (N, n)
+        if self.decoupled_safety:
+            Pv = float(self.P[0, 0])
+            Ph = self.P[1:, 1:]
+            drift_v = Pv * E_next[:, 0] ** 2 - Pv * e_t[0] ** 2
+            Vh_t = float(e_t[1:] @ Ph @ e_t[1:])
+            drift_h = np.einsum("ni,ij,nj->n", E_next[:, 1:], Ph, E_next[:, 1:]) - Vh_t
+            bound_v = -self.sigma * e_t[0] ** 2 + self.zeta * uncertainty_width
+            bound_h = -self.sigma * float(np.sum(e_t[1:] ** 2)) + self.zeta * uncertainty_width
+            return (drift_v <= bound_v) & (drift_h <= bound_h)
+        V_t = float(e_t @ self.P @ e_t)
+        V_next = np.einsum("ni,ij,nj->n", E_next, self.P, E_next)
+        bound = -self.sigma * float(np.sum(e_t ** 2)) + self.zeta * uncertainty_width
+        return (V_next - V_t) <= bound
 
     def get_desired_allocation(self, x_t: np.ndarray, x_star: np.ndarray, 
                                uncertainty_width: float, tau: float = 30.0) -> Tuple[np.ndarray, np.ndarray]:
@@ -265,7 +324,7 @@ class ChimeraController:
         Returns:
             Tuple of (optimal_action, next_state)
         """
-        # Resolve Riccati gains for the delay tau
+        # Riccati gains for the delay tau (cached after the first solve)
         self._solve_riccati(tau)
         
         if not self.use_state_augmentation:
