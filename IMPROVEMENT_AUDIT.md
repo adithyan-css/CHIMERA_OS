@@ -225,3 +225,199 @@ was not re-tuned for any of them. Full tables: `results/robustness/ROBUSTNESS.md
 - `k` is still learned as SLO / mean service time. A model-free alternative (learning the
   violation curve from observed latencies) is the natural fix for point 3 and has not been
   tried.
+
+---
+
+## 6. Remove the inert components (done 12 Oct 2026)
+
+**Question.** The coupling penalty, the Lyapunov filter, the anti-chattering guardrail and
+the vertical-bridging flag change no decision in v5. Can they come out?
+
+**What was done.**
+
+- `ChimeraController` gained a `lean` path: the LQR action is clipped to the physical
+  bounds and the capacity budget, with no coupling penalty, no Lyapunov filter and no
+  action grid (`src/core/chimera_controller.py`, `project_to_safe_set`).
+- **Check before switching.** v5 was re-run on the held-out set through the lean path with
+  the guardrail off (`CHIMERA_Lean`), and again with the bridging flag off as well
+  (`CHIMERA_Lean_NoBridging`): 90 runs each (9 traces x 10 seeds).
+
+| Variant | Runs identical to v5 (SLO, CPU, p99, action counts) |
+|---|---:|
+| v5, re-run | 90 / 90 (reproduces `results_v5.csv` exactly) |
+| lean: penalty, filter, grid and guardrail removed | **90 / 90** |
+| lean, bridging flag also off | **90 / 90** |
+
+  Evidence: `results/lean_check.csv`.
+- **Switched.** The reported controller (v6, see item 8) and the Kubernetes operator now
+  run the lean path. The operator no longer evaluates the grid or the penalty at all.
+
+**What was deliberately not deleted.**
+
+- The legacy code path stays in the controller class. CHIMERA v1 to v5 and the ablation
+  rows that *re-add* each component need it, and those rows are the evidence that the
+  components are inert. The ablation now reads "+ coupling penalty", "+ Lyapunov filter",
+  "+ anti-chattering guardrail" instead of "without".
+- The operator keeps its own rule "never remove replicas while ordered ones are still
+  booting". It is cheap, and the first live run showed that real boot times do not match
+  the simulator's.
+- The vertical-bridging flag stays on. It is inert in the lean path, but harmless, and the
+  operator's fast loop sizes CPU for the replicas that are serving in any case.
+
+**Side finding.** With the action grid in place, turning bridging off changed 3 % of v5
+runs. In the lean path it changes none. The 3 % came from the grid's quantisation, not
+from bridging.
+
+**Bug found while switching the operator.** A unit test failed with the wider dead-band
+and exposed a sizing flaw in the operator, not the test: on a freshly started operator, a
+forecast upper bound from before a load jump was used as a demand scenario even though it
+was below the demand observed now, and with few scenarios it pulled the allocation to
+about 65 % of the observed demand. Fixed (`_risk` in `k8s/operator_core.py`: the bound is a
+scenario only at or above the observed demand; fewer than five history steps fall back to
+one zero step, as the simulator does), with a regression test. The simulator has the same
+structure but is always started with a primed history, where the effect is diluted over 40
+scenarios; it was left unchanged so the evaluated controller is not altered.
+
+**Checks.** Both test suites pass (18 and 30 tests).
+
+**Still open.** The legacy path is dead weight for anyone who only wants the final
+controller. A release would split it into a separate module.
+
+---
+
+## 8. Reduce resize churn (done 12 Oct 2026)
+
+**Question.** v5 makes about 60 in-place CPU resizes per 30-minute run. Can that be cut
+without giving up the cost/SLO advantage?
+
+**Dev study** (`src/scripts/churn_dev.py`, dev split only, 15 variants x 5 settings x 9
+traces x 3 seeds; `results/churn_dev.csv`). Three inner-loop knobs were varied: the
+scale-up dead-band, the release band and the release ticks. "Gap" is the SLO difference to
+v5 at equal CPU on each variant's own frontier (positive = better than v5).
+
+| Scale-up dead-band (release 15 %, 2 ticks) | Resizes/run | Gap to v5 at equal CPU (pp) | Traces not worse |
+|---|---:|---:|---:|
+| 10 % (v5) | 52.6 | 0.00 | 9/9 |
+| 15 % | 43.0 | +0.18 | 9/9 |
+| 20 % | 37.6 | +0.29 | 8/9 |
+| 25 % | 32.7 | +0.25 | 8/9 |
+| **30 %** | **29.0** | **+0.22** | **9/9** |
+| 40 % | 23.0 | +0.18 | 7/9 |
+| 50 % | 18.9 | -0.07 | 3/9 |
+
+Widening the release band or adding release ticks also cut resizes but cost efficiency on
+every trace (for example release 25 %, 3 ticks: 21.9 resizes, -0.84 pp, 0 of 9 traces not
+worse), because CPU is then held longer.
+
+**Rule, fixed before the held-out run:** the widest scale-up dead-band whose dev frontier
+is no worse than that of v5 on at least 8 of 9 traces and on average. That is 30 %. The
+default setting moves from 0.50 to 0.46 by the rule v5 itself used (the cheapest setting
+whose dev SLO is no worse than the previous default: 5.06 % against 5.35 % for v5).
+
+**The result is CHIMERA v6** = v5 + the lean path (item 6) + a 30 % scale-up dead-band.
+
+**Confirmation on data the choice did not see.**
+
+| Set | Resizes/run v5 -> v6 | SLO v5 -> v6 | CPU v5 -> v6 (core-min) | v6 against v5 at equal CPU |
+|---|---|---|---|---|
+| Held-out, 5 Azure traces | 62.1 -> 30.8 | 6.13 % -> 5.93 % | 244.3 -> 251.5 | +0.09 pp |
+| Held-out, 4 synthetic shapes | 58.2 -> 34.6 | 5.93 % -> 5.63 % | 68.0 -> 71.8 | +0.89 pp |
+| External, 10 web-server traces | 53.4 -> 26.1 | 6.41 % -> 6.18 % | 184.6 -> 190.2 | +0.01 pp (6 of 10 traces) |
+
+Resizes are halved on all three sets. At equal CPU v6 is level with v5 on the real traces
+and somewhat better on the synthetic shapes.
+
+**Against the baselines, v6 on the held-out set** (`results/REPORT_v6.md`): 47 of 48
+trace-baseline comparisons won at equal CPU (v5 with the corrected KOSMOS: 51 of 51). The
+one loss is new: the MagicScaler-inspired scaler on `real_kswd_w2`, by 0.66 pp. All
+baselines remain significantly behind on the pooled test (p < 0.001).
+
+**What this changes in the claims.**
+
+- "About 62 resizes per run" becomes about 31, against about 7 pod changes for AAPA and
+  about 250 resizes for KOSMOS.
+- "Wins every comparison on the held-out set" is no longer true for v6: 47 of 48.
+
+**Honest accounting of the held-out set.** The held-out set has now been scored twice: once
+for the v5 verdict and once for v6. The v6 change was chosen on dev by a rule written
+before the run, and nothing was adjusted after it, but the set is no longer untouched. The
+external traces (item 2) had never been used for anything when v6 was run on them.
+
+**Still open.** The API-server and kubelet load of 30 resizes per half hour per workload
+at fleet scale is still unmeasured.
+
+---
+
+## 2. More real traces (done 12 Oct 2026)
+
+**Question.** The only real workloads were five 100-minute Azure Functions excerpts, reused
+across every design round. Does the result hold on real traces no design decision saw?
+
+**Data.** The Azure Functions 2019 archive is still not downloadable (HTTP 403 and 409 on
+both known URLs). Two public web-server logs were downloaded from the Internet Traffic
+Archive at LBNL, whose pages state "the traces may be freely redistributed":
+
+| File | Size | Content |
+|---|---:|---|
+| `NASA_access_log_Jul95.gz` | 20.7 MB | NASA Kennedy Space Center WWW server, July 1995 |
+| `clarknet_access_log_Aug28.gz` | 21.8 MB | ClarkNet, 28 Aug - 3 Sep 1995 |
+
+`dataset/tools/ita_to_traces.py` turns them into ten 100-minute per-minute traces
+(`dataset/external/`). The windows are fixed by calendar rule in that script (NASA: 14:00
+on six July dates; ClarkNet: four set times), written before any controller ran on them.
+The raw logs are not committed; the script rebuilds the traces from them.
+
+**A first attempt was discarded, and why.** The first run scaled the request rates of both
+sites by 5. On every ClarkNet window the horizontal-only baselines sat at their 30-replica
+limit (900 pod-minutes in a 30-minute window) and could not add capacity, so the 56 of 58
+"wins" CHIMERA scored there said nothing. Those results are kept in
+`results/ext_first_attempt_capped/` and are not used. The scales were then set by a rule
+(the busiest minute must fit what 30 half-core replicas serve at the cheapest sweep
+setting: NASA x3, ClarkNet x1.5) and everything was re-run. This rescaling happened after
+seeing the first results; it was done to remove a handicap on the baselines, not to help
+CHIMERA, and the comparison became harder for CHIMERA as a result.
+
+**Result** (`results/REPORT_ext.md`; 900 main runs, 3,150 sweep runs; CHIMERA v6 with
+unchanged settings).
+
+Equal CPU, trace by trace:
+
+| vs | Traces won | Mean gap (pp) | p (Holm) |
+|---|---:|---:|---:|
+| AAPA | 10/10 | +2.00 | <0.001 |
+| HPA | 10/10 | +4.53 | <0.001 |
+| HPA+VPA | 10/10 | +3.89 | <0.001 |
+| KOSMOS (re-tuned) | 10/10 | +1.27 | <0.001 |
+| MagicScaler-inspired | 10/10 | +4.66 | <0.001 |
+| VPA | 10/10 | +2.20 | <0.001 |
+
+60 of 60 trace-baseline comparisons won.
+
+Default settings:
+
+| Controller | SLO violations | p99 (s) | CPU (core-min) | Actions/run |
+|---|---:|---:|---:|---:|
+| CHIMERA v6 | 6.18 % | 0.83 | 190.2 | 26.1 |
+| AAPA | 7.45 % | 1.18 | 193.6 | 7.8 |
+| KOSMOS | 4.22 % | 0.83 | 271.9 | 270.6 |
+| HPA | 16.19 % | 2.93 | 148.9 | 18.9 |
+
+**Reading.**
+
+1. On ten real traces that no design round saw, CHIMERA has fewer violations than every
+   baseline at equal CPU on every trace. This is the strongest single piece of evidence in
+   the project, because nothing about the controller was chosen with these traces in view.
+2. Against AAPA at default settings: 1.27 pp fewer violations with slightly less CPU.
+3. **KOSMOS is the closest competitor** once properly tuned: only 1.27 pp behind at equal
+   CPU, and at default settings it has fewer violations than CHIMERA (4.22 % against
+   6.18 %) for 43 % more CPU and ten times the resizes.
+4. Risk sizing adds little here: v6 against v4 (no risk sizing) at equal CPU is +0.24 pp,
+   better on 7 of 10 traces. Consistent with item 1.
+
+**Limits.**
+
+- These are 1995 web-server logs, not serverless-function traces: real, public and
+  untouched, but a different kind of workload from the Azure excerpts.
+- Two sites, ten windows. A 100-minute window is still short.
+- Rates are rescaled to fit the simulated cluster, as with the Azure excerpts.
+- Still simulation.

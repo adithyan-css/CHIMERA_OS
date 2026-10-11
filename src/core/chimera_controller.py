@@ -40,7 +40,9 @@ class ChimeraController:
                  coupling_mode: str = "opposing", # "opposing": penalise only dv*dh < 0 (the spec);
                                                   # "absolute": legacy kappa*|dv*dh|, kept for ablation
                  legacy_delay_model: bool = False, # True: Review-2 buffer (one step too long)
-                 control_interval: float = 15.0
+                 control_interval: float = 15.0,
+                 lean: bool = False      # True: plain LQR + bounds, without the coupling penalty,
+                                         # the Lyapunov filter and the action grid (all inert in v5)
                  ):
         """Initialize controller parameters."""
         self.v_min = v_min
@@ -59,6 +61,7 @@ class ChimeraController:
         self.decoupled_safety = decoupled_safety
         self.coupling_mode = coupling_mode
         self.legacy_delay_model = legacy_delay_model
+        self.lean = lean
         self.control_interval = control_interval
         # Set by project_to_safe_set: True when the Lyapunov constraint changed the chosen action
         self.last_filter_active = False
@@ -251,6 +254,17 @@ class ChimeraController:
         Project nominal action onto the Lyapunov and physical safety bounds.
         Using grid search over action space for speed & robustness (<0.5ms target latency).
         """
+        if self.lean:
+            # The LQR action clipped to the physical bounds and the capacity budget. No
+            # coupling penalty, no Lyapunov filter, no action grid: in v5 none of them
+            # changes a decision (see the ablation), so the deployable controller omits them.
+            v_next = float(np.clip(x_t[0] + u_nom[0], self.v_min, self.v_max))
+            h_next = float(np.clip(x_t[1] + u_nom[1], self.h_min, self.h_max))
+            if v_next * h_next > self.C_max:
+                v_next = max(self.v_min, self.C_max / h_next)
+            self.last_filter_active = False
+            return np.array([v_next - x_t[0], h_next - x_t[1]], dtype=float)
+
         # Search grid (same grid as the original loop implementation, evaluated in one shot)
         v_actions = np.linspace(-1.5, 1.5, 31)
         h_actions = np.linspace(-5, 5, 21)

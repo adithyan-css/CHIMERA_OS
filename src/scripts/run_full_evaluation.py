@@ -417,6 +417,28 @@ SPLITS = {
 DEV_SEEDS = [7, 11, 13, 17, 19]
 
 
+# Request-rate scale per site (the Azure excerpts use 15). Chosen so that the busiest
+# minute of any window still fits what the horizontal-only baselines can serve at the
+# cheapest setting of the sweep: peak req/s x 0.5 cores / 0.40 <= 30 replicas x 0.5 cores.
+# A first attempt used 5 for both sites and saturated those baselines at 30 replicas on
+# every ClarkNet window (results/ext_first_attempt_capped/), which handicapped them.
+EXTERNAL_SCALE = {'nasa': 3.0, 'clarknet': 1.5}
+
+
+def get_external_workloads() -> List[Dict[str, Any]]:
+    """Ten real web-server traces (NASA KSC July 1995, ClarkNet August 1995) from the
+    Internet Traffic Archive, as 100-minute windows fixed by calendar rule in
+    dataset/tools/ita_to_traces.py. Never used in any design round."""
+    out = []
+    for f in sorted(Path("dataset/external").glob("*.json")):
+        data = json.load(open(f))
+        scale = EXTERNAL_SCALE[data['function_id'].split('_')[0]]
+        out.append({'id': 'real_ext_' + data['function_id'],
+                    'trace': np.array(data["request_trace"]["requests_per_minute"], dtype=float) * scale,
+                    'type': 'UNKNOWN'})
+    return out
+
+
 def get_dev_workloads() -> List[Dict[str, Any]]:
     """Real traces (scored on the dev window) plus synthetic shapes that do NOT appear in
     the test set. Never used for reported results."""
@@ -557,7 +579,8 @@ def run_simulation(trace: np.ndarray, config_name: str, config: dict, w_type: st
         use_scale_down_guardrail=config.get('use_scale_down_guardrail', True),
         decoupled_safety=config.get('decoupled_safety', False),
         coupling_mode=config.get('coupling_mode', 'opposing'),
-        legacy_delay_model=config.get('legacy_delay_model', False)
+        legacy_delay_model=config.get('legacy_delay_model', False),
+        lean=config.get('lean', False)
     )
 
     cpp = CPU_PER_REQUEST
@@ -706,12 +729,25 @@ CHIMERA_V4 = dict(CHIMERA_V3, inner_owns_vertical=True, replica_band=0.85, adwin
 CHIMERA_V5 = dict(CHIMERA_V4, risk_sizing=True, inner_up_band=0.10, target_utilization=0.5)
 
 
+# CHIMERA (v6): v5 with two changes, both chosen on the dev split (IMPROVEMENT_AUDIT.md,
+# items 6 and 8).
+#  - lean: the coupling penalty, the Lyapunov filter with its action grid and the
+#    anti-chattering guardrail are out of the decision path. With them out, all 90 held-out
+#    v5 runs are bit-identical (results/lean_check.csv), so this changes no result.
+#  - inner_up_band 0.10 -> 0.30: the largest scale-up dead-band whose dev cost/SLO frontier
+#    is no worse than v5's (src/scripts/churn_dev.py); 45 % fewer resizes on dev. The knob
+#    moves 0.50 -> 0.46 by v5's own rule (cheapest setting whose dev SLO is no worse than
+#    the previous version's default).
+CHIMERA_V6 = dict(CHIMERA_V5, lean=True, kappa=0.0, eta=0.0, sigma=100.0, use_scale_down_guardrail=False,
+                  inner_up_band=0.30, target_utilization=0.46)
+
+
 KOSMOS_GAINS = dict(DC=0.03, BC=0.15)
 
 
 def build_configs() -> Dict[str, dict]:
     B = lambda **kw: dict(run_type='baseline', **kw)
-    A = lambda **kw: dict(CHIMERA_V5, run_type='ablation', **kw)
+    A = lambda **kw: dict(CHIMERA_V6, run_type='ablation', **kw)
     return {
         # --- Baselines: identical bounds (0.5 core/pod start, >= 2 replicas), 70% target ---
         'HPA':                  B(kind='hpa', **BOUNDS_H_ONLY),
@@ -730,8 +766,15 @@ def build_configs() -> Dict[str, dict]:
         'CHIMERA_v2':           dict(CHIMERA_V2, run_type='baseline'),
         'CHIMERA_v3':           dict(CHIMERA_V3, run_type='baseline'),
         'CHIMERA_v4':           dict(CHIMERA_V4, run_type='baseline'),
-        'CHIMERA':              dict(CHIMERA_V5, run_type='baseline'),
-        'CHIMERA_Decoupled':    dict(CHIMERA_V5, run_type='baseline', decoupled_safety=True),
+        'CHIMERA_v5':           dict(CHIMERA_V5, run_type='baseline'),
+        'CHIMERA':              dict(CHIMERA_V6, run_type='baseline'),
+        # v5 with the inert components taken out of the decision path (IMPROVEMENT_AUDIT.md,
+        # item 6): no coupling penalty, no Lyapunov filter or action grid, no anti-chattering
+        # guardrail; the second also drops the vertical-bridging flag.
+        'CHIMERA_Lean':         dict(CHIMERA_V5, run_type='sensitivity', lean=True, kappa=0.0, eta=0.0,
+                                     sigma=100.0, use_scale_down_guardrail=False),
+        'CHIMERA_Lean_NoBridging': dict(CHIMERA_V5, run_type='sensitivity', lean=True, kappa=0.0, eta=0.0,
+                                        sigma=100.0, use_scale_down_guardrail=False, vertical_bridging=False),
         # --- Reference bound: clairvoyant, instant, no boot delay. Not a competitor. ---
         'Oracle':               dict(kind='oracle', run_type='reference', **BOUNDS_JOINT),
         # --- Sensitivity: 3x head-start pods for horizontal-only baselines; no KEP-1287 ---
@@ -739,16 +782,16 @@ def build_configs() -> Dict[str, dict]:
         'AAPA_1.5':             dict(kind='aapa', run_type='sensitivity', v_min=1.5, v_max=1.5, h_min=2, h_max=30),
         'KOSMOS_NoInPlace':     dict(kind='kosmos', run_type='sensitivity', **BOUNDS_JOINT, **KOSMOS_GAINS,
                                      alpha=0.25, use_inplace_resize=False),
-        'CHIMERA_NoInPlace':    dict(CHIMERA_V5, run_type='sensitivity', use_inplace_resize=False),
-        # --- Ablation: each removes (w/o) or re-adds (+) exactly one mechanism of CHIMERA v4 ---
+        'CHIMERA_NoInPlace':    dict(CHIMERA_V6, run_type='sensitivity', use_inplace_resize=False),
+        # --- Ablation: each removes (w/o) or re-adds (+) exactly one mechanism of CHIMERA v6 ---
         'CHIMERA_Full':                     A(),
-        'CHIMERA_+Lyapunov_Filter':         A(sigma=0.1),
-        'CHIMERA_w/o_Coupling_Penalty':     A(kappa=0.0, eta=0.0),
+        'CHIMERA_+Lyapunov_Filter':         A(lean=False, sigma=0.1),
+        'CHIMERA_+Coupling_Penalty':        A(lean=False, kappa=0.5, eta=0.2),
         'CHIMERA_w/o_CQR':                  A(use_cqr=False),
         'CHIMERA_w/o_ADWIN_Drift':          A(use_drift=False),
         'CHIMERA_w/o_OOD_Fallback':         A(use_ood_fallback=False),
         'CHIMERA_w/o_State_Augmentation':   A(use_state_augmentation=False),
-        'CHIMERA_w/o_Anti_Chattering':      A(use_scale_down_guardrail=False),
+        'CHIMERA_+Anti_Chattering':         A(use_scale_down_guardrail=True),
         'CHIMERA_w/o_Joint_H_V':            A(v_min=0.5, v_max=0.5, use_inplace_resize=False),
         'CHIMERA_w/o_Vertical_Bridging':    A(vertical_bridging=False),
         'CHIMERA_w/o_Asymmetric_Smoothing': A(asymmetric_smoothing=False),
@@ -756,13 +799,14 @@ def build_configs() -> Dict[str, dict]:
         'CHIMERA_w/o_Naive_Conformal':      A(naive_conformal_fallback=False),
         'CHIMERA_Double_Count_Inflight':    A(serving_replica_state=False),
         'CHIMERA_Legacy_Delay_Model':       A(legacy_delay_model=True),
-        'CHIMERA_Legacy_Coupling':          A(coupling_mode='absolute'),
+        'CHIMERA_+Legacy_Coupling':         A(lean=False, kappa=0.5, eta=0.2, coupling_mode='absolute'),
         'CHIMERA_w/o_Cascade':              A(inner_vertical_period=0.0),
         'CHIMERA_w/o_Fast_Release':         A(inner_release_band=0.0),
         'CHIMERA_w/o_Replica_Band':         A(replica_band=0.0),
         'CHIMERA_w/o_Inner_Owns_CPU':       A(inner_owns_vertical=False),
         'CHIMERA_w/o_ADWIN_Margin_Reset':   A(adwin_margin_reset=False),
         'CHIMERA_w/o_Up_Deadband':          A(inner_up_band=0.0),
+        'CHIMERA_Up_Deadband_0.10':         A(inner_up_band=0.10),
     }
 
 
@@ -773,7 +817,7 @@ SWEEP_UTILS = [0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95]
 # SLO needs a mean well below the threshold, so the sweep covers small alpha.
 SWEEP_KOSMOS_ALPHA = [0.15, 0.20, 0.25, 0.30, 0.40, 0.50, 0.70]
 SWEEP_FAMILIES = ['HPA', 'VPA', 'HPA+VPA', 'AAPA', 'MagicScaler-Inspired', 'KOSMOS', 'CHIMERA_v1', 'CHIMERA_v2',
-                  'CHIMERA_v3', 'CHIMERA_v4', 'CHIMERA', 'Oracle']
+                  'CHIMERA_v3', 'CHIMERA_v4', 'CHIMERA_v5', 'CHIMERA', 'Oracle']
 
 
 def build_sweep_configs(base: Dict[str, dict]) -> Dict[str, dict]:
@@ -856,6 +900,8 @@ def main():
     ap.add_argument('--holdout', action='store_true',
                     help='held-out final set: real traces + four held-out synthetic shapes (use with '
                          '--seeds from HOLDOUT_SEEDS)')
+    ap.add_argument('--external', action='store_true',
+                    help='ten real web-server traces from the Internet Traffic Archive (never used in design)')
     ap.add_argument('--warmup', type=int, default=0,
                     help='unscored warm-up minutes before the window (0 = start cold at the window)')
     ap.add_argument('--service-dist', choices=sorted(SERVICE_DISTS), default='exponential',
@@ -869,7 +915,9 @@ def main():
         sys.exit("Refusing to overwrite the Review-2 verified results file.")
 
     logger.info("Starting CHIMERA evaluation harness...")
-    if args.holdout:
+    if args.external:
+        workloads = get_external_workloads()
+    elif args.holdout:
         workloads = get_holdout_workloads()
     else:
         workloads = get_remediation_workloads() if args.split == 'test' else get_dev_workloads()

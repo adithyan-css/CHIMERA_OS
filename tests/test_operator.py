@@ -253,6 +253,24 @@ class TestOperatorCore(unittest.TestCase):
         self.assertEqual(sum(st.controller.dh_history), 0)
         self.assertTrue(d2.new_replicas is None or d2.new_replicas >= n)
 
+    def test_rate_signal_never_estimates_below_measured_cpu(self):
+        """Found in the first live replay: with the cost per request set 20 % too low the
+        rate-based estimate said 75 % utilisation while the pods were saturated, and the
+        operator held."""
+        st = TargetState(Spec(cpu_per_request=0.05))
+        d = st.step(obs(0, replicas=2, ready=2, cpu=0.5, usage=1.0, rate=15.0))
+        self.assertGreaterEqual(d.demand_cores, 1.0 * Spec().saturation_boost - 1e-9)
+        calm = TargetState(Spec(cpu_per_request=0.05)).step(obs(0, replicas=2, ready=2, cpu=1.0, usage=0.2, rate=10.0))
+        self.assertAlmostEqual(calm.demand_cores, 0.5)             # the faster signal leads when it is higher
+
+    def test_stale_upper_bound_does_not_shrink_capacity_below_demand(self):
+        """A fresh operator sees a jump: the forecast bound from before the jump is below
+        the demand observed now. Sizing must still cover the observed demand."""
+        st = TargetState(Spec())
+        st.step(obs(0, cpu=1.0, usage=0.6))
+        demand = st._observed_demand(obs(5, cpu=1.0, usage=2.5))
+        self.assertGreaterEqual(st._risk(demand), demand / Spec().target_utilization - 1e-6)
+
     def test_inflight_buffer_adopts_pods_it_did_not_order(self):
         st = TargetState(Spec())
         st.step(obs(0, replicas=4, ready=4, cpu=1.0, usage=2.0))

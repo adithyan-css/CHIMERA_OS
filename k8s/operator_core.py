@@ -62,7 +62,7 @@ class Spec:
     risk_sizing: bool = True
     slo_seconds: float = 0.5
     service_time_seconds: float = 0.1
-    up_band: float = 0.10
+    up_band: float = 0.30     # v6: widest scale-up dead-band with no loss on the dev frontier
 
 
 @dataclass
@@ -167,13 +167,14 @@ class OnlineConformalForecaster:
 class TargetState:
     def __init__(self, spec: Spec):
         self.spec = spec
-        # sigma=100 disables the runtime Lyapunov filter, as in the evaluated v4 controller:
-        # the Riccati P already certifies that the LQR law decreases V = e'Pe.
+        # lean: plain LQR clipped to the bounds, as in the evaluated v6 controller. The
+        # coupling penalty and the Lyapunov filter change no decision (the Riccati P already
+        # certifies that the LQR law decreases V = e'Pe), so the operator does not run them.
         self.controller = ChimeraController(
             v_min=spec.min_cpu, v_max=spec.max_cpu,
             h_min=spec.min_replicas, h_max=spec.max_replicas,
             gamma_ratio=spec.ratio_cpu_to_replicas,
-            C_max=spec.max_cpu * spec.max_replicas, sigma=100.0)
+            C_max=spec.max_cpu * spec.max_replicas, sigma=100.0, lean=True)
         self.forecaster = OnlineConformalForecaster()
         self.drift = AdwinDriftDetector(delta=0.05)
         self.cores_per_req: Optional[float] = spec.cpu_per_request
@@ -189,18 +190,23 @@ class TargetState:
         """Current demand in cores. CPU usage is capped by the limit when pods throttle,
         so a saturated reading is treated as a lower bound and boosted."""
         allocated = obs.cpu_per_pod * max(1, obs.ready_replicas)
-        if obs.request_rate is not None and obs.cpu_usage is not None and obs.request_rate > 0:
+        # A cost per request given in the spec is fixed; it is learned only when omitted
+        if (self.spec.cpu_per_request is None and obs.request_rate is not None
+                and obs.cpu_usage is not None and obs.request_rate > 0):
             if obs.cpu_usage < 0.9 * allocated:   # learn cost/request only when unsaturated
                 sample = obs.cpu_usage / obs.request_rate
                 self.cores_per_req = sample if self.cores_per_req is None else \
                     0.8 * self.cores_per_req + 0.2 * sample
-        if obs.request_rate is not None and self.cores_per_req is not None:
-            return obs.request_rate * self.cores_per_req
+        from_cpu = None
         if obs.cpu_usage is not None:
-            if obs.cpu_usage >= 0.95 * allocated:
-                return obs.cpu_usage * self.spec.saturation_boost
-            return obs.cpu_usage
-        return None
+            from_cpu = obs.cpu_usage * (self.spec.saturation_boost if obs.cpu_usage >= 0.95 * allocated else 1.0)
+        if obs.request_rate is not None and self.cores_per_req is not None:
+            # The request rate reacts faster than a CPU-usage rate, but its conversion to
+            # cores can be wrong (a mis-set or mis-learned cost per request). Measured CPU
+            # is the ground truth for what is being burned, so never estimate below it.
+            from_rate = obs.request_rate * self.cores_per_req
+            return from_rate if from_cpu is None else max(from_rate, from_cpu)
+        return from_cpu
 
     # -- one control tick -----------------------------------------------------------
     def step(self, obs: Observation) -> Decision:
@@ -313,9 +319,13 @@ class TargetState:
         """Risk-optimal cores: scenarios = demand + recent signed changes, plus the
         forecaster's upper bound."""
         s = self.spec
-        sc = [max(0.0, demand + d) for d in self.forecaster.steps] + [demand]
+        steps = self.forecaster.steps if len(self.forecaster.steps) >= 5 else [0.0]   # as the simulator
+        sc = [max(0.0, demand + d) for d in steps] + [demand]
         if self._last_hi is not None:
-            sc.append(self._last_hi)
+            # An upper bound from before a jump can sit below the demand observed now; as a
+            # scenario it would then argue for less capacity than is already in use. With
+            # few scenarios (a freshly started operator) that halved the allocation.
+            sc.append(max(self._last_hi, demand))
         return risk_cores(sc, s.target_utilization, s.slo_seconds / max(1e-6, s.service_time_seconds))
 
     # -- cascade inner loop -----------------------------------------------------------

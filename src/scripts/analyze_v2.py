@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 RES = Path("results")
 FIG = RES / "figures"
 BASELINES = ['HPA', 'VPA', 'HPA+VPA', 'AAPA', 'MagicScaler-Inspired', 'KOSMOS', 'CHIMERA_v1', 'CHIMERA_v2',
-             'CHIMERA_v3', 'CHIMERA_v4']
+             'CHIMERA_v3', 'CHIMERA_v4', 'CHIMERA_v5']
 ORACLE = 'Oracle'   # minute-level clairvoyant reference, never a competitor
 METRICS = [('slo_violation_rate', 'SLO violations', 100, '%'),
            ('p99_response_time', 'p99 latency', 1, 's'),

@@ -1,0 +1,666 @@
+2026-10-12 01:45:49,767 - __main__ - INFO - Starting CHIMERA evaluation harness...
+2026-10-12 01:45:49,770 - __main__ - INFO - Training CQR model for trace real_kswd_w1...
+2026-10-12 01:45:49,896 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:49,943 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:49,944 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:49,944 - __main__ - INFO - Training CQR model for trace real_kswd_w2...
+2026-10-12 01:45:50,060 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:50,069 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:50,077 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:50,077 - __main__ - INFO - Training CQR model for trace real_kswd_w3...
+2026-10-12 01:45:50,197 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:50,210 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:50,211 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:50,211 - __main__ - INFO - Training CQR model for trace real_kswd_w4...
+2026-10-12 01:45:50,367 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:50,379 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:50,380 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:50,380 - __main__ - INFO - Training CQR model for trace real_kswd_w5...
+2026-10-12 01:45:50,500 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:50,530 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:50,531 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:50,531 - __main__ - INFO - Training CQR model for trace holdout_flash_crowd...
+2026-10-12 01:45:50,650 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:50,657 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:50,658 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:50,658 - __main__ - INFO - Training CQR model for trace holdout_diurnal...
+2026-10-12 01:45:50,781 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:50,790 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:50,790 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:50,790 - __main__ - INFO - Training CQR model for trace holdout_step_down...
+2026-10-12 01:45:50,912 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:50,920 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:50,920 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:50,921 - __main__ - INFO - Training CQR model for trace holdout_on_off...
+2026-10-12 01:45:51,034 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 01:45:51,063 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 01:45:51,064 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 01:45:51,068 - __main__ - INFO - 3870 runs = 43 configs x 9 workloads x 10 seeds, 10 workers
+2026-10-12 01:46:37,507 - __main__ - INFO -   50/3870 runs done (46s)
+2026-10-12 01:46:42,863 - __main__ - INFO -   100/3870 runs done (52s)
+2026-10-12 01:46:54,117 - __main__ - INFO -   150/3870 runs done (63s)
+2026-10-12 01:46:57,390 - __main__ - INFO -   200/3870 runs done (66s)
+2026-10-12 01:47:12,070 - __main__ - INFO -   250/3870 runs done (81s)
+2026-10-12 01:47:25,088 - __main__ - INFO -   300/3870 runs done (94s)
+2026-10-12 01:47:37,233 - __main__ - INFO -   350/3870 runs done (106s)
+2026-10-12 01:47:52,044 - __main__ - INFO -   400/3870 runs done (121s)
+2026-10-12 01:48:04,070 - __main__ - INFO -   450/3870 runs done (133s)
+2026-10-12 01:48:14,042 - __main__ - INFO -   500/3870 runs done (143s)
+2026-10-12 01:48:31,701 - __main__ - INFO -   550/3870 runs done (161s)
+2026-10-12 01:48:46,188 - __main__ - INFO -   600/3870 runs done (175s)
+2026-10-12 01:49:01,150 - __main__ - INFO -   650/3870 runs done (190s)
+2026-10-12 01:49:23,927 - __main__ - INFO -   700/3870 runs done (213s)
+2026-10-12 01:49:40,977 - __main__ - INFO -   750/3870 runs done (230s)
+2026-10-12 01:50:02,936 - __main__ - INFO -   800/3870 runs done (252s)
+2026-10-12 01:50:25,870 - __main__ - INFO -   850/3870 runs done (275s)
+2026-10-12 01:50:30,732 - __main__ - INFO -   900/3870 runs done (280s)
+2026-10-12 01:50:35,212 - __main__ - INFO -   950/3870 runs done (284s)
+2026-10-12 01:50:50,678 - __main__ - INFO -   1000/3870 runs done (300s)
+2026-10-12 01:50:52,380 - __main__ - INFO -   1050/3870 runs done (301s)
+2026-10-12 01:51:05,669 - __main__ - INFO -   1100/3870 runs done (315s)
+2026-10-12 01:51:20,005 - __main__ - INFO -   1150/3870 runs done (329s)
+2026-10-12 01:51:35,312 - __main__ - INFO -   1200/3870 runs done (344s)
+2026-10-12 01:51:47,436 - __main__ - INFO -   1250/3870 runs done (356s)
+2026-10-12 01:52:00,627 - __main__ - INFO -   1300/3870 runs done (370s)
+2026-10-12 01:52:05,224 - __main__ - INFO -   1350/3870 runs done (374s)
+2026-10-12 01:52:10,810 - __main__ - INFO -   1400/3870 runs done (380s)
+2026-10-12 01:52:22,997 - __main__ - INFO -   1450/3870 runs done (392s)
+2026-10-12 01:52:30,519 - __main__ - INFO -   1500/3870 runs done (399s)
+2026-10-12 01:52:43,733 - __main__ - INFO -   1550/3870 runs done (413s)
+2026-10-12 01:52:58,596 - __main__ - INFO -   1600/3870 runs done (428s)
+2026-10-12 01:53:11,682 - __main__ - INFO -   1650/3870 runs done (441s)
+2026-10-12 01:53:24,653 - __main__ - INFO -   1700/3870 runs done (454s)
+2026-10-12 01:53:34,732 - __main__ - INFO -   1750/3870 runs done (464s)
+2026-10-12 01:53:44,236 - __main__ - INFO -   1800/3870 runs done (473s)
+2026-10-12 01:53:57,189 - __main__ - INFO -   1850/3870 runs done (486s)
+2026-10-12 01:54:08,481 - __main__ - INFO -   1900/3870 runs done (497s)
+2026-10-12 01:54:25,268 - __main__ - INFO -   1950/3870 runs done (514s)
+2026-10-12 01:54:40,367 - __main__ - INFO -   2000/3870 runs done (529s)
+2026-10-12 01:54:59,862 - __main__ - INFO -   2050/3870 runs done (549s)
+2026-10-12 01:55:15,906 - __main__ - INFO -   2100/3870 runs done (565s)
+2026-10-12 01:55:31,066 - __main__ - INFO -   2150/3870 runs done (580s)
+2026-10-12 01:55:35,373 - __main__ - INFO -   2200/3870 runs done (584s)
+2026-10-12 01:55:40,722 - __main__ - INFO -   2250/3870 runs done (590s)
+2026-10-12 01:55:51,737 - __main__ - INFO -   2300/3870 runs done (601s)
+2026-10-12 01:55:55,586 - __main__ - INFO -   2350/3870 runs done (605s)
+2026-10-12 01:56:09,313 - __main__ - INFO -   2400/3870 runs done (618s)
+2026-10-12 01:56:20,271 - __main__ - INFO -   2450/3870 runs done (629s)
+2026-10-12 01:56:34,402 - __main__ - INFO -   2500/3870 runs done (643s)
+2026-10-12 01:56:47,163 - __main__ - INFO -   2550/3870 runs done (656s)
+2026-10-12 01:56:53,193 - __main__ - INFO -   2600/3870 runs done (662s)
+2026-10-12 01:56:56,188 - __main__ - INFO -   2650/3870 runs done (665s)
+2026-10-12 01:57:04,321 - __main__ - INFO -   2700/3870 runs done (673s)
+2026-10-12 01:57:10,508 - __main__ - INFO -   2750/3870 runs done (679s)
+2026-10-12 01:57:18,340 - __main__ - INFO -   2800/3870 runs done (687s)
+2026-10-12 01:57:32,304 - __main__ - INFO -   2850/3870 runs done (701s)
+2026-10-12 01:57:42,493 - __main__ - INFO -   2900/3870 runs done (711s)
+2026-10-12 01:57:53,000 - __main__ - INFO -   2950/3870 runs done (722s)
+2026-10-12 01:58:07,403 - __main__ - INFO -   3000/3870 runs done (736s)
+2026-10-12 01:58:10,009 - __main__ - INFO -   3050/3870 runs done (739s)
+2026-10-12 01:58:14,769 - __main__ - INFO -   3100/3870 runs done (744s)
+2026-10-12 01:58:28,292 - __main__ - INFO -   3150/3870 runs done (757s)
+2026-10-12 01:58:30,796 - __main__ - INFO -   3200/3870 runs done (760s)
+2026-10-12 01:58:43,342 - __main__ - INFO -   3250/3870 runs done (772s)
+2026-10-12 01:58:57,547 - __main__ - INFO -   3300/3870 runs done (786s)
+2026-10-12 01:59:12,023 - __main__ - INFO -   3350/3870 runs done (801s)
+2026-10-12 01:59:24,125 - __main__ - INFO -   3400/3870 runs done (813s)
+2026-10-12 01:59:36,184 - __main__ - INFO -   3450/3870 runs done (825s)
+2026-10-12 01:59:38,601 - __main__ - INFO -   3500/3870 runs done (828s)
+2026-10-12 01:59:43,562 - __main__ - INFO -   3550/3870 runs done (832s)
+2026-10-12 01:59:52,834 - __main__ - INFO -   3600/3870 runs done (842s)
+2026-10-12 01:59:58,735 - __main__ - INFO -   3650/3870 runs done (848s)
+2026-10-12 02:00:10,692 - __main__ - INFO -   3700/3870 runs done (860s)
+2026-10-12 02:00:20,697 - __main__ - INFO -   3750/3870 runs done (870s)
+2026-10-12 02:00:30,785 - __main__ - INFO -   3800/3870 runs done (880s)
+2026-10-12 02:00:39,825 - __main__ - INFO -   3850/3870 runs done (889s)
+2026-10-12 02:00:43,861 - __main__ - INFO -   3870/3870 runs done (893s)
+2026-10-12 02:00:44,018 - __main__ - INFO - Evaluation completed in 893s. Results saved to results\results_v6.csv
+2026-10-12 02:00:49,035 - __main__ - INFO - Starting CHIMERA evaluation harness...
+2026-10-12 02:00:49,039 - __main__ - INFO - Training CQR model for trace real_kswd_w1...
+2026-10-12 02:00:49,140 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:49,186 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:49,186 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:49,187 - __main__ - INFO - Training CQR model for trace real_kswd_w2...
+2026-10-12 02:00:49,303 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:49,308 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:49,309 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:49,309 - __main__ - INFO - Training CQR model for trace real_kswd_w3...
+2026-10-12 02:00:49,423 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:49,435 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:49,435 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:49,436 - __main__ - INFO - Training CQR model for trace real_kswd_w4...
+2026-10-12 02:00:49,551 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:49,566 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:49,568 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:49,568 - __main__ - INFO - Training CQR model for trace real_kswd_w5...
+2026-10-12 02:00:49,703 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:49,736 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:49,736 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:49,737 - __main__ - INFO - Training CQR model for trace holdout_flash_crowd...
+2026-10-12 02:00:49,858 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:49,866 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:49,866 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:49,867 - __main__ - INFO - Training CQR model for trace holdout_diurnal...
+2026-10-12 02:00:49,979 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:49,985 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:49,985 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:49,985 - __main__ - INFO - Training CQR model for trace holdout_step_down...
+2026-10-12 02:00:50,102 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:50,108 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:50,108 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:50,108 - __main__ - INFO - Training CQR model for trace holdout_on_off...
+2026-10-12 02:00:50,223 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:00:50,247 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:00:50,248 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:00:50,251 - __main__ - INFO - 4095 runs = 91 configs x 9 workloads x 5 seeds, 10 workers
+2026-10-12 02:01:28,206 - __main__ - INFO -   50/4095 runs done (38s)
+2026-10-12 02:01:29,402 - __main__ - INFO -   100/4095 runs done (39s)
+2026-10-12 02:01:32,648 - __main__ - INFO -   150/4095 runs done (42s)
+2026-10-12 02:01:35,431 - __main__ - INFO -   200/4095 runs done (45s)
+2026-10-12 02:01:39,477 - __main__ - INFO -   250/4095 runs done (49s)
+2026-10-12 02:01:45,734 - __main__ - INFO -   300/4095 runs done (55s)
+2026-10-12 02:01:51,058 - __main__ - INFO -   350/4095 runs done (61s)
+2026-10-12 02:02:08,057 - __main__ - INFO -   400/4095 runs done (78s)
+2026-10-12 02:02:15,336 - __main__ - INFO -   450/4095 runs done (85s)
+2026-10-12 02:02:22,099 - __main__ - INFO -   500/4095 runs done (92s)
+2026-10-12 02:02:30,981 - __main__ - INFO -   550/4095 runs done (101s)
+2026-10-12 02:02:39,906 - __main__ - INFO -   600/4095 runs done (110s)
+2026-10-12 02:02:49,024 - __main__ - INFO -   650/4095 runs done (119s)
+2026-10-12 02:03:00,511 - __main__ - INFO -   700/4095 runs done (130s)
+2026-10-12 02:03:12,852 - __main__ - INFO -   750/4095 runs done (143s)
+2026-10-12 02:03:24,530 - __main__ - INFO -   800/4095 runs done (154s)
+2026-10-12 02:03:44,957 - __main__ - INFO -   850/4095 runs done (175s)
+2026-10-12 02:03:56,548 - __main__ - INFO -   900/4095 runs done (186s)
+2026-10-12 02:03:58,475 - __main__ - INFO -   950/4095 runs done (188s)
+2026-10-12 02:03:59,868 - __main__ - INFO -   1000/4095 runs done (190s)
+2026-10-12 02:04:01,187 - __main__ - INFO -   1050/4095 runs done (191s)
+2026-10-12 02:04:05,699 - __main__ - INFO -   1100/4095 runs done (195s)
+2026-10-12 02:04:09,863 - __main__ - INFO -   1150/4095 runs done (200s)
+2026-10-12 02:04:15,706 - __main__ - INFO -   1200/4095 runs done (205s)
+2026-10-12 02:04:22,166 - __main__ - INFO -   1250/4095 runs done (212s)
+2026-10-12 02:04:35,439 - __main__ - INFO -   1300/4095 runs done (225s)
+2026-10-12 02:04:43,364 - __main__ - INFO -   1350/4095 runs done (233s)
+2026-10-12 02:04:48,241 - __main__ - INFO -   1400/4095 runs done (238s)
+2026-10-12 02:04:50,945 - __main__ - INFO -   1450/4095 runs done (241s)
+2026-10-12 02:04:54,145 - __main__ - INFO -   1500/4095 runs done (244s)
+2026-10-12 02:05:00,202 - __main__ - INFO -   1550/4095 runs done (250s)
+2026-10-12 02:05:05,003 - __main__ - INFO -   1600/4095 runs done (255s)
+2026-10-12 02:05:10,187 - __main__ - INFO -   1650/4095 runs done (260s)
+2026-10-12 02:05:16,000 - __main__ - INFO -   1700/4095 runs done (266s)
+2026-10-12 02:05:27,568 - __main__ - INFO -   1750/4095 runs done (277s)
+2026-10-12 02:05:36,931 - __main__ - INFO -   1800/4095 runs done (287s)
+2026-10-12 02:05:43,521 - __main__ - INFO -   1850/4095 runs done (293s)
+2026-10-12 02:05:50,016 - __main__ - INFO -   1900/4095 runs done (300s)
+2026-10-12 02:05:56,412 - __main__ - INFO -   1950/4095 runs done (306s)
+2026-10-12 02:06:05,919 - __main__ - INFO -   2000/4095 runs done (316s)
+2026-10-12 02:06:13,723 - __main__ - INFO -   2050/4095 runs done (323s)
+2026-10-12 02:06:23,856 - __main__ - INFO -   2100/4095 runs done (334s)
+2026-10-12 02:06:32,904 - __main__ - INFO -   2150/4095 runs done (343s)
+2026-10-12 02:06:48,944 - __main__ - INFO -   2200/4095 runs done (359s)
+2026-10-12 02:07:02,200 - __main__ - INFO -   2250/4095 runs done (372s)
+2026-10-12 02:07:05,156 - __main__ - INFO -   2300/4095 runs done (375s)
+2026-10-12 02:07:06,367 - __main__ - INFO -   2350/4095 runs done (376s)
+2026-10-12 02:07:07,811 - __main__ - INFO -   2400/4095 runs done (378s)
+2026-10-12 02:07:12,276 - __main__ - INFO -   2450/4095 runs done (382s)
+2026-10-12 02:07:15,603 - __main__ - INFO -   2500/4095 runs done (385s)
+2026-10-12 02:07:21,817 - __main__ - INFO -   2550/4095 runs done (392s)
+2026-10-12 02:07:26,069 - __main__ - INFO -   2600/4095 runs done (396s)
+2026-10-12 02:07:38,329 - __main__ - INFO -   2650/4095 runs done (408s)
+2026-10-12 02:07:46,984 - __main__ - INFO -   2700/4095 runs done (417s)
+2026-10-12 02:07:49,447 - __main__ - INFO -   2750/4095 runs done (419s)
+2026-10-12 02:07:51,403 - __main__ - INFO -   2800/4095 runs done (421s)
+2026-10-12 02:07:52,423 - __main__ - INFO -   2850/4095 runs done (422s)
+2026-10-12 02:07:56,493 - __main__ - INFO -   2900/4095 runs done (426s)
+2026-10-12 02:07:59,070 - __main__ - INFO -   2950/4095 runs done (429s)
+2026-10-12 02:08:02,520 - __main__ - INFO -   3000/4095 runs done (432s)
+2026-10-12 02:08:07,348 - __main__ - INFO -   3050/4095 runs done (437s)
+2026-10-12 02:08:15,523 - __main__ - INFO -   3100/4095 runs done (445s)
+2026-10-12 02:08:26,977 - __main__ - INFO -   3150/4095 runs done (457s)
+2026-10-12 02:08:30,520 - __main__ - INFO -   3200/4095 runs done (460s)
+2026-10-12 02:08:32,949 - __main__ - INFO -   3250/4095 runs done (463s)
+2026-10-12 02:08:34,893 - __main__ - INFO -   3300/4095 runs done (465s)
+2026-10-12 02:08:39,436 - __main__ - INFO -   3350/4095 runs done (469s)
+2026-10-12 02:08:43,428 - __main__ - INFO -   3400/4095 runs done (473s)
+2026-10-12 02:08:47,799 - __main__ - INFO -   3450/4095 runs done (478s)
+2026-10-12 02:08:53,749 - __main__ - INFO -   3500/4095 runs done (483s)
+2026-10-12 02:09:01,270 - __main__ - INFO -   3550/4095 runs done (491s)
+2026-10-12 02:09:14,564 - __main__ - INFO -   3600/4095 runs done (504s)
+2026-10-12 02:09:18,070 - __main__ - INFO -   3650/4095 runs done (508s)
+2026-10-12 02:09:20,219 - __main__ - INFO -   3700/4095 runs done (510s)
+2026-10-12 02:09:21,934 - __main__ - INFO -   3750/4095 runs done (512s)
+2026-10-12 02:09:25,279 - __main__ - INFO -   3800/4095 runs done (515s)
+2026-10-12 02:09:28,144 - __main__ - INFO -   3850/4095 runs done (518s)
+2026-10-12 02:09:31,972 - __main__ - INFO -   3900/4095 runs done (522s)
+2026-10-12 02:09:35,626 - __main__ - INFO -   3950/4095 runs done (525s)
+2026-10-12 02:09:42,646 - __main__ - INFO -   4000/4095 runs done (532s)
+2026-10-12 02:09:54,406 - __main__ - INFO -   4050/4095 runs done (544s)
+2026-10-12 02:09:58,330 - __main__ - INFO -   4095/4095 runs done (548s)
+2026-10-12 02:09:58,487 - __main__ - INFO - Evaluation completed in 548s. Results saved to results\results_v6_sweep.csv
+# CHIMERA v6 - evaluation report
+
+Generated by `src/scripts/analyze_v2.py --tag v6` from `results/results_v6.csv` (3870 runs: 43 configurations x 9 workloads x 10 seeds) and `results/results_v6_sweep.csv` (4095 runs).
+
+All controllers share the same resource bounds (0.5 core/pod start, >= 2 replicas), the same traces and the same seeds. In the headline tables each runs at its own default setting (baselines: 70 % target utilisation; CHIMERA: its configured default), so the like-for-like comparison is the equal-CPU frontier analysis further down. Scored window: minutes 70-100.
+
+## Headline comparison - five real Azure Functions traces
+
+| Controller | SLO viol. | p99 (s) | CPU (core-min) | pod-min | actions |
+|---|---:|---:|---:|---:|---:|
+| **CHIMERA** | 5.93% | 0.82 | 251.5 | 135.1 | 30.8 |
+| CHIMERA_v5 | 6.13% | 0.83 | 244.3 | 129.0 | 62.1 |
+| AAPA | 6.92% | 0.91 | 236.8 | 473.6 | 7.4 |
+| CHIMERA_v2 | 7.06% | 0.89 | 235.7 | 125.8 | 37.6 |
+| CHIMERA_v3 | 7.35% | 0.89 | 227.8 | 125.2 | 100.1 |
+| CHIMERA_v4 | 7.39% | 0.89 | 230.5 | 135.6 | 51.0 |
+| KOSMOS | 8.71% | 3.87 | 326.7 | 98.3 | 250.6 |
+| CHIMERA_v1 | 11.82% | 1.33 | 227.0 | 148.2 | 9.7 |
+| HPA+VPA | 14.06% | 1.73 | 194.8 | 368.3 | 22.8 |
+| HPA | 15.60% | 3.65 | 190.8 | 381.6 | 18.0 |
+| MagicScaler-Inspired | 16.78% | 2.69 | 181.1 | 362.2 | 19.2 |
+| VPA | 19.40% | 4.79 | 169.2 | 150.0 | 16.4 |
+
+Paired tests, CHIMERA minus baseline (five real Azure Functions traces). Negative = CHIMERA lower. p = Wilcoxon signed-rank, Holm-corrected within each metric. 'wins' = traces where CHIMERA's seed-mean is lower.
+
+| vs | SLO diff (pp) | p | p99 diff (s) | p | CPU diff | p | SLO wins |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| HPA | -9.67 | <0.001 | -2.83 | <0.001 | +60.7 | <0.001 | 5/5 |
+| VPA | -13.47 | <0.001 | -3.97 | <0.001 | +82.3 | <0.001 | 3/5 |
+| HPA+VPA | -8.13 | <0.001 | -0.91 | <0.001 | +56.8 | <0.001 | 5/5 |
+| AAPA | -0.99 | 0.003 | -0.09 | <0.001 | +14.7 | 0.086 | 3/5 |
+| MagicScaler-Inspired | -10.85 | <0.001 | -1.86 | <0.001 | +70.4 | <0.001 | 5/5 |
+| KOSMOS | -2.78 | 0.097 | -3.05 | <0.001 | -75.2 | <0.001 | 2/5 |
+| CHIMERA_v1 | -5.89 | <0.001 | -0.51 | <0.001 | +24.5 | 0.002 | 5/5 |
+| CHIMERA_v2 | -1.14 | <0.001 | -0.07 | <0.001 | +15.8 | 0.003 | 3/5 |
+| CHIMERA_v3 | -1.42 | <0.001 | -0.07 | <0.001 | +23.7 | <0.001 | 5/5 |
+| CHIMERA_v4 | -1.46 | <0.001 | -0.07 | <0.001 | +21.0 | <0.001 | 5/5 |
+| CHIMERA_v5 | -0.21 | <0.001 | -0.01 | 0.005 | +7.2 | <0.001 | 5/5 |
+
+## Headline comparison - four synthetic stress traces
+
+| Controller | SLO viol. | p99 (s) | CPU (core-min) | pod-min | actions |
+|---|---:|---:|---:|---:|---:|
+| KOSMOS | 3.42% | 0.81 | 132.1 | 61.0 | 305.1 |
+| **CHIMERA** | 5.63% | 0.81 | 71.8 | 68.3 | 34.6 |
+| CHIMERA_v5 | 5.93% | 0.83 | 68.0 | 66.1 | 58.2 |
+| CHIMERA_v4 | 6.73% | 0.88 | 79.1 | 61.5 | 48.6 |
+| CHIMERA_v2 | 6.91% | 0.97 | 89.1 | 84.2 | 26.6 |
+| CHIMERA_v3 | 6.93% | 0.89 | 85.5 | 83.7 | 73.4 |
+| AAPA | 7.02% | 2.98 | 101.9 | 203.7 | 6.0 |
+| HPA+VPA | 13.29% | 3.22 | 65.2 | 119.9 | 14.8 |
+| CHIMERA_v1 | 14.27% | 7.66 | 81.9 | 97.7 | 10.9 |
+| MagicScaler-Inspired | 14.41% | 7.24 | 63.2 | 126.3 | 12.2 |
+| HPA | 15.13% | 8.54 | 63.7 | 127.5 | 10.1 |
+| VPA | 15.16% | 2.55 | 78.7 | 150.0 | 3.9 |
+
+Paired tests, CHIMERA minus baseline (four synthetic stress traces). Negative = CHIMERA lower. p = Wilcoxon signed-rank, Holm-corrected within each metric. 'wins' = traces where CHIMERA's seed-mean is lower.
+
+| vs | SLO diff (pp) | p | p99 diff (s) | p | CPU diff | p | SLO wins |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| HPA | -9.49 | <0.001 | -7.73 | <0.001 | +8.0 | <0.001 | 4/4 |
+| VPA | -9.52 | <0.001 | -1.74 | <0.001 | -7.0 | 0.103 | 3/4 |
+| HPA+VPA | -7.66 | <0.001 | -2.41 | <0.001 | +6.6 | <0.001 | 4/4 |
+| AAPA | -1.39 | 0.006 | -2.16 | 0.010 | -30.1 | <0.001 | 2/4 |
+| MagicScaler-Inspired | -8.78 | <0.001 | -6.43 | <0.001 | +8.6 | <0.001 | 4/4 |
+| KOSMOS | +2.21 | <0.001 | +0.00 | 0.066 | -60.3 | <0.001 | 0/4 |
+| CHIMERA_v1 | -8.64 | <0.001 | -6.85 | <0.001 | -10.2 | 0.002 | 4/4 |
+| CHIMERA_v2 | -1.27 | <0.001 | -0.16 | <0.001 | -17.4 | <0.001 | 4/4 |
+| CHIMERA_v3 | -1.30 | <0.001 | -0.08 | <0.001 | -13.7 | 0.003 | 4/4 |
+| CHIMERA_v4 | -1.09 | <0.001 | -0.07 | <0.001 | -7.3 | 0.003 | 4/4 |
+| CHIMERA_v5 | -0.29 | <0.001 | -0.01 | 0.010 | +3.7 | <0.001 | 4/4 |
+
+## Headline comparison - all nine traces
+
+| Controller | SLO viol. | p99 (s) | CPU (core-min) | pod-min | actions |
+|---|---:|---:|---:|---:|---:|
+| **CHIMERA** | 5.80% | 0.82 | 171.6 | 105.4 | 32.5 |
+| CHIMERA_v5 | 6.04% | 0.83 | 166.0 | 101.1 | 60.4 |
+| KOSMOS | 6.36% | 2.51 | 240.2 | 81.7 | 274.8 |
+| AAPA | 6.97% | 1.83 | 176.8 | 353.6 | 6.7 |
+| CHIMERA_v2 | 7.00% | 0.93 | 170.6 | 107.3 | 32.7 |
+| CHIMERA_v4 | 7.10% | 0.89 | 163.2 | 102.7 | 49.9 |
+| CHIMERA_v3 | 7.16% | 0.89 | 164.6 | 106.7 | 88.2 |
+| CHIMERA_v1 | 12.91% | 4.14 | 162.5 | 125.8 | 10.3 |
+| HPA+VPA | 13.72% | 2.39 | 137.2 | 257.9 | 19.2 |
+| HPA | 15.39% | 5.82 | 134.3 | 268.6 | 14.5 |
+| MagicScaler-Inspired | 15.73% | 4.71 | 128.7 | 257.4 | 16.1 |
+| VPA | 17.51% | 3.80 | 129.0 | 150.0 | 10.8 |
+
+Paired tests, CHIMERA minus baseline (all nine traces). Negative = CHIMERA lower. p = Wilcoxon signed-rank, Holm-corrected within each metric. 'wins' = traces where CHIMERA's seed-mean is lower.
+
+| vs | SLO diff (pp) | p | p99 diff (s) | p | CPU diff | p | SLO wins |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| HPA | -9.59 | <0.001 | -5.00 | <0.001 | +37.3 | <0.001 | 9/9 |
+| VPA | -11.72 | <0.001 | -2.98 | <0.001 | +42.6 | 0.210 | 6/9 |
+| HPA+VPA | -7.92 | <0.001 | -1.57 | <0.001 | +34.5 | <0.001 | 9/9 |
+| AAPA | -1.17 | <0.001 | -1.01 | <0.001 | -5.2 | 0.270 | 5/9 |
+| MagicScaler-Inspired | -9.93 | <0.001 | -3.89 | <0.001 | +42.9 | <0.001 | 9/9 |
+| KOSMOS | -0.56 | 0.078 | -1.69 | 0.002 | -68.6 | <0.001 | 2/9 |
+| CHIMERA_v1 | -7.11 | <0.001 | -3.33 | <0.001 | +9.1 | 0.337 | 9/9 |
+| CHIMERA_v2 | -1.20 | <0.001 | -0.11 | <0.001 | +1.1 | 0.622 | 7/9 |
+| CHIMERA_v3 | -1.36 | <0.001 | -0.07 | <0.001 | +7.1 | 0.337 | 9/9 |
+| CHIMERA_v4 | -1.30 | <0.001 | -0.07 | <0.001 | +8.4 | 0.191 | 9/9 |
+| CHIMERA_v5 | -0.24 | <0.001 | -0.01 | <0.001 | +5.7 | <0.001 | 9/9 |
+
+## Ablation (each row removes (w/o) or re-adds (+) one mechanism of CHIMERA)
+
+'identical' = share of runs whose SLO, CPU, p99 and action counts match CHIMERA_Full exactly; 100 % means the mechanism is inert in this design.
+
+| Variant | real SLO | real p99 | real CPU | synthetic SLO | synthetic CPU | resizes/run | pod changes/run | identical |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| CHIMERA_w/o_Fast_Release | 2.24% | 0.60 | 480.1 | 2.44% | 185.6 | 1.0 | 0.5 | 0 % |
+| CHIMERA_w/o_Joint_H_V | 4.80% | 0.76 | 271.7 | 3.75% | 114.8 | 12.0 | 12.0 | 0 % |
+| CHIMERA_w/o_Cascade | 4.92% | 0.77 | 274.6 | 5.01% | 81.2 | 37.2 | 0.4 | 0 % |
+| CHIMERA_w/o_Up_Deadband | 4.96% | 0.77 | 269.1 | 4.80% | 75.8 | 84.1 | 0.5 | 0 % |
+| CHIMERA_w/o_Inner_Owns_CPU | 5.12% | 0.78 | 267.4 | 4.90% | 75.7 | 79.7 | 0.5 | 0 % |
+| CHIMERA_Up_Deadband_0.10 | 5.15% | 0.77 | 265.3 | 4.95% | 75.0 | 61.3 | 0.5 | 0 % |
+| CHIMERA_w/o_Replica_Band | 5.88% | 0.82 | 256.2 | 5.61% | 74.3 | 43.3 | 8.6 | 0 % |
+| CHIMERA_Legacy_Delay_Model | 5.93% | 0.82 | 251.7 | 5.69% | 72.3 | 33.2 | 0.8 | 57 % |
+| CHIMERA_Full | 5.93% | 0.82 | 251.5 | 5.63% | 71.8 | 32.5 | 0.5 | 100 % |
+| CHIMERA_+Lyapunov_Filter | 5.93% | 0.82 | 251.5 | 5.63% | 71.8 | 32.5 | 0.5 | 100 % |
+| CHIMERA_+Legacy_Coupling | 5.93% | 0.82 | 251.5 | 5.63% | 71.8 | 32.5 | 0.5 | 100 % |
+| CHIMERA_+Coupling_Penalty | 5.93% | 0.82 | 251.5 | 5.63% | 71.8 | 32.5 | 0.5 | 100 % |
+| CHIMERA_w/o_Vertical_Bridging | 5.93% | 0.82 | 251.5 | 5.63% | 71.8 | 32.5 | 0.5 | 100 % |
+| CHIMERA_+Anti_Chattering | 5.93% | 0.82 | 251.5 | 5.63% | 71.8 | 32.5 | 0.5 | 100 % |
+| CHIMERA_Double_Count_Inflight | 5.94% | 0.82 | 251.3 | 5.50% | 76.7 | 31.9 | 1.3 | 57 % |
+| CHIMERA_w/o_State_Augmentation | 5.95% | 0.82 | 251.0 | 5.67% | 72.8 | 33.1 | 0.8 | 63 % |
+| CHIMERA_w/o_Naive_Conformal | 5.95% | 0.82 | 251.0 | 5.50% | 73.0 | 31.8 | 0.4 | 0 % |
+| CHIMERA_w/o_Asymmetric_Smoothing | 5.96% | 0.82 | 250.6 | 5.65% | 71.1 | 32.7 | 0.3 | 64 % |
+| CHIMERA_+Online_Conformal | 5.97% | 0.82 | 248.8 | 5.60% | 72.3 | 34.1 | 0.5 | 0 % |
+| CHIMERA_w/o_OOD_Fallback | 5.99% | 0.82 | 250.2 | 5.64% | 72.1 | 32.2 | 0.5 | 0 % |
+| CHIMERA_w/o_ADWIN_Margin_Reset | 6.06% | 0.83 | 248.4 | 5.62% | 70.2 | 34.6 | 0.4 | 3 % |
+| CHIMERA_w/o_ADWIN_Drift | 6.06% | 0.83 | 247.6 | 5.62% | 70.2 | 34.8 | 0.4 | 3 % |
+| CHIMERA_w/o_CQR | 6.21% | 0.83 | 242.6 | 5.62% | 69.8 | 37.8 | 0.4 | 0 % |
+
+Lyapunov filter activations per run (CHIMERA_Full): 0.00.
+Lyapunov filter activations per run (CHIMERA_+Lyapunov_Filter): 0.00.
+
+## Sensitivity runs (not part of the headline)
+
+| Config | real SLO | real CPU | synthetic SLO | synthetic CPU |
+|---|---:|---:|---:|---:|
+| AAPA_1.5 | 4.42% | 291.1 | 3.26% | 144.9 |
+| CHIMERA_Lean | 6.13% | 244.3 | 5.93% | 68.0 |
+| CHIMERA_Lean_NoBridging | 6.13% | 244.3 | 5.93% | 68.0 |
+| CHIMERA_NoInPlace | 5.56% | 164.9 | 7.91% | 53.9 |
+| HPA_1.5 | 9.96% | 215.0 | 7.40% | 99.3 |
+| KOSMOS_AugustGains | 19.76% | 324.8 | 14.11% | 168.3 |
+| KOSMOS_NoInPlace | 9.57% | 109.2 | 5.88% | 20.6 |
+
+## Cost vs SLO frontier
+
+Each controller swept over target utilisation [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95] (KOSMOS: its latency setpoint alpha). Figures: `results/figures/v6/frontier_*.png`.
+
+Distance from a minute-level clairvoyant reference (knows each minute's average demand in advance and resizes instantly with no boot delay, but cannot react within a minute): SLO points above the reference at the same CPU, averaged over each controller's sweep points. Lower is better. Negative means the controller beats the best per-minute plan, which is possible only by tracking within-minute bursts.
+
+| Controller | real | synthetic | all |
+|---|---:|---:|---:|
+| CHIMERA_v5 | -2.18 | -3.38 | -3.43 |
+| **CHIMERA** | -1.78 | -4.08 | -3.28 |
+| CHIMERA_v4 | -2.67 | +1.89 | -2.79 |
+| CHIMERA_v3 | -3.06 | +3.97 | -2.55 |
+| CHIMERA_v2 | -2.32 | +5.46 | -1.76 |
+| KOSMOS | -0.11 | +4.50 | -1.56 |
+| AAPA | -2.35 | - | -1.36 |
+| MagicScaler-Inspired | +1.05 | +5.36 | -0.38 |
+| HPA+VPA | +0.76 | +5.25 | +0.32 |
+| HPA | +0.52 | +5.61 | +0.34 |
+| VPA | -0.04 | - | +2.18 |
+| CHIMERA_v1 | +4.47 | +17.77 | +6.31 |
+
+
+SLO gap at equal CPU cost: baseline SLO minus CHIMERA SLO, interpolated at each CHIMERA sweep point that falls inside the baseline's own cost range (positive = CHIMERA better).
+
+| Set | vs | points compared | mean SLO gap (pp) | min | max | CHIMERA better at | p99 CHIMERA / baseline (s) |
+|---|---|---:|---:|---:|---:|---:|---:|
+| all | AAPA | 2 | +1.69 | +0.92 | +2.46 | 2/2 | 0.81 / 1.86 |
+| all | CHIMERA_v1 | 3 | +7.93 | +3.89 | +12.92 | 3/3 | 0.92 / 4.97 |
+| all | CHIMERA_v2 | 3 | +1.92 | +0.43 | +3.40 | 3/3 | 0.92 / 1.20 |
+| all | CHIMERA_v3 | 3 | +1.35 | +0.32 | +2.50 | 3/3 | 0.92 / 1.00 |
+| all | CHIMERA_v4 | 3 | +1.14 | +0.26 | +2.22 | 3/3 | 0.92 / 0.99 |
+| all | CHIMERA_v5 | 6 | +0.33 | -0.67 | +1.55 | 5/6 | 3.24 / 3.05 |
+| all | HPA | 3 | +5.27 | +3.35 | +7.05 | 3/3 | 1.36 / 6.48 |
+| all | HPA+VPA | 4 | +3.82 | +0.99 | +7.20 | 4/4 | 1.21 / 2.97 |
+| all | KOSMOS | 4 | +3.72 | +3.18 | +4.19 | 4/4 | 1.21 / 5.17 |
+| all | MagicScaler-Inspired | 4 | +3.68 | +2.44 | +5.56 | 4/4 | 2.40 / 16.01 |
+| all | VPA | 3 | +6.51 | +2.37 | +11.50 | 3/3 | 1.36 / 4.37 |
+| real | AAPA | 3 | +0.55 | +0.04 | +1.35 | 3/3 | 0.92 / 1.11 |
+| real | CHIMERA_v1 | 3 | +4.10 | +2.03 | +6.13 | 3/3 | 0.92 / 1.49 |
+| real | CHIMERA_v2 | 3 | +0.68 | +0.07 | +1.53 | 3/3 | 0.92 / 0.98 |
+| real | CHIMERA_v3 | 3 | +0.13 | -0.05 | +0.44 | 1/3 | 0.92 / 0.92 |
+| real | CHIMERA_v4 | 3 | +0.39 | +0.09 | +0.93 | 3/3 | 0.92 / 0.94 |
+| real | CHIMERA_v5 | 6 | +0.09 | -0.82 | +0.81 | 5/6 | 3.03 / 2.75 |
+| real | HPA | 4 | +3.88 | +1.63 | +6.06 | 4/4 | 2.27 / 5.48 |
+| real | HPA+VPA | 4 | +2.77 | +0.28 | +6.20 | 4/4 | 1.20 / 2.21 |
+| real | KOSMOS | 4 | +4.03 | +1.91 | +5.16 | 4/4 | 1.20 / 6.15 |
+| real | MagicScaler-Inspired | 3 | +3.34 | +2.39 | +4.04 | 3/3 | 2.73 / 28.31 |
+| real | VPA | 4 | +2.20 | +1.07 | +3.40 | 4/4 | 2.27 / 4.91 |
+| synthetic | AAPA | 1 | +5.54 | +5.54 | +5.54 | 1/1 | 0.74 / 3.99 |
+| synthetic | CHIMERA_v1 | 2 | +15.28 | +8.53 | +22.03 | 2/2 | 0.81 / 9.76 |
+| synthetic | CHIMERA_v2 | 1 | +3.19 | +3.19 | +3.19 | 1/1 | 0.74 / 1.04 |
+| synthetic | CHIMERA_v3 | 2 | +5.55 | +2.51 | +8.59 | 2/2 | 0.81 / 1.21 |
+| synthetic | CHIMERA_v4 | 2 | +3.38 | +1.39 | +5.37 | 2/2 | 0.81 / 1.05 |
+| synthetic | CHIMERA_v5 | 6 | +0.89 | -0.08 | +2.35 | 5/6 | 3.50 / 3.47 |
+| synthetic | HPA | 3 | +7.49 | +4.33 | +10.38 | 3/3 | 0.92 / 8.15 |
+| synthetic | HPA+VPA | 3 | +6.73 | +2.53 | +11.14 | 3/3 | 0.92 / 3.58 |
+| synthetic | KOSMOS | 2 | +5.43 | +3.60 | +7.26 | 2/2 | 0.81 / 3.02 |
+| synthetic | MagicScaler-Inspired | 3 | +7.00 | +3.01 | +11.13 | 3/3 | 0.92 / 6.27 |
+| synthetic | VPA | 1 | +3.74 | +3.74 | +3.74 | 1/1 | 0.74 / 1.53 |
+
+Equal-cost comparison trace by trace (each trace's own frontiers; averages across traces can hide a trace where CHIMERA loses). 'wins' = traces where CHIMERA has fewer violations at the same CPU; only traces where the cost ranges overlap count.
+
+| Set | vs | traces compared | CHIMERA wins | mean gap (pp) | worst trace (pp) |
+|---|---|---:|---:|---:|---:|
+| real | AAPA | 4 | 4/4 | +1.68 | +0.62 (real_kswd_w3) |
+| real | HPA | 5 | 5/5 | +4.67 | +1.91 (real_kswd_w2) |
+| real | HPA+VPA | 5 | 5/5 | +4.14 | +1.44 (real_kswd_w2) |
+| real | KOSMOS | 5 | 5/5 | +5.42 | +1.00 (real_kswd_w4) |
+| real | MagicScaler-Inspired | 5 | 4/5 | +4.71 | -0.66 (real_kswd_w2) |
+| real | VPA | 3 | 3/3 | +2.72 | +0.56 (real_kswd_w2) |
+| synthetic | AAPA | 3 | 3/3 | +6.68 | +3.96 (holdout_step_down) |
+| synthetic | HPA | 4 | 4/4 | +8.10 | +2.48 (holdout_diurnal) |
+| synthetic | HPA+VPA | 4 | 4/4 | +5.66 | +2.38 (holdout_diurnal) |
+| synthetic | KOSMOS | 4 | 4/4 | +5.75 | +4.78 (holdout_on_off) |
+| synthetic | MagicScaler-Inspired | 4 | 4/4 | +7.49 | +0.88 (holdout_diurnal) |
+| synthetic | VPA | 2 | 2/2 | +12.03 | +7.63 (holdout_flash_crowd) |
+
+Overall: CHIMERA wins 47 of 48 trace-baseline comparisons at equal CPU.
+
+Significance of the equal-CPU comparison: one gap per (trace, seed), CHIMERA vs the baseline at the same CPU on the same request stream (positive = CHIMERA better). One-sample Wilcoxon signed-rank, Holm-corrected across baselines within each set.
+
+| Set | vs | gaps (trace x seed) | traces | mean gap (pp) | p (Holm) | traces won |
+|---|---|---:|---:|---:|---:|---:|
+| all | AAPA | 40 | 9 | +3.30 | <0.001 | 9/9 |
+| all | HPA | 45 | 9 | +6.19 | <0.001 | 9/9 |
+| all | HPA+VPA | 45 | 9 | +5.16 | <0.001 | 9/9 |
+| all | KOSMOS | 45 | 9 | +5.81 | <0.001 | 9/9 |
+| all | MagicScaler-Inspired | 45 | 9 | +5.87 | <0.001 | 8/9 |
+| all | VPA | 28 | 6 | +6.00 | <0.001 | 6/6 |
+| real | AAPA | 22 | 5 | +1.68 | <0.001 | 5/5 |
+| real | HPA | 25 | 5 | +4.71 | <0.001 | 5/5 |
+| real | HPA+VPA | 25 | 5 | +4.26 | <0.001 | 5/5 |
+| real | KOSMOS | 25 | 5 | +5.65 | <0.001 | 5/5 |
+| real | MagicScaler-Inspired | 25 | 5 | +4.72 | <0.001 | 4/5 |
+| real | VPA | 15 | 3 | +2.81 | <0.001 | 3/3 |
+| synthetic | AAPA | 18 | 4 | +5.28 | <0.001 | 4/4 |
+| synthetic | HPA | 20 | 4 | +8.04 | <0.001 | 4/4 |
+| synthetic | HPA+VPA | 20 | 4 | +6.27 | <0.001 | 4/4 |
+| synthetic | KOSMOS | 20 | 4 | +6.00 | <0.001 | 4/4 |
+| synthetic | MagicScaler-Inspired | 20 | 4 | +7.31 | <0.001 | 4/4 |
+| synthetic | VPA | 13 | 3 | +9.69 | <0.001 | 3/3 |
+
+Lowest SLO violation rate each controller reaches anywhere on its sweep (and the CPU it costs):
+
+| Set | AAPA | CHIMERA | CHIMERA_v1 | CHIMERA_v2 | CHIMERA_v3 | CHIMERA_v4 | CHIMERA_v5 | HPA | HPA+VPA | KOSMOS | MagicScaler-Inspired | Oracle | VPA |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| real | 4.5% @ 289 | 4.5% @ 288 | 2.9% @ 404 | 2.6% @ 401 | 2.6% @ 395 | 2.6% @ 402 | 4.0% @ 303 | 5.5% @ 261 | 4.2% @ 301 | 6.8% @ 667 | 9.6% @ 230 | 7.1% @ 264 | 5.5% @ 269 |
+| synthetic | 3.2% @ 160 | 4.2% @ 87 | 5.2% @ 136 | 2.4% @ 153 | 2.5% @ 149 | 2.5% @ 139 | 3.8% @ 90 | 6.3% @ 103 | 4.6% @ 107 | 2.0% @ 338 | 4.8% @ 106 | 10.3% @ 68 | 4.8% @ 96 |
+| all | 4.0% @ 231 | 4.4% @ 198 | 3.9% @ 285 | 2.5% @ 291 | 2.6% @ 286 | 2.5% @ 285 | 3.9% @ 208 | 5.9% @ 190 | 4.4% @ 215 | 4.7% @ 521 | 8.7% @ 166 | 8.5% @ 177 | 5.2% @ 192 |
+
+2026-10-12 02:10:09,113 - __main__ - INFO - Starting CHIMERA evaluation harness...
+2026-10-12 02:10:09,115 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0829_1000...
+2026-10-12 02:10:09,310 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:09,385 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:09,386 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:09,386 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0830_1500...
+2026-10-12 02:10:09,503 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:09,517 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:09,517 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:09,517 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0831_2000...
+2026-10-12 02:10:09,639 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:09,652 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:09,653 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:09,653 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0901_1000...
+2026-10-12 02:10:09,771 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:09,783 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:09,783 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:09,783 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0703_1400...
+2026-10-12 02:10:09,900 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:09,920 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:09,920 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:09,920 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0706_1400...
+2026-10-12 02:10:10,072 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:10,094 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:10,095 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:10,095 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0710_1400...
+2026-10-12 02:10:10,210 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:10,233 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:10,234 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:10,234 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0713_1400...
+2026-10-12 02:10:10,347 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:10,375 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:10,376 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:10,377 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0718_1400...
+2026-10-12 02:10:10,486 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:10,506 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:10,506 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:10,506 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0724_1400...
+2026-10-12 02:10:10,620 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:10:10,631 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:10:10,632 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:10:10,632 - __main__ - INFO - 900 runs = 9 configs x 10 workloads x 10 seeds, 10 workers
+2026-10-12 02:10:49,401 - __main__ - INFO -   50/900 runs done (39s)
+2026-10-12 02:10:58,015 - __main__ - INFO -   100/900 runs done (47s)
+2026-10-12 02:11:03,212 - __main__ - INFO -   150/900 runs done (53s)
+2026-10-12 02:11:10,623 - __main__ - INFO -   200/900 runs done (60s)
+2026-10-12 02:11:14,887 - __main__ - INFO -   250/900 runs done (64s)
+2026-10-12 02:11:21,487 - __main__ - INFO -   300/900 runs done (71s)
+2026-10-12 02:11:30,267 - __main__ - INFO -   350/900 runs done (80s)
+2026-10-12 02:11:33,672 - __main__ - INFO -   400/900 runs done (83s)
+2026-10-12 02:11:41,635 - __main__ - INFO -   450/900 runs done (91s)
+2026-10-12 02:11:45,564 - __main__ - INFO -   500/900 runs done (95s)
+2026-10-12 02:11:53,428 - __main__ - INFO -   550/900 runs done (103s)
+2026-10-12 02:11:58,190 - __main__ - INFO -   600/900 runs done (108s)
+2026-10-12 02:12:05,118 - __main__ - INFO -   650/900 runs done (114s)
+2026-10-12 02:12:10,555 - __main__ - INFO -   700/900 runs done (120s)
+2026-10-12 02:12:17,254 - __main__ - INFO -   750/900 runs done (127s)
+2026-10-12 02:12:24,965 - __main__ - INFO -   800/900 runs done (134s)
+2026-10-12 02:12:27,513 - __main__ - INFO -   850/900 runs done (137s)
+2026-10-12 02:12:35,800 - __main__ - INFO -   900/900 runs done (145s)
+2026-10-12 02:12:35,890 - __main__ - INFO - Evaluation completed in 145s. Results saved to results\results_ext.csv
+2026-10-12 02:12:39,735 - __main__ - INFO - Starting CHIMERA evaluation harness...
+2026-10-12 02:12:39,737 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0829_1000...
+2026-10-12 02:12:39,842 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:39,890 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:39,891 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:39,891 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0830_1500...
+2026-10-12 02:12:40,043 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:40,053 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:40,054 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:40,054 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0831_2000...
+2026-10-12 02:12:40,179 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:40,190 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:40,191 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:40,191 - __main__ - INFO - Training CQR model for trace real_ext_clarknet_0901_1000...
+2026-10-12 02:12:40,310 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:40,328 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:40,329 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:40,329 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0703_1400...
+2026-10-12 02:12:40,441 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:40,455 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:40,455 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:40,455 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0706_1400...
+2026-10-12 02:12:40,568 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:40,581 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:40,581 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:40,581 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0710_1400...
+2026-10-12 02:12:40,734 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:40,754 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:40,755 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:40,755 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0713_1400...
+2026-10-12 02:12:40,873 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:40,909 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:40,909 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:40,909 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0718_1400...
+2026-10-12 02:12:41,024 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:41,045 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:41,045 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:41,045 - __main__ - INFO - Training CQR model for trace real_ext_nasa_0724_1400...
+2026-10-12 02:12:41,158 - src.models.cqr_uncertainty - INFO - Training CQR quantile models (alpha=0.1)...
+2026-10-12 02:12:41,168 - src.models.cqr_uncertainty - INFO - Initializing conformal calibration buffer...
+2026-10-12 02:12:41,168 - src.models.cqr_uncertainty - INFO - Conformal buffer initialized with 20 scores.
+2026-10-12 02:12:41,171 - __main__ - INFO - 3150 runs = 63 configs x 10 workloads x 5 seeds, 10 workers
+2026-10-12 02:13:20,434 - __main__ - INFO -   50/3150 runs done (39s)
+2026-10-12 02:13:23,186 - __main__ - INFO -   100/3150 runs done (42s)
+2026-10-12 02:13:28,688 - __main__ - INFO -   150/3150 runs done (48s)
+2026-10-12 02:13:32,969 - __main__ - INFO -   200/3150 runs done (52s)
+2026-10-12 02:13:41,447 - __main__ - INFO -   250/3150 runs done (60s)
+2026-10-12 02:13:54,497 - __main__ - INFO -   300/3150 runs done (73s)
+2026-10-12 02:14:01,497 - __main__ - INFO -   350/3150 runs done (80s)
+2026-10-12 02:14:05,510 - __main__ - INFO -   400/3150 runs done (84s)
+2026-10-12 02:14:09,508 - __main__ - INFO -   450/3150 runs done (88s)
+2026-10-12 02:14:16,480 - __main__ - INFO -   500/3150 runs done (95s)
+2026-10-12 02:14:22,691 - __main__ - INFO -   550/3150 runs done (102s)
+2026-10-12 02:14:35,874 - __main__ - INFO -   600/3150 runs done (115s)
+2026-10-12 02:14:44,456 - __main__ - INFO -   650/3150 runs done (123s)
+2026-10-12 02:14:47,999 - __main__ - INFO -   700/3150 runs done (127s)
+2026-10-12 02:14:50,555 - __main__ - INFO -   750/3150 runs done (129s)
+2026-10-12 02:14:56,380 - __main__ - INFO -   800/3150 runs done (135s)
+2026-10-12 02:14:59,811 - __main__ - INFO -   850/3150 runs done (139s)
+2026-10-12 02:15:10,880 - __main__ - INFO -   900/3150 runs done (150s)
+2026-10-12 02:15:20,343 - __main__ - INFO -   950/3150 runs done (159s)
+2026-10-12 02:15:24,513 - __main__ - INFO -   1000/3150 runs done (163s)
+2026-10-12 02:15:28,284 - __main__ - INFO -   1050/3150 runs done (167s)
+2026-10-12 02:15:33,518 - __main__ - INFO -   1100/3150 runs done (172s)
+2026-10-12 02:15:38,091 - __main__ - INFO -   1150/3150 runs done (177s)
+2026-10-12 02:15:48,706 - __main__ - INFO -   1200/3150 runs done (188s)
+2026-10-12 02:16:01,218 - __main__ - INFO -   1250/3150 runs done (200s)
+2026-10-12 02:16:06,873 - __main__ - INFO -   1300/3150 runs done (206s)
+2026-10-12 02:16:09,190 - __main__ - INFO -   1350/3150 runs done (208s)
+2026-10-12 02:16:12,281 - __main__ - INFO -   1400/3150 runs done (211s)
+2026-10-12 02:16:18,225 - __main__ - INFO -   1450/3150 runs done (217s)
+2026-10-12 02:16:22,384 - __main__ - INFO -   1500/3150 runs done (221s)
+2026-10-12 02:16:36,992 - __main__ - INFO -   1550/3150 runs done (236s)
+2026-10-12 02:16:43,858 - __main__ - INFO -   1600/3150 runs done (243s)
+2026-10-12 02:16:46,914 - __main__ - INFO -   1650/3150 runs done (246s)
+2026-10-12 02:16:50,100 - __main__ - INFO -   1700/3150 runs done (249s)
+2026-10-12 02:16:56,740 - __main__ - INFO -   1750/3150 runs done (256s)
+2026-10-12 02:17:00,761 - __main__ - INFO -   1800/3150 runs done (260s)
+2026-10-12 02:17:14,014 - __main__ - INFO -   1850/3150 runs done (273s)
+2026-10-12 02:17:23,500 - __main__ - INFO -   1900/3150 runs done (282s)
+2026-10-12 02:17:27,273 - __main__ - INFO -   1950/3150 runs done (286s)
+2026-10-12 02:17:29,876 - __main__ - INFO -   2000/3150 runs done (289s)
+2026-10-12 02:17:34,575 - __main__ - INFO -   2050/3150 runs done (293s)
+2026-10-12 02:17:38,644 - __main__ - INFO -   2100/3150 runs done (297s)
+2026-10-12 02:17:48,078 - __main__ - INFO -   2150/3150 runs done (307s)
+2026-10-12 02:18:01,909 - __main__ - INFO -   2200/3150 runs done (321s)
+2026-10-12 02:18:06,931 - __main__ - INFO -   2250/3150 runs done (326s)
+2026-10-12 02:18:10,144 - __main__ - INFO -   2300/3150 runs done (329s)
+2026-10-12 02:18:15,527 - __main__ - INFO -   2350/3150 runs done (334s)
+2026-10-12 02:18:20,006 - __main__ - INFO -   2400/3150 runs done (339s)
+2026-10-12 02:18:25,899 - __main__ - INFO -   2450/3150 runs done (345s)
+2026-10-12 02:18:42,306 - __main__ - INFO -   2500/3150 runs done (361s)
+2026-10-12 02:18:48,341 - __main__ - INFO -   2550/3150 runs done (367s)
+2026-10-12 02:18:51,023 - __main__ - INFO -   2600/3150 runs done (370s)
+2026-10-12 02:18:53,798 - __main__ - INFO -   2650/3150 runs done (373s)
+2026-10-12 02:18:59,564 - __main__ - INFO -   2700/3150 runs done (378s)
+2026-10-12 02:19:03,134 - __main__ - INFO -   2750/3150 runs done (382s)
+2026-10-12 02:19:15,739 - __main__ - INFO -   2800/3150 runs done (395s)
+2026-10-12 02:19:24,353 - __main__ - INFO -   2850/3150 runs done (403s)
+2026-10-12 02:19:27,270 - __main__ - INFO -   2900/3150 runs done (406s)
+2026-10-12 02:19:29,831 - __main__ - INFO -   2950/3150 runs done (409s)
+2026-10-12 02:19:35,101 - __main__ - INFO -   3000/3150 runs done (414s)
+2026-10-12 02:19:39,428 - __main__ - INFO -   3050/3150 runs done (418s)
+2026-10-12 02:19:47,863 - __main__ - INFO -   3100/3150 runs done (427s)
+2026-10-12 02:20:03,066 - __main__ - INFO -   3150/3150 runs done (442s)
+2026-10-12 02:20:03,182 - __main__ - INFO - Evaluation completed in 442s. Results saved to results\results_ext_sweep.csv
+chain_exit=0
