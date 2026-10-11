@@ -105,7 +105,7 @@ azurefunctions-dataset2019/
 invocations_per_function_md.anon.d*.csv
 function_durations_percentiles.anon.d*.csv
 app_memory_percentiles.anon.d*.csv
-tools/
+/tools/
 
 # Deployment logs carry the AWS account id
 results/live_eks/deploy.log
