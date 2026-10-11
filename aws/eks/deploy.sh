@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Deploy the CHIMERA operator to Amazon EKS.
 #
+# NOT RUN TO COMPLETION YET, AND NOT FREE: EKS charges for the control plane, and the
+# t3.xlarge node cannot be launched on an AWS Free plan account. For a Free plan account
+# use aws/ec2/deploy.sh instead. The first attempt stopped at the Docker login below
+# (Windows credential store: "The stub received bad data").
+#
 # Before running: install the AWS CLI, eksctl, kubectl and Docker; run `aws configure`
 # or `aws login` yourself; set AWS_REGION. This creates billable resources (an EKS control
 # plane and one t3.xlarge node). Run aws/eks/teardown.sh when you are done.

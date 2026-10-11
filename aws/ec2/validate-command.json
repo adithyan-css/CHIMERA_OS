@@ -1,0 +1,9 @@
+{
+  "commands": [
+    "cd /opt/chimera",
+    "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml PATH=/usr/local/bin:$PATH",
+    "rm -rf /tmp/live_ec2 && mkdir -p /tmp/live_ec2",
+    "python3 k8s/live_validation.py --out /tmp/live_ec2 --low 0 --high 5 > /tmp/live_ec2/validation_console.log 2>&1; echo exit=$?",
+    "tail -n 2 /tmp/live_ec2/validation_console.log"
+  ]
+}

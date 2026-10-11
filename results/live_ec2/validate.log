@@ -1,0 +1,14 @@
+=== Validation on i-03b0b01de9876f2af (about 11 minutes) ===
+exit=0
+[  656s] relax    replicas=2 ready=2 cpu/pod=0.25 used=5.456386386146108e-05 restarts=0 | hold
+report: /tmp/live_ec2/LIVE_REPORT.md (all checks passed)
+
+=== Fetching results ===
+LIVE_REPORT.md
+deploy.log
+operator.log
+run1_insufficient_load
+timeline.csv
+validate.log
+validation_console.log
+wrapper_exit=0

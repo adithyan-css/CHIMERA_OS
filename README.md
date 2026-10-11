@@ -118,7 +118,8 @@ src/scripts/analyze_v2.py        statistics, cost/SLO frontier, figures, REPORT_
 demo_run.py                      ~10 s live demo through the same harness code
 k8s/                             operator, CRD, RBAC, Dockerfile, Prometheus, quickstart,
                                  live_validation.py
-aws/                             Amazon EKS deployment (eksctl cluster, deploy, teardown)
+aws/ec2/                         AWS deployment on one free-tier instance (deploy, validate, teardown)
+aws/eks/                         Amazon EKS variant for a paid account (not run to completion)
 results/live/                    live-cluster validation runs and summary
 final_research_package/          paper sections written against the v5 results
 tests/                           controller/simulator tests + operator tests
@@ -222,9 +223,9 @@ Validate a running cluster yourself:
 python k8s/live_validation.py --out results/live/my_run
 ```
 
-Amazon EKS: `aws/deploy.sh` builds and pushes the image to ECR, creates a Kubernetes 1.33
-cluster with eksctl and applies the same manifests. See `BUILD_PLAN.md`, Phase 5. It has
-not been run yet.
+AWS: the operator also runs on one free-tier EC2 instance with k3s 1.33
+(`aws/ec2/deploy.sh`), where the same validation passes all five checks
+(`results/live_ec2/README.md`). See `BUILD_PLAN.md`, Phase 5.
 
 ## Limitations
 

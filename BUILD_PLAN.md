@@ -4,12 +4,12 @@ Status as of 11 Oct 2026. Each phase lists what "done" means and how to reproduc
 
 | Phase | What | Status |
 |---|---|---|
-| 0 | Secure the work in git and publish to GitHub | in progress |
+| 0 | Secure the work in git and publish to GitHub | done |
 | 1 | Local build and tests | done |
 | 2 | Live-cluster validation (kind, Kubernetes 1.33) | done |
 | 3 | Paper package rewritten against v5 | done |
 | 4 | Repository clean-up | done |
-| 5 | AWS hosting (EKS) | prepared, needs your AWS account |
+| 5 | AWS hosting (EC2 + k3s, free tier) | done |
 
 ## Phase 0 - Secure the work
 
@@ -93,41 +93,27 @@ Done when every number in the package traces to `results/REPORT_v5.md` or
 
 ## Phase 5 - AWS hosting
 
-"Hosting" an autoscaler means running the operator on a managed cluster: Amazon EKS on
-Kubernetes 1.33 or later (in-place resize is on by default), with the operator image in
-Amazon ECR.
+Done on 12 Oct 2026: `results/live_ec2/README.md`.
 
-Prepared in `aws/`:
+The operator runs on one free-tier-eligible EC2 instance (`t3.small`, k3s 1.33) in
+ap-south-1. This fits an AWS Free plan account, where usage is drawn from credits (about
+22 USD a month for the instance, its disk and a public IPv4 address; an estimate, check the
+Billing console). No inbound ports are opened; access is through Systems Manager.
 
-- `aws/cluster.yaml` - eksctl cluster definition (1 x t3.xlarge, Kubernetes 1.33; fits the
-  5-vCPU default quota of a new account);
-- `aws/autoscaler-eks.yaml` - the demo autoscaler sized for those nodes;
-- `aws/deploy.sh` - create the ECR repository, build and push the image, create the
-  cluster, apply the same manifests as the kind run;
-- `aws/teardown.sh` - delete the cluster and the repository so nothing keeps billing.
-
-What only you can do:
-
-1. Have an AWS account with billing enabled.
-2. Install the AWS CLI and `eksctl`.
-3. Run `aws login` (browser sign-in) or `aws configure` yourself. Credentials are never
-   typed into this session.
-4. Choose the region and accept the spend. As a rough guide, the EKS control plane is
-   about 0.10 USD/hour and one t3.xlarge node about 0.18 USD/hour, so around 7 USD per day
-   while the cluster is up. Check current prices for your region first.
-
-Then:
+Sign in first (`aws login`, or `aws configure`), then from the repository root:
 
 ```bash
-AWS_REGION=ap-south-1 ./aws/deploy.sh
+AWS_REGION=ap-south-1 ./aws/ec2/deploy.sh
 ```
 
 ```bash
-python k8s/live_validation.py --out results/live_eks --high 3
+AWS_REGION=ap-south-1 ./aws/ec2/validate.sh
 ```
 
 ```bash
-AWS_REGION=ap-south-1 ./aws/teardown.sh
+AWS_REGION=ap-south-1 ./aws/ec2/teardown.sh
 ```
 
-Done when `results/live_eks/LIVE_REPORT.md` passes the same checks as the kind run.
+`aws/eks/` holds an Amazon EKS variant for a paid account. EKS charges for its control
+plane and needs instance types a Free plan account cannot launch; it has not been run to
+completion.
