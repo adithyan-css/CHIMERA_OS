@@ -1,98 +1,252 @@
-# CHIMERA: Coupled Horizontal/Vertical Intelligent Machine-learning-based Resource Autoscaler
+# CHIMERA: Delay-Aware Predictive Coupled Autoscaling for Kubernetes
 
-CHIMERA is a next-generation Kubernetes autoscaler that jointly optimizes Horizontal Pod Autoscaling (HPA) and Vertical Pod Autoscaling (VPA) through optimal feedback control theory (LQR/Riccati) under mathematical Lyapunov stability boundaries coupled to Conformalized Quantile Regression (CQR) workload uncertainty bounds.
+CHIMERA is a joint horizontal + vertical pod autoscaler. It drives both replica count
+(`h`, slow: a new pod takes ~20 s to boot) and CPU per pod (`v`, fast: an in-place resize
+under KEP-1287 takes ~0.1 s) from **one** delay-augmented LQR control law, instead of
+two loops that fight. Demand comes from conformal forecasts: a CQR interval plus a
+conformal margin on the reactive fallback.
 
-It is built as a major architectural upgrade and extension of the **AAPA** baseline paper framework (arXiv:2507.05653).
+It extends the AAPA baseline (arXiv:2507.05653) from horizontal-only to a coordinated
+2-D controller.
+
+## Results (simulation; CHIMERA v5, held-out evaluation)
+
+The final verdict uses data no design decision saw:
+- the five real Azure Functions traces;
+- four held-out synthetic shapes (flash crowd, diurnal, step-down, on/off) that appear in
+  neither the dev nor the earlier test set;
+- ten fresh seeds;
+- a 20-minute unscored warm-up for every controller.
+
+There are 3,510 main runs (39 configurations x 9 workloads x 10 seeds) plus a 3,780-run
+cost/SLO frontier sweep, in which every controller is run at target utilisation 0.4-0.95.
+Full tables are in `results/REPORT_v5.md`.
+
+**Equal CPU, the fair comparison.** On each trace, each baseline's SLO is interpolated at
+CHIMERA's CPU cost:
+- **CHIMERA has fewer violations in 44 of 44 trace-baseline comparisons**, against every
+  baseline, on every trace.
+- The advantage is significant against every baseline on the real traces, the synthetic
+  traces and both combined (per trace x seed gaps, Wilcoxon, Holm-corrected, all
+  p <= 0.0002).
+- Mean advantage at equal CPU: +2.2 pp over AAPA on the real traces, +5.4 pp on the
+  held-out synthetic traces.
+- v5 also beats v4 and v2 at equal CPU on all 9 traces.
+
+Five real traces, each controller at its default setting:
+
+| Controller | SLO violations | p99 latency | CPU (core-min) | resizes/run |
+|---|---:|---:|---:|---:|
+| **CHIMERA v5** | **6.1%** | **0.83 s** | 244 | 62 |
+| AAPA (base paper) | 6.9% | 0.91 s | 237 | 7 |
+| HPA + VPA | 14.1% | 1.73 s | 195 | 23 |
+| HPA | 15.6% | 3.65 s | 191 | 18 |
+| MagicScaler-inspired | 16.8% | 2.69 s | 181 | 19 |
+| VPA | 19.4% | 4.79 s | 169 | 16 |
+| KOSMOS (ICSOC 2021) | 19.8% | 21.8 s | 325 | 253 |
+| CHIMERA v4 | 7.4% | 0.89 s | 230 | 51 |
+| CHIMERA v1 (Review 2) | 11.8% | 1.33 s | 227 | 10 |
+
+- **Default settings.** Baselines run at their 70 % target; CHIMERA at its default risk
+  price (knob 0.5, chosen on dev). Against AAPA: 0.8 pp fewer violations (p = 0.012) for a
+  CPU difference that is not significant (+3 %).
+- **Held-out synthetic shapes.** CHIMERA 5.9 % at 68 core-min, against AAPA 7.0 % at 102:
+  fewer violations with a third less CPU.
+- **Correction to earlier versions.** v2-v4 reported a ~19x better p99 than AAPA. With a
+  warm-up, most of that turned out to be AAPA starting cold. The real tail gap is 1.1x
+  against AAPA, 4.4x against HPA and 26x against KOSMOS.
+
+**What each v5 component does** (ablation, `results/REPORT_v5.md`):
+- Fast CPU release: without it, CPU doubles.
+- Cascade inner loop: worse cost/SLO without it.
+- Inner loop owns CPU: resizes 87 → 60.
+- 10 % scale-up dead-band: resizes 82 → 60.
+- Replica band: pod changes 7.6 → 0.4 per run.
+- CQR: changes the cost/SLO trade-off.
+- ADWIN margin reset: small effect.
+- Superseded by risk sizing (almost no effect now): the reactive margin and the OOD
+  fallback.
+- Inert (identical runs without them): the coupling penalty, the anti-chattering guardrail,
+  the bridging flag, and the Lyapunov runtime filter (off; the Riccati solution certifies
+  stability).
+
+**How v5 was chosen.** All design choices were made on a separate dev split: an earlier
+time window, dev-only synthetic traces and dev-only seeds. See `CODE_FIXES_LOG.md` for
+every round, including the bisection bug in the first risk-sizing implementation, which
+was caught by a test and fixed before the held-out run.
 
 ---
 
-## Key Features
-- **Joint HPA+VPA Control (★★★★★)**: Solves for both replica count ($h_t$) and CPU cores ($v_t$) as a coupled 2D state-space vector ($x_t = [v_t, h_t]^T$).
-- **Cross-Coupling Penalty (★★★★☆)**: Formalizes the dynamic interference $\Psi(v, h)$ of simultaneous horizontal and vertical resource transitions.
-- **Lyapunov Stability Bound (★★★★☆)**: Formally guarantees bounded-input bounded-state (BIBS) convergence using a Control Lyapunov Function (CLF) safety filter.
-- **Conformal Uncertainty Bounds (★★★☆☆)**: Employs Conformalized Quantile Regression (CQR) for prediction interval coverage instead of standard calibration heuristics.
-- **Concept Drift Detection (★☆☆☆☆)**: Employs ADWIN to track errors and dynamically adapt Lyapunov safety weights under workload distribution shifts.
+## How it works (one joint control tick every 15 s, plus a 5 s inner loop)
 
----
+1. **Forecast.** A LightGBM CQR model gives a 90% interval for next-minute demand. It is
+   recalibrated online, and the reactive fallback carries its own split-conformal
+   margin, so a model with nothing to learn from cannot leave CHIMERA with zero headroom.
+2. **Risk-optimal capacity.** Cores are chosen to minimise expected SLO violations plus a
+   price per core under the queueing model p(u) = exp(-k(1-u)). k = SLO / service time is
+   learned online, and the scenarios come from conformal demand changes. With a certain
+   forecast this is exactly demand / target. Capacity is split into `x* = [v*, h*]`, with
+   `h* x v_max >= cores` always.
+3. **Residual vertical bridging.** `v*` is sized for the replicas that are *serving
+   now*. While ordered pods boot, the fast actuator covers the gap; when they arrive it
+   hands the capacity back.
+4. **Delay-augmented LQR.** State `e = [v - v*, h_serving - h*, dh(t-1)]`. The in-flight
+   slot carries replicas that were ordered but have not booted, so the controller never
+   orders the same capacity twice. A 20 s boot on a 15 s loop needs one slot.
+5. **Safety projection.** Physical bounds and the joint capacity budget. Stability is
+   certified by the Riccati solution: V = e'Pe decreases under u = -Ke, so v5 runs no
+   separate Lyapunov filter (`sigma` re-enables it; it never binds).
+6. **Actuate.** CPU in place; replicas via the scale subresource.
+7. **Cascade inner loop (every 5 s).** Between the 15 s joint steps, a fast loop is the only
+   thing that moves the 0.1 s CPU actuator. It scales up on a statistically significant
+   surge and releases CPU once the need has stayed 15 % below the allocation for two ticks.
+8. **Replica band.** Replicas change only when CPU resizing cannot absorb the change:
+   between ceil(C / (0.85 v_max)) and floor(C / v_min) the pod count does not change the CPU
+   bill, but every new pod spends 20 s booting.
+9. **ADWIN.** On a detected regime change, the reactive margin drops its pre-change history
+   and re-learns the new regime.
 
-## Project Structure
+## Project structure
+
 ```
-chimera_project/
-├── src/
-│   ├── core/
-│   │   ├── chimera_controller.py  # Joint LQR-Lyapunov controller
-│   │   ├── chimera_simulator.py   # SimPy 2D Kubernetes simulator
-│   │   ├── simulator.py           # Original AAPA simulator
-│   │   └── autoscaler.py          # Original AAPA autoscaler
-│   ├── models/
-│   │   ├── cqr_uncertainty.py     # CQR interval prediction models
-│   │   └── drift_detector.py      # ADWIN drift detection
-│   └── scripts/
-│       ├── train_cqr.py           # Quantile training script
-│       └── run_eval.py            # Comparative baseline evaluation
-├── tests/
-│   └── test_chimera.py            # Unit tests suite
-├── k8s/
-│   ├── crd.yaml                   # ChimeraAutoscaler CRD
-│   ├── controller.yaml            # Manager Deployment & RBAC
-│   ├── Dockerfile                 # Image build recipe
-│   ├── manager.py                 # Operator reconciliation manager
-│   └── quickstart.sh              # Local Kind cluster quickstart setup
-└── requirements.txt               # Dependencies list
+src/core/chimera_controller.py   delay-augmented LQR, CLF filter, coupling penalty
+src/core/chimera_simulator.py    SimPy 2-D cluster simulator (20 s boot, 0.1 s resize)
+src/core/kosmos_simulator.py     KOSMOS (ICSOC 2021) baseline, tuned PI gains
+src/models/                      CQR, ADWIN
+src/scripts/run_full_evaluation.py   all controllers x 9 workloads x seeds (+ --sweep)
+src/scripts/analyze_v2.py        statistics, cost/SLO frontier, figures, REPORT_<tag>.md
+demo_run.py                      ~10 s live demo through the same harness code
+k8s/                             operator, CRD, RBAC, Dockerfile, Prometheus, quickstart,
+                                 live_validation.py
+aws/                             Amazon EKS deployment (eksctl cluster, deploy, teardown)
+results/live/                    live-cluster validation runs and summary
+final_research_package/          paper sections written against the v5 results
+tests/                           controller/simulator tests + operator tests
+presentation/                    figure and deck generators, updated review deck
 ```
 
----
+## Running it
 
-## Getting Started
+Python 3.10+.
 
-### 1. Installation
-Ensure Python 3.10+ is installed. Clone the repository and install dependencies:
 ```bash
 pip install -r requirements.txt
-pip install kubernetes prometheus-client
 ```
 
-### 2. Run Unit Tests
-Verify the control theory math and code safety (dependency-free tests):
+Run the tests (both suites, 18 and 29 tests; `kubernetes` is needed only for the operator tests):
+
 ```bash
 python tests/test_chimera.py
 ```
 
-### 3. Model Training
-Train the CQR quantile regression models (fits GBDT regressors to predict quantile intervals):
 ```bash
-python src/scripts/train_cqr.py
+python tests/test_operator.py
 ```
-This saves model files under `models/cqr_model_low.txt` and `models/cqr_model_high.txt`.
 
-### 4. Running Comparative Simulation Evaluation
-To run the full comparative analysis (HPA vs AAPA vs MagicScaler vs AWARE vs CHIMERA) on benchmark traces:
+Live demo (PowerShell: `$env:PYTHONPATH="."; python demo_run.py`):
+
 ```bash
-python src/scripts/run_eval.py
+PYTHONPATH=. python demo_run.py
 ```
-This saves detailed metrics for every step to `results/simulation_results.csv` with a fixed column schema for downstream plots:
-`autoscaler,workload_id,slo_violation_rate,mean_response_time,p99_response_time,pod_minutes,scaling_actions,coupling_penalty,rei`
 
----
+Full evaluation plus the cost/SLO frontier sweep (together roughly 10-30 min on a
+12-core laptop, depending on load), then the statistics, report and figures:
 
-## Kubernetes Quickstart (Kind / Local)
-
-A complete local deployment pipeline is provided in `k8s/`. To build and run in a local `kind` cluster:
 ```bash
-chmod +x k8s/quickstart.sh
+python src/scripts/run_full_evaluation.py --holdout --warmup 20 --seeds 101 202 303 404 505 606 707 808 909 1010 --out results/results_v5.csv
+```
+
+```bash
+python src/scripts/run_full_evaluation.py --holdout --warmup 20 --sweep-only --seeds 101 202 303 404 505 --out results/results_v5_sweep.csv
+```
+
+```bash
+python src/scripts/analyze_v2.py --tag v5
+```
+
+The harness writes to the file given by `--out` (the v5 held-out results are `results/results_v5.csv` and `results/results_v5_sweep.csv`) and refuses to overwrite the Review-2 dataset
+`results/results_FINAL_verified.csv`.
+
+Design work uses the dev split, never the test window:
+
+```bash
+python src/scripts/run_full_evaluation.py --split dev --warmup 20 --sweep-only --seeds 7 11 13 --out results/dev_sweep.csv
+```
+
+Rebuild the review deck from the results:
+
+```bash
+python presentation/make_deck_figures.py
+```
+
+```bash
+python presentation/update_deck.py
+```
+
+## Kubernetes
+
+`k8s/quickstart.sh` creates a kind cluster on Kubernetes 1.33, where in-place pod resize
+is on by default. It installs a minimal Prometheus, builds and deploys the operator, and
+attaches a `ChimeraAutoscaler` to a CPU-bound demo service with a load generator.
+`--dry-run` makes the operator log decisions without patching anything.
+
+```bash
 ./k8s/quickstart.sh
 ```
 
-This script:
-1. Spawns a local `kind` cluster named `chimera-cluster`.
-2. Builds the operator Docker image (`chimera-controller:latest`).
-3. Loads the image into the cluster.
-4. Registers the `ChimeraAutoscaler` CRD.
-5. Deploys the operator manager.
-6. Launches a mock `billing-service` app deployment and attaches a `ChimeraAutoscaler` policy YAML.
+The operator (`k8s/manager.py`) runs every 15 s over all `ChimeraAutoscaler` objects:
 
----
+- **Metrics.** Reads CPU usage and, optionally, request rate from Prometheus
+  (`k8s/prom_query.py`, a real HTTP API client).
+- **Decision.** Runs the same control step as the simulator (`k8s/operator_core.py`).
+- **Actuation.** Resizes CPU through the `pods/resize` subresource and scales replicas
+  through `deployments/scale`.
+- **Status.** Writes the decision back to the object's status.
 
-## License & Attribution
-This project is licensed under the MIT License. The code builds upon the open-source AAPA simulator framework.
-All control-theoretic modifications, conformal prediction elements, and drift feedback integrations are proprietary contributions of the CHIMERA project.
+**Status:** validated on a live Kubernetes 1.33.1 cluster (kind) on 11 Oct 2026:
+`results/live/LIVE_REPORT.md`.
+
+- CPU per pod was resized in place under load on the same pods, with zero container
+  restarts, and released again when the load stopped.
+- A replica was added once CPU alone could not cover the need, held, and removed after the
+  load stopped.
+- The first run found a real bug (a pod that booted faster than assumed was counted twice
+  and removed 15 s after being added). It is fixed and has regression tests.
+
+These runs are a functional test, not a performance comparison: there is no latency
+measurement and no baseline on the cluster.
+
+Validate a running cluster yourself:
+
+```bash
+python k8s/live_validation.py --out results/live/my_run
+```
+
+Amazon EKS: `aws/deploy.sh` builds and pushes the image to ECR, creates a Kubernetes 1.33
+cluster with eksctl and applies the same manifests. See `BUILD_PLAN.md`, Phase 5. It has
+not been run yet.
+
+## Limitations
+
+- **Data.** The real traces are 100-minute excerpts of five Azure Functions 2019 traces.
+  The full dataset's public URL now refuses access, so no fresh real traces could be added.
+  The held-out synthetic shapes are our own.
+- **Performance numbers are simulated.** Every SLO, latency and cost figure comes from the
+  simulator. The operator (same control law) has been run on a live cluster as a
+  functional test only.
+- **Operator signal lag.** With the default CPU-usage metric the live allocation climbs
+  over minutes rather than seconds; a request-rate metric is supported but untested live.
+- **Inert components.** The coupling penalty, the anti-chattering guardrail and the
+  bridging flag change no decision in the v5 cascade.
+- **Resizes.** 62 in-place resizes per run, against v4's 51. AAPA changes pods about 7
+  times.
+- **Service model.** Risk sizing assumes the simulator's queueing-style latency model. In
+  the operator, k comes from configured SLO and service-time values, not yet from live
+  latency histograms.
+
+See `CODE_FIXES_LOG.md` for every bug found and fixed, including in the baselines, and
+`results/REPORT_v5.md` for the full statistics.
+
+## License
+
+MIT. Builds on the open-source AAPA simulator framework.
