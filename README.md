@@ -9,71 +9,71 @@ conformal margin on the reactive fallback.
 It extends the AAPA baseline (arXiv:2507.05653) from horizontal-only to a coordinated
 2-D controller.
 
-## Results (simulation; CHIMERA v5, held-out evaluation)
+## Results (CHIMERA v6)
 
-The final verdict uses data no design decision saw:
-- the five real Azure Functions traces;
-- four held-out synthetic shapes (flash crowd, diurnal, step-down, on/off) that appear in
-  neither the dev nor the earlier test set;
-- ten fresh seeds;
-- a 20-minute unscored warm-up for every controller.
+Full tables: `results/REPORT_v6.md` (held-out set), `results/REPORT_ext.md` (ten external
+real traces), `results/robustness/ROBUSTNESS.md` (other latency models),
+`results/replay/REPLAY_REPORT.md` (live cluster). What changed since v5 and why:
+`IMPROVEMENT_AUDIT.md`. Draft paper: `paper/CHIMERA_paper.md`.
 
-There are 3,510 main runs (39 configurations x 9 workloads x 10 seeds) plus a 3,780-run
-cost/SLO frontier sweep, in which every controller is run at target utilisation 0.4-0.95.
-Full tables are in `results/REPORT_v5.md`.
+**Equal CPU, the fair comparison.** Each baseline's SLO violation rate is interpolated on
+its own cost/SLO frontier at CHIMERA's CPU cost, trace by trace.
 
-**Equal CPU, the fair comparison.** On each trace, each baseline's SLO is interpolated at
-CHIMERA's CPU cost:
-- **CHIMERA has fewer violations in 44 of 44 trace-baseline comparisons**, against every
-  baseline, on every trace.
-- The advantage is significant against every baseline on the real traces, the synthetic
-  traces and both combined (per trace x seed gaps, Wilcoxon, Holm-corrected, all
-  p <= 0.0002).
-- Mean advantage at equal CPU: +2.2 pp over AAPA on the real traces, +5.4 pp on the
-  held-out synthetic traces.
-- v5 also beats v4 and v2 at equal CPU on all 9 traces.
+| Evaluation set | Trace-baseline comparisons won | Mean advantage over AAPA | over KOSMOS |
+|---|---:|---:|---:|
+| Ten external real traces (NASA, ClarkNet web logs; used in no design step) | 60 of 60 | +2.0 pp | +1.3 pp |
+| Held-out set (5 Azure Functions traces, 4 unseen synthetic shapes) | 47 of 48 | +3.3 pp | +5.8 pp |
 
-Five real traces, each controller at its default setting:
+All baselines are significantly behind on both sets (Wilcoxon, Holm-corrected,
+p < 0.001). The one loss is to the MagicScaler-style scaler on one Azure trace, by 0.66 pp.
 
-| Controller | SLO violations | p99 latency | CPU (core-min) | resizes/run |
+**Default settings, ten external real traces:**
+
+| Controller | SLO violations | p99 latency | CPU (core-min) | actions/run |
 |---|---:|---:|---:|---:|
-| **CHIMERA v5** | **6.1%** | **0.83 s** | 244 | 62 |
-| AAPA (base paper) | 6.9% | 0.91 s | 237 | 7 |
-| HPA + VPA | 14.1% | 1.73 s | 195 | 23 |
-| HPA | 15.6% | 3.65 s | 191 | 18 |
-| MagicScaler-inspired | 16.8% | 2.69 s | 181 | 19 |
-| VPA | 19.4% | 4.79 s | 169 | 16 |
-| KOSMOS (ICSOC 2021) | 19.8% | 21.8 s | 325 | 253 |
-| CHIMERA v4 | 7.4% | 0.89 s | 230 | 51 |
-| CHIMERA v1 (Review 2) | 11.8% | 1.33 s | 227 | 10 |
+| **CHIMERA v6** | 6.18% | 0.83 s | 190 | 26 |
+| AAPA (base paper) | 7.45% | 1.18 s | 194 | 8 |
+| KOSMOS (ICSOC 2021, re-tuned) | **4.22%** | 0.83 s | 272 | 271 |
+| HPA + VPA | 14.84% | 1.74 s | 151 | 24 |
+| HPA | 16.19% | 2.93 s | 149 | 19 |
+| MagicScaler-inspired | 18.25% | 3.44 s | 143 | 20 |
+| VPA | 29.43% | 6.20 s | 116 | 23 |
 
-- **Default settings.** Baselines run at their 70 % target; CHIMERA at its default risk
-  price (knob 0.5, chosen on dev). Against AAPA: 0.8 pp fewer violations (p = 0.012) for a
-  CPU difference that is not significant (+3 %).
-- **Held-out synthetic shapes.** CHIMERA 5.9 % at 68 core-min, against AAPA 7.0 % at 102:
-  fewer violations with a third less CPU.
-- **Correction to earlier versions.** v2-v4 reported a ~19x better p99 than AAPA. With a
-  warm-up, most of that turned out to be AAPA starting cold. The real tail gap is 1.1x
-  against AAPA, 4.4x against HPA and 26x against KOSMOS.
+**What does not favour CHIMERA.**
 
-**What each v5 component does** (ablation, `results/REPORT_v5.md`):
-- Fast CPU release: without it, CPU doubles.
-- Cascade inner loop: worse cost/SLO without it.
-- Inner loop owns CPU: resizes 87 → 60.
-- 10 % scale-up dead-band: resizes 82 → 60.
-- Replica band: pod changes 7.6 → 0.4 per run.
-- CQR: changes the cost/SLO trade-off.
-- ADWIN margin reset: small effect.
-- Superseded by risk sizing (almost no effect now): the reactive margin and the OOD
-  fallback.
-- Inert (identical runs without them): the coupling penalty, the anti-chattering guardrail,
-  the bridging flag, and the Lyapunov runtime filter (off; the Riccati solution certifies
-  stability).
+- At default settings KOSMOS has fewer violations on the external traces and on the
+  synthetic shapes, for 43-84 % more CPU and about ten times the resizes.
+- Under bimodal service times CHIMERA loses to AAPA at equal CPU on 4 of 9 traces.
+- The risk-priced capacity rule adds about 1 pp when the latency law matches its
+  assumption and nothing when it does not.
+- On a real cluster (one run per controller) CHIMERA had the fewest violations but the
+  highest cost against the Kubernetes HPA: 28.6 % at 81.8 core-min against 35.5 % at 77.1.
+  That run does not establish an advantage at matched cost.
 
-**How v5 was chosen.** All design choices were made on a separate dev split: an earlier
-time window, dev-only synthetic traces and dev-only seeds. See `CODE_FIXES_LOG.md` for
-every round, including the bisection bug in the first risk-sizing implementation, which
-was caught by a test and fixed before the held-out run.
+**Corrections to earlier versions of this README.**
+
+- "26x better p99 than KOSMOS" and "+19 pp over KOSMOS" came from a mis-tuned KOSMOS
+  baseline. With gains re-tuned on the dev split the figures are 4.7x and +5.8 pp on the
+  held-out set.
+- "19x better p99 than AAPA" (v2-v4) was mostly AAPA starting cold; with a warm-up it is
+  1.1x.
+- "Wins 44 of 44" (v5) is now 47 of 48 on the same set for v6, which makes half as many
+  resizes.
+
+**What each component does** (ablation, `results/REPORT_v6.md`):
+- Fast CPU release: without it, CPU nearly doubles.
+- Joint control: 7-37 % less CPU than horizontal-only, 0.5 pod changes per run against 12.
+- Inner loop owns CPU, and the 30 % scale-up dead-band: each removes more than half of
+  the resizes (80-84 -> 32 per run).
+- Replica band: pod changes 8.6 -> 0.5 per run.
+- Removed from the decision path because they change nothing (all 90 check runs
+  identical): the coupling penalty, the Lyapunov filter and its action grid, and the
+  anti-chattering guardrail.
+
+**How it was chosen.** Every design choice was made on a separate dev split (an earlier
+time window, dev-only synthetic traces, dev-only seeds). The held-out set has been scored
+twice (v5, then v6). The external traces had not been used for anything when v6 ran on
+them.
 
 ---
 
@@ -134,7 +134,7 @@ Python 3.10+.
 pip install -r requirements.txt
 ```
 
-Run the tests (both suites, 18 and 29 tests; `kubernetes` is needed only for the operator tests):
+Run the tests (both suites, 18 and 32 tests; `kubernetes` is needed only for the operator tests):
 
 ```bash
 python tests/test_chimera.py

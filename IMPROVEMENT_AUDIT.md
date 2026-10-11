@@ -421,3 +421,188 @@ Default settings:
 - Two sites, ten windows. A 100-minute window is still short.
 - Rates are rescaled to fit the simulated cluster, as with the Azure excerpts.
 - Still simulation.
+
+---
+
+## 3. Measure real performance on a cluster (done 12 Oct 2026; result is mixed)
+
+**Question.** The live runs so far only showed that the operator works. How does CHIMERA
+compare with the Kubernetes HPA on a real cluster, with latency measured at the client?
+
+**What was built.**
+
+- `k8s/replay/loadgen.py`: an open-loop load generator that runs in the cluster. It sends
+  requests at the rate a trace dictates whether or not earlier ones have returned (Poisson
+  arrivals), measures latency at the client, and exports its request counters to
+  Prometheus.
+- `k8s/replay/run_replay.py`: replays the same trace against each controller from the same
+  starting state, samples allocated CPU every 5 s, and writes
+  `results/replay/REPLAY_REPORT.md`.
+- metrics-server on the cluster for the HPA; a Prometheus scrape job for the generator.
+
+**Setup.** kind, one node, Kubernetes 1.33.1, on a 12-core laptop. Service:
+`registry.k8s.io/hpa-example`, measured at 61 ms of CPU per request (from the container CPU
+counter over 600 requests). SLO 0.30 s, which is 5 x the service time, the ratio the
+simulator uses. Trace: 24 minutes, 12 from the Azure trace `w_0005` scaled to a mean of
+0.6 cores, then a flash crowd to 3 cores. Three unscored lead-in minutes. Client timeout
+10 s, counted as a violation. One run per controller, one seed.
+
+**Result.**
+
+| Controller | SLO violations | CPU (core-min) | Steady 16 min: violations / CPU | Spike 8 min: violations / CPU |
+|---|---:|---:|---|---|
+| HPA, 70 % target | 51.1 % | 72.8 | 23.7 % / 38.8 | 66.8 % / 34.0 |
+| HPA, 50 % target | 35.5 % | 77.1 | 18.4 % / 40.4 | 45.2 % / 36.8 |
+| CHIMERA, CPU signal | 33.2 % | 83.4 | 19.9 % / 32.9 | 41.0 % / 50.5 |
+| CHIMERA, request-rate signal | 28.6 % | 81.8 | 23.5 % / 34.2 | 31.6 % / 47.7 |
+
+Zero container restarts in all four runs. CHIMERA made 18 and 24 in-place resizes and 9
+replica changes; the HPA made 12 and 9 replica changes.
+
+**Reading. This does not confirm the simulator's margin, and it does not contradict it.**
+
+1. **Steady load: CHIMERA is cheaper for about the same violations.** It used 15 to 19 %
+   less CPU than either HPA setting. With the CPU signal it had fewer violations than the
+   HPA at 70 % (19.9 % against 23.7 %) and slightly more than the HPA at 50 % (18.4 %).
+2. **Spike: CHIMERA has fewer violations but spends more.** With the request-rate signal it
+   cut spike violations to 31.6 % against 45.2 % for the better HPA setting, using 30 %
+   more CPU in that phase. Part of that is structural: the HPA is limited to 10 pods of
+   half a core (5 cores), while CHIMERA can also grow the pods and peaked near 15 cores for
+   a 3-core demand, because a saturated CPU reading is boosted while a backlog drains.
+3. **Overall: fewest violations, highest cost.** CHIMERA with the request-rate signal has
+   6.9 points fewer violations than the HPA at 50 % for 6 % more CPU. With two HPA points
+   there is no frontier to interpolate on, so an equal-cost win cannot be claimed from
+   this run.
+4. **Every controller violates heavily.** A 0.3 s objective on a 61 ms request is very
+   tight for pods throttled at half a core: a single request already exceeds one CFS quota
+   period. The simulator's 5 to 6 % violation rates are not what this service delivers at
+   the same ratio. This is a statement about the simulator's fidelity as much as about any
+   controller.
+
+**Operator problems the replay exposed (all fixed, each with a regression test).**
+
+- The demo service was OOM-killed under open-loop load (128 Mi; now 512 Mi). Closed-loop
+  generators had hidden this.
+- With the request-rate signal, a cost per request set 20 % too low made the operator
+  believe it was at 75 % utilisation while the pods were saturated. The demand estimate is
+  now never below what measured CPU implies.
+- A cost per request given in the spec was being overwritten by online learning, and the
+  learning itself is biased low while load rises (1-minute CPU rate against a 30-second
+  request rate). A configured value is now fixed.
+- A pod added while a backlog drained was removed 45 s later. Scale-in is now held for
+  120 s after a scale-out.
+- With the 30 % dead-band and a 70 % target the operator did not act until about 91 %
+  utilisation. The replay runs CHIMERA at its evaluated default (0.46), where it acts at
+  about 60 %.
+
+**Limits. Treat the numbers as indicative only.**
+
+- One run per controller: no repetition, no confidence interval. Differences of a few
+  points could be noise.
+- A laptop, one node, one synthetic CPU-bound service, one 24-minute trace.
+- The HPA was run with stock behaviour settings and a 10-replica limit; a larger limit
+  would have helped it in the spike.
+- No comparison with VPA, AAPA or KOSMOS on the cluster: none of them has an operator here.
+
+**Still open.** Repeat with several seeds and a third HPA setting to get an actual
+frontier; use a service whose latency is not dominated by CFS throttling (or pods of at
+least one core); let the simulator's slowdown law be fitted to measurements like these.
+
+---
+
+## 5. Speed up the operator's reaction (done 12 Oct 2026)
+
+**Question.** In the first live runs the CPU allocation took 2 to 5 minutes to climb. Does
+a request-rate signal fix that?
+
+**What was done.** The operator already accepted a request-rate query; it had never been
+run live. The replay (item 3) drives it from the load generator's request counter over a
+30 s window, next to the default 1-minute CPU-usage rate, on the same trace.
+
+**Result, flash crowd starting at minute 16** (`results/replay/timeline_*.csv`):
+
+| Controller | Seconds until 2 cores allocated | Until 4 cores | Spike-phase violations |
+|---|---:|---:|---:|
+| HPA, 70 % | 60 | 105 | 66.8 % |
+| CHIMERA, CPU signal | 45 | 80 | 41.0 % |
+| CHIMERA, request-rate signal | 20 | 60 | 31.6 % |
+
+(The HPA at 50 % already held 2 cores when the spike began; it reached 4 cores after 75 s.)
+
+The request-rate signal reaches each allocation level 20 to 25 s sooner than the CPU
+signal, and in the two minutes after the peak it had 19 % and 4 % violations against 53 %
+and 16 %. The remaining delay is mostly the signal window: 30 s of rate history has to
+fill before the estimate reflects a step.
+
+**What it cost.** In steady load the request-rate run had more violations than the CPU run
+(23.5 % against 19.9 %) for slightly more CPU. With one run each this may be noise; it may
+also be that the rate signal, converted with a fixed cost per request, sizes a little
+tighter than measured CPU does.
+
+**Checks.** The three operator fixes this needed (see item 3) each have a regression test;
+32 operator tests pass.
+
+**Still open.**
+
+- "Seconds" is not reached: 20 s to the first level is the 30 s window plus a 5 s loop. A
+  shorter window, or an arrival-count surge test like the one the simulator uses, is the
+  next step.
+- In a real deployment the request rate would come from an ingress or service mesh, not
+  from the load generator.
+- The cost per request has to be configured; learning it online is biased while load is
+  rising.
+
+---
+
+## 9. Write the manuscript (draft done 12 Oct 2026)
+
+**What was done.** `paper/CHIMERA_paper.md`: one continuous draft with abstract,
+introduction, related work, design, evaluation method, held-out results, generalisation
+(external traces and other latency models), the real-cluster section, discussion and
+limitations, conclusion, references, and a table mapping every results section to the file
+its numbers come from.
+
+**How it differs from the earlier section drafts.**
+
+- Written for v6 and the corrected KOSMOS baseline; no claim rests on a v5-only number
+  except Table 5, which says so.
+- Novelty is narrowed to what the literature review supports: it states that Themis and
+  Ship et al. come first on "vertical first" and on joint optimisation.
+- Negative results are in the body, not an appendix: the inert components, the
+  model-dependence of risk pricing, KOSMOS winning at default settings, the discarded first
+  external-trace run, and the inconclusive live comparison.
+
+**Checks.** Each number in Tables 1 to 6 was copied from the generated reports named in
+the source table and re-read against them once after writing.
+
+**What it is not.**
+
+- Not formatted for a venue; no figures are placed in the text and there is no
+  architecture figure.
+- Related work is built from abstracts (item 7).
+- Not proof-read by a second person.
+- `final_research_package/` still holds the v5 section drafts; the manuscript supersedes
+  them.
+
+---
+
+## Summary of the pass
+
+| # | Improvement | Outcome |
+|---|---|---|
+| 1 | Unknown latency model | Advantage over baselines holds in 6 of 8 scenarios fully, 37-38 of 42 in the other two; risk pricing is model-dependent |
+| 2 | More real traces | Ten new real traces; 60 of 60 comparisons won at equal CPU; a first unfair attempt discarded |
+| 3 | Real performance on a cluster | Measured; fewest violations at highest cost against the HPA; inconclusive at matched cost |
+| 4 | Recheck KOSMOS | Baseline was mis-tuned; corrected; advantage over it shrinks from 19.3 to 5.8 points (held-out) |
+| 5 | Faster operator reaction | Request-rate signal is 20-25 s faster than the CPU signal after a spike; not yet "seconds" |
+| 6 | Remove inert components | Out of the decision path; 90 of 90 check runs identical |
+| 7 | Literature review | Ten papers verified; two close prior works added; two unverifiable references removed; abstract-level only |
+| 8 | Reduce churn | Resizes halved (62 to 31 per run) with no loss at equal CPU |
+| 9 | Manuscript | Complete draft, unformatted |
+| 10 | AWS run | Hosted on one free-tier EC2 instance; all five checks pass |
+
+Bugs found and fixed along the way, each with a regression test: a pod counted twice when
+it boots faster than assumed; sizing below observed demand on a cold start; the rate-based
+demand estimate falling below measured CPU; a configured cost per request overwritten by
+learning; scale-in straight after scale-out. Baseline and protocol errors found and
+corrected: stale KOSMOS gains; external traces scaled past the baselines' replica limit.
