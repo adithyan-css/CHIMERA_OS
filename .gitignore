@@ -91,7 +91,7 @@ models/*.joblib
 models/*.h5
 
 # Results
-results/
+# results/ is tracked: the v2-v5 reports and raw runs are the evidence for the paper
 output/
 logs/
 
@@ -105,3 +105,4 @@ azurefunctions-dataset2019/
 invocations_per_function_md.anon.d*.csv
 function_durations_percentiles.anon.d*.csv
 app_memory_percentiles.anon.d*.csv
+tools/

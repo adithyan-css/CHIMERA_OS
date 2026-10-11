@@ -31,3 +31,5 @@ notebook>=6.4.0
 # Optional: For parallel processing
 dask>=2021.8.0
 ray>=1.6.0
+# Kubernetes operator (k8s/manager.py) and tests/test_operator.py
+kubernetes>=33.1.0

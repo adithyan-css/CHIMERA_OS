@@ -1,0 +1,6 @@
+*.sh text eol=lf
+k8s/Dockerfile text eol=lf
+*.yaml text eol=lf
+*.pptx binary
+*.pdf binary
+*.png binary
