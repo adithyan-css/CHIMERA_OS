@@ -12,10 +12,14 @@ rules:
   - apiGroups: [""]
     resources: ["pods", "pods/status", "services", "namespaces", "configmaps"]
     verbs: ["get", "list", "watch", "update", "patch"]
+  # In-place CPU resize (KEP-1287): Kubernetes >= 1.33 routes it through this subresource
+  - apiGroups: [""]
+    resources: ["pods/resize"]
+    verbs: ["patch", "update"]
   - apiGroups: ["apps"]
     resources: ["deployments", "deployments/scale", "deployments/status"]
     verbs: ["get", "list", "watch", "update", "patch"]
-  - apiGroups: ["autoscaling.k8s.io"]
+  - apiGroups: ["autoscaling.chimera.io"]
     resources: ["chimeraautoscalers", "chimeraautoscalers/status", "chimeraautoscalers/finalizers"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
@@ -56,7 +60,11 @@ spec:
           imagePullPolicy: Never
           env:
             - name: PROMETHEUS_URL
-              value: "http://prometheus-k8s.monitoring.svc:9090"
+              value: "http://prometheus.monitoring.svc:9090"
+            - name: CHIMERA_INTERVAL
+              value: "15"
+            - name: CHIMERA_DRY_RUN
+              value: "0"
           resources:
             limits:
               cpu: 500m

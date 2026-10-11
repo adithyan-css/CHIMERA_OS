@@ -1,19 +1,27 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: chimeraautoscalers.autoscaling.k8s.io
+  name: chimeraautoscalers.autoscaling.chimera.io
 spec:
-  group: autoscaling.k8s.io
+  group: autoscaling.chimera.io
   names:
     kind: ChimeraAutoscaler
     listKind: ChimeraAutoscalerList
     plural: chimeraautoscalers
     singular: chimeraautoscaler
+    shortNames: ["chas"]
   scope: Namespaced
   versions:
     - name: v1alpha1
       served: true
       storage: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - {name: Target, type: string, jsonPath: .spec.scaleTargetRef.name}
+        - {name: Replicas, type: integer, jsonPath: .status.currentReplicas}
+        - {name: CPU/pod, type: string, jsonPath: .status.currentCPUAllocation}
+        - {name: Decision, type: string, jsonPath: .status.lastDecision}
       schema:
         openAPIV3Schema:
           type: object
@@ -25,17 +33,11 @@ spec:
               properties:
                 scaleTargetRef:
                   type: object
-                  required:
-                    - apiVersion
-                    - kind
-                    - name
+                  required: [apiVersion, kind, name]
                   properties:
-                    apiVersion:
-                      type: string
-                    kind:
-                      type: string
-                    name:
-                      type: string
+                    apiVersion: {type: string}
+                    kind: {type: string}
+                    name: {type: string}
                 minReplicas:
                   type: integer
                   minimum: 1
@@ -50,25 +52,53 @@ spec:
                 maxCPU:
                   type: string
                   default: "4000m"
-                targetSLO:
-                  type: integer
-                  default: 200
+                targetUtilization:
+                  description: CPU utilisation the controller aims for (lower = more headroom, more cost).
+                  type: number
+                  minimum: 0.1
+                  maximum: 0.95
+                  default: 0.7
                 ratioCPUToReplicas:
+                  description: Long-run CPU-per-pod to replica ratio used by the target split.
                   type: number
                   default: 0.5
-                costWeight:
+                podStartupSeconds:
+                  description: Typical time for a new pod to become Ready; sets the delay-state dimension.
                   type: number
-                  default: 0.1
+                  default: 20
+                targetSLOMilliseconds:
+                  description: Per-request latency SLO; with serviceTimeMilliseconds it sets the risk model.
+                  type: number
+                  default: 500
+                serviceTimeMilliseconds:
+                  description: Mean per-request CPU service time (CPU-seconds per request x 1000).
+                  type: number
+                  default: 100
+                resizeMode:
+                  description: InPlace uses the pods/resize subresource (KEP-1287); Rolling patches the pod template.
+                  type: string
+                  enum: [InPlace, Rolling]
+                  default: InPlace
+                metrics:
+                  type: object
+                  properties:
+                    cpuUsageQuery:
+                      description: PromQL returning total CPU cores used by the target. {namespace} and {deployment} are substituted.
+                      type: string
+                    requestRateQuery:
+                      description: Optional PromQL returning requests/second for the target.
+                      type: string
+                    cpuPerRequest:
+                      description: Optional fixed cores per req/s; learned online when omitted.
+                      type: number
             status:
               type: object
               properties:
-                currentReplicas:
-                  type: integer
-                currentCPUAllocation:
-                  type: string
-                lastScaleTime:
-                  type: string
-                conformalIntervalWidth:
-                  type: number
-                driftDetected:
-                  type: boolean
+                currentReplicas: {type: integer}
+                readyReplicas: {type: integer}
+                currentCPUAllocation: {type: string}
+                observedDemandCores: {type: number}
+                conformalIntervalWidth: {type: number}
+                driftDetected: {type: boolean}
+                lastDecision: {type: string}
+                lastScaleTime: {type: string}

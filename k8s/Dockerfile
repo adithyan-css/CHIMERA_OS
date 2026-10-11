@@ -2,20 +2,15 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir kubernetes prometheus-client
+# The operator only needs the control core, not the research/evaluation stack.
+# numpy, scipy and kubernetes all ship wheels, so no compiler is installed.
+COPY k8s/requirements-operator.txt .
+RUN pip install --no-cache-dir -r requirements-operator.txt
 
 # Copy application code
 COPY src/ /app/src/
 COPY models/ /app/models/
-COPY k8s/manager.py /app/manager.py
+COPY k8s/manager.py k8s/operator_core.py k8s/prom_query.py /app/
 
 ENV PYTHONPATH=/app
 

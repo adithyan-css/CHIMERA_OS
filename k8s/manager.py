@@ -1,195 +1,246 @@
 """
 CHIMERA Kubernetes Controller Manager (Operator Loop)
 
-Watches ChimeraAutoscaler CRD resources, executes LQR-Lyapunov joint optimization,
-and reconciles target deployment replicas and pod CPU allocations.
+Every control interval (default 15 s) this lists all ChimeraAutoscaler objects and, for
+each one:
+  1. reads the target Deployment and its pods (replicas, Ready count, CPU per pod),
+  2. queries Prometheus for CPU usage and (optionally) request rate,
+  3. runs the CHIMERA control step (k8s/operator_core.py),
+  4. actuates: replicas via the Deployment scale subresource; CPU in place via the
+     pods/resize subresource (KEP-1287, Kubernetes >= 1.33; falls back to patching the
+     pod directly on 1.27-1.32 with the InPlacePodVerticalScaling feature gate), or via
+     a rolling update of the pod template when spec.resizeMode is "Rolling",
+  5. writes status back to the ChimeraAutoscaler object.
+
+Configuration (environment):
+  PROMETHEUS_URL        default http://prometheus.monitoring.svc:9090
+  PROMETHEUS_TOKEN_FILE optional bearer token file
+  CHIMERA_DRY_RUN=1     compute and log decisions, never patch anything
+  CHIMERA_INTERVAL      full joint step period, seconds (default 15)
+  CHIMERA_FAST_INTERVAL cascade vertical-only step period, seconds (default 5)
 """
 
-import time
-import os
+import datetime
 import logging
-from kubernetes import client, config, watch
+import os
+import sys
+import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from kubernetes import client, config
 from kubernetes.client.rest import ApiException
-import numpy as np
 
-from src.core.chimera_controller import ChimeraController
-from src.models.cqr_uncertainty import ConformalQuantileRegressor
-from src.models.drift_detector import AdwinDriftDetector
+from operator_core import Observation, Spec, TargetState
+from prom_query import PrometheusClient, PrometheusError
 
-# Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("chimera-operator")
 
-# Initialize clients
-try:
-    config.load_incluster_config()
-except Exception:
-    config.load_kube_config()
+GROUP, VERSION, PLURAL = "autoscaling.chimera.io", "v1alpha1", "chimeraautoscalers"
 
-v1_core = client.CoreV1Api()
-apps_v1 = client.AppsV1Api()
-custom_objects = client.CustomObjectsApi()
+DEFAULT_CPU_QUERY = ('sum(rate(container_cpu_usage_seconds_total{{namespace="{namespace}",'
+                     'pod=~"{deployment}-.*",container!="",container!="POD"}}[1m]))')
 
-def parse_cpu(cpu_str: str) -> float:
-    """Helper to convert Kubernetes CPU strings (e.g. 500m, 1.5) to core float."""
-    if cpu_str.endswith('m'):
-        return float(cpu_str[:-1]) / 1000.0
-    return float(cpu_str)
+
+def parse_cpu(cpu_str) -> float:
+    """Convert Kubernetes CPU quantities (500m, 1.5, 2) to cores."""
+    s = str(cpu_str)
+    if s.endswith('m'):
+        return float(s[:-1]) / 1000.0
+    return float(s)
+
 
 def format_cpu(cpu_val: float) -> str:
-    """Helper to format CPU core float to millicores string."""
-    return f"{int(cpu_val * 1000)}m"
+    """Format cores as millicores."""
+    return f"{int(round(cpu_val * 1000))}m"
+
+
+def spec_from_cr(obj: dict) -> Spec:
+    sp = obj.get('spec', {})
+    return Spec(
+        min_replicas=int(sp.get('minReplicas', 2)),
+        max_replicas=int(sp.get('maxReplicas', 30)),
+        min_cpu=parse_cpu(sp.get('minCPU', '500m')),
+        max_cpu=parse_cpu(sp.get('maxCPU', '4000m')),
+        target_utilization=float(sp.get('targetUtilization', 0.70)),
+        ratio_cpu_to_replicas=float(sp.get('ratioCPUToReplicas', 0.5)),
+        pod_startup_seconds=float(sp.get('podStartupSeconds', 20)),
+        slo_seconds=float(sp.get('targetSLOMilliseconds', 500)) / 1000.0,
+        service_time_seconds=float(sp.get('serviceTimeMilliseconds', 100)) / 1000.0,
+        cpu_per_request=(float(sp['metrics']['cpuPerRequest'])
+                         if sp.get('metrics', {}).get('cpuPerRequest') is not None else None),
+    )
+
 
 class ChimeraReconciler:
-    def __init__(self):
-        self.controllers = {} # maps crd name -> controller state
-        
-        # Load pre-trained CQR models if available
-        self.cqr = ConformalQuantileRegressor(alpha=0.1, calibration_size=100)
-        cqr_path = "models/cqr_model"
-        if os.path.exists(cqr_path + "_low.txt"):
-            try:
-                self.cqr.load(cqr_path)
-                logger.info("Loaded pre-trained CQR models.")
-            except Exception as e:
-                logger.warning(f"Failed to load CQR models: {e}. Using fallback bounds.")
-        else:
-            # Set default dummy bounds
-            self.cqr.calibration_scores = [0.1, 0.2, 0.3]
-            class DummyModel:
-                def predict(self, X):
-                    return np.ones(len(X)) * 25.0
-            self.cqr.model_low = DummyModel()
-            self.cqr.model_high = DummyModel()
+    def __init__(self, prom: PrometheusClient, dry_run: bool = False):
+        self.prom = prom
+        self.dry_run = dry_run
+        self.states = {}         # (namespace, name) -> (spec, TargetState)
+        self.core = client.CoreV1Api()
+        self.apps = client.AppsV1Api()
+        self.custom = client.CustomObjectsApi()
 
-    def get_prom_telemetry(self, deploy_name: str) -> float:
-        """
-        Query metrics from local Prometheus adapter.
-        Note: Verification confirms reconciliation logic; live Prometheus telemetry integration is untested in this release, using local query mockups.
-        """
-        logger.info(f"Retrieving telemetry for deployment {deploy_name}...")
-        return 10.0 + np.random.normal(0, 2.0)
-
-    def reconcile_resource(self, obj: dict):
-        namespace = obj['metadata']['namespace']
-        name = obj['metadata']['name']
-        spec = obj['spec']
-        
-        # Parse CRD specs
-        target_ref = spec['scaleTargetRef']
-        min_replicas = spec.get('minReplicas', 2)
-        max_replicas = spec.get('maxReplicas', 30)
-        v_min = parse_cpu(spec.get('minCPU', '500m'))
-        v_max = parse_cpu(spec.get('maxCPU', '4000m'))
-        gamma_ratio = spec.get('ratioCPUToReplicas', 0.5)
-        cost_weight = spec.get('costWeight', 0.1)
-        
-        # Instantiate controller states if not cached
-        if name not in self.controllers:
-            self.controllers[name] = {
-                'controller': ChimeraController(
-                    v_min=v_min, v_max=v_max, h_min=min_replicas, h_max=max_replicas,
-                    gamma_ratio=gamma_ratio, R=np.diag([cost_weight, cost_weight])
-                ),
-                'drift_detector': AdwinDriftDetector(delta=0.05)
-            }
-            
-        ctrl_state = self.controllers[name]
-        controller: ChimeraController = ctrl_state['controller']
-        detector: AdwinDriftDetector = ctrl_state['drift_detector']
-        
-        # 1. Fetch deployment status
+    # -- reads ----------------------------------------------------------------------
+    def _metric(self, query_template: str, namespace: str, deployment: str):
+        if not query_template:
+            return None
+        q = query_template.format(namespace=namespace, deployment=deployment)
         try:
-            deploy = apps_v1.read_namespaced_deployment(target_ref['name'], namespace)
-        except ApiException as e:
-            logger.error(f"Failed to read deployment {target_ref['name']}: {e}")
-            return
-            
-        current_replicas = deploy.spec.replicas
-        
-        # Read current CPU allocation from first container
-        container = deploy.spec.template.spec.containers[0]
-        current_cpu = parse_cpu(container.resources.limits.get('cpu', '500m'))
-        
-        x_t = np.array([current_cpu, current_replicas])
-        
-        # 2. Get telemetry metrics
-        req_rate = self.get_prom_telemetry(target_ref['name'])
-        
-        # Generate dummy 37D feature vector for model prediction
-        features = np.zeros(37)
-        features[0] = req_rate # Inject request rate as first feature
-        
-        L_t, U_t, u_width = self.cqr.predict_conformal_bounds(features)
-        target_demand = float(U_t[0])
-        
-        # 3. Calculate target state x*
-        total_cores_needed = target_demand * 0.01 / 0.7  # 70% target utilization
-        h_star = int(np.ceil(np.sqrt(total_cores_needed / controller.gamma_ratio)))
-        h_star = max(controller.h_min, min(h_star, controller.h_max))
-        v_star = total_cores_needed / h_star
-        v_star = max(controller.v_min, min(v_star, controller.v_max))
-        
-        x_star = np.array([v_star, h_star])
-        
-        # 4. Invoke joint controller
-        u_opt, x_next = controller.get_desired_allocation(x_t, x_star, u_width, tau=20.0)
-        dv, dh = u_opt[0], u_opt[1]
-        
-        # 5. Apply actuation modifications
-        patch_needed = False
-        
-        # (a) Vertical resize
-        if abs(dv) > 1e-4:
-            new_cpu = x_t[0] + dv
-            logger.info(f"Scaling vertical CPU: {format_cpu(x_t[0])} -> {format_cpu(new_cpu)}")
-            container.resources.limits['cpu'] = format_cpu(new_cpu)
-            container.resources.requests['cpu'] = format_cpu(new_cpu)
-            patch_needed = True
-            
-        # (b) Horizontal resize
-        if abs(dh) > 0.1:
-            new_replicas = int(current_replicas + np.round(dh))
-            logger.info(f"Scaling horizontal replicas: {current_replicas} -> {new_replicas}")
-            deploy.spec.replicas = new_replicas
-            patch_needed = True
-            
-        if patch_needed:
-            try:
-                apps_v1.patch_namespaced_deployment(target_ref['name'], namespace, deploy)
-                logger.info("Successfully patched target deployment.")
-            except ApiException as e:
-                logger.error(f"Failed to patch deployment: {e}")
-                
-        # 6. Monitor concept drift
-        is_drift = detector.add_element(abs(req_rate - target_demand))
-        if is_drift:
-            logger.warning("Operator loop detected concept drift. Recalibrating...")
-            controller.zeta = min(2.0, controller.zeta * 2)
+            return self.prom.query_scalar(q)
+        except PrometheusError as exc:
+            logger.warning(f"{namespace}/{deployment}: Prometheus query failed: {exc}")
+            return None
 
-    def watch_loop(self):
-        logger.info("Starting CHIMERA Controller watch loop...")
-        resource_ver = ""
+    def observe(self, obj: dict) -> tuple:
+        ns = obj['metadata']['namespace']
+        sp = obj['spec']
+        target = sp['scaleTargetRef']['name']
+        deploy = self.apps.read_namespaced_deployment(target, ns)
+
+        selector = ",".join(f"{k}={v}" for k, v in (deploy.spec.selector.match_labels or {}).items())
+        pods = [p for p in self.core.list_namespaced_pod(ns, label_selector=selector).items
+                if p.metadata.deletion_timestamp is None]
+        ready = sum(1 for p in pods if any(c.type == "Ready" and c.status == "True"
+                                           for c in (p.status.conditions or [])))
+
+        # CPU per pod: what the running pods actually have (in-place resizes change pods,
+        # not the template); fall back to the template before any pod exists.
+        cpu = None
+        for p in pods:
+            res = (p.spec.containers[0].resources.limits or {})
+            if 'cpu' in res:
+                cpu = max(cpu or 0.0, parse_cpu(res['cpu']))
+        if cpu is None:
+            limits = deploy.spec.template.spec.containers[0].resources.limits or {}
+            cpu = parse_cpu(limits.get('cpu', '500m'))
+
+        metrics = sp.get('metrics', {})
+        obs = Observation(
+            now=time.monotonic(),
+            replicas=int(deploy.spec.replicas or 0),
+            ready_replicas=ready,
+            cpu_per_pod=cpu,
+            cpu_usage=self._metric(metrics.get('cpuUsageQuery', DEFAULT_CPU_QUERY), ns, target),
+            request_rate=self._metric(metrics.get('requestRateQuery', ''), ns, target),
+        )
+        return deploy, pods, obs
+
+    # -- writes ---------------------------------------------------------------------
+    def _resize_pod_in_place(self, ns: str, pod, container: str, cpu: str):
+        body = {"spec": {"containers": [{"name": container,
+                                         "resources": {"requests": {"cpu": cpu}, "limits": {"cpu": cpu}}}]}}
+        try:   # Kubernetes >= 1.33: the pods/resize subresource (typed client method)
+            self.core.patch_namespaced_pod_resize(pod.metadata.name, ns, body)
+        except ApiException as exc:
+            if exc.status != 404:
+                raise
+            # 1.27-1.32 with InPlacePodVerticalScaling: resources are mutable on the pod itself
+            self.core.patch_namespaced_pod(pod.metadata.name, ns, body)
+
+    def actuate(self, obj: dict, deploy, pods, decision, obs_cpu: float):
+        ns = obj['metadata']['namespace']
+        name = deploy.metadata.name
+        mode = obj['spec'].get('resizeMode', 'InPlace')
+        container = deploy.spec.template.spec.containers[0].name
+
+        if mode == 'Rolling':
+            if decision.new_cpu is not None:
+                cpu = format_cpu(decision.new_cpu)
+                self.apps.patch_namespaced_deployment(name, ns, {"spec": {"template": {"spec": {"containers": [
+                    {"name": container, "resources": {"requests": {"cpu": cpu}, "limits": {"cpu": cpu}}}]}}}})
+        else:
+            # In place: bring every pod to the current allocation. This also catches pods
+            # that were just created from the (unchanged) template at its original size.
+            target = decision.new_cpu if decision.new_cpu is not None else obs_cpu
+            cpu = format_cpu(target)
+            for p in pods:
+                limits = p.spec.containers[0].resources.limits or {}
+                if format_cpu(parse_cpu(limits.get('cpu', '0'))) != cpu:
+                    self._resize_pod_in_place(ns, p, container, cpu)
+        if decision.new_replicas is not None:
+            self.apps.patch_namespaced_deployment_scale(name, ns, {"spec": {"replicas": decision.new_replicas}})
+
+    def write_status(self, obj: dict, obs: Observation, decision):
+        status = {
+            "currentReplicas": decision.new_replicas or obs.replicas,
+            "readyReplicas": obs.ready_replicas,
+            "currentCPUAllocation": format_cpu(decision.new_cpu or obs.cpu_per_pod),
+            "observedDemandCores": round(decision.demand_cores, 4),
+            "conformalIntervalWidth": round(decision.interval_width, 4),
+            "driftDetected": decision.drift,
+            "lastDecision": decision.reason,
+            "lastScaleTime": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+        try:
+            self.custom.patch_namespaced_custom_object_status(
+                GROUP, VERSION, obj['metadata']['namespace'], PLURAL, obj['metadata']['name'],
+                {"status": status})
+        except ApiException as exc:
+            logger.warning(f"status update failed: {exc.reason}")
+
+    # -- loop -----------------------------------------------------------------------
+    def reconcile(self, obj: dict, full: bool = True):
+        """full=True: joint step (replicas + CPU). full=False: the cascade's fast,
+        vertical-only step that runs between full steps."""
+        key = (obj['metadata']['namespace'], obj['metadata']['name'])
+        spec = spec_from_cr(obj)
+        if key not in self.states or self.states[key][0] != spec:
+            self.states[key] = (spec, TargetState(spec))   # new object or spec edited
+            full = True
+        state = self.states[key][1]
+
+        deploy, pods, obs = self.observe(obj)
+        decision = state.step(obs) if full else state.fast_step(obs)
+        if not full and decision.new_cpu is None:
+            return
+        logger.info(f"{key[0]}/{key[1]}: demand={decision.demand_cores:.3f} cores, "
+                    f"replicas={obs.replicas} ready={obs.ready_replicas} cpu/pod={obs.cpu_per_pod:.2f} "
+                    f"-> {decision.reason}{' [dry-run]' if self.dry_run else ''}")
+        if not self.dry_run:
+            self.actuate(obj, deploy, pods, decision, obs.cpu_per_pod)
+            self.write_status(obj, obs, decision)
+
+    def run_forever(self, interval: float = 15.0, fast_interval: float = 5.0):
+        """Cascade: a fast vertical-only tick every `fast_interval` seconds, and a full
+        joint step every `interval` seconds."""
+        every = max(1, int(round(interval / fast_interval)))
+        logger.info(f"CHIMERA operator started (full step every {interval:.0f}s, fast vertical step every "
+                    f"{fast_interval:.0f}s, Prometheus {self.prom.base_url})")
+        tick = 0
         while True:
+            started = time.monotonic()
+            full = tick % every == 0
+            tick += 1
             try:
-                stream = watch.Watch().stream(
-                    custom_objects.list_cluster_custom_object,
-                    group="autoscaling.k8s.io",
-                    version="v1alpha1",
-                    plural="chimeraautoscalers",
-                    resource_version=resource_ver
-                )
-                for event in stream:
-                    obj = event['object']
-                    resource_ver = obj['metadata'].get('resourceVersion', resource_ver)
-                    
-                    if event['type'] in ['ADDED', 'MODIFIED']:
-                        logger.info(f"Processing event for: {obj['metadata']['name']}")
-                        self.reconcile_resource(obj)
-            except Exception as e:
-                logger.error(f"Watch connection dropped: {e}. Retrying in 5 seconds...")
-                time.sleep(5)
+                objs = self.custom.list_cluster_custom_object(GROUP, VERSION, PLURAL).get('items', [])
+            except ApiException as exc:
+                logger.error(f"cannot list ChimeraAutoscalers: {exc.reason}")
+                objs = []
+            live = set()
+            for obj in objs:
+                live.add((obj['metadata']['namespace'], obj['metadata']['name']))
+                try:
+                    self.reconcile(obj, full=full)
+                except ApiException as exc:
+                    logger.error(f"{obj['metadata']['name']}: API error {exc.status} {exc.reason}")
+                except Exception:
+                    logger.exception(f"{obj['metadata']['name']}: reconcile failed")
+            for gone in set(self.states) - live:   # forget deleted objects
+                del self.states[gone]
+            time.sleep(max(0.0, fast_interval - (time.monotonic() - started)))
+
+
+def main():
+    try:
+        config.load_incluster_config()
+    except config.ConfigException:
+        config.load_kube_config()
+    prom = PrometheusClient(os.environ.get("PROMETHEUS_URL", "http://prometheus.monitoring.svc:9090"))
+    ChimeraReconciler(prom, dry_run=os.environ.get("CHIMERA_DRY_RUN") == "1").run_forever(
+        float(os.environ.get("CHIMERA_INTERVAL", "15")), float(os.environ.get("CHIMERA_FAST_INTERVAL", "5")))
+
 
 if __name__ == "__main__":
-    reconciler = ChimeraReconciler()
-    reconciler.watch_loop()
+    main()

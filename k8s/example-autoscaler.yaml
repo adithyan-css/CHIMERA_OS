@@ -1,0 +1,17 @@
+apiVersion: autoscaling.chimera.io/v1alpha1
+kind: ChimeraAutoscaler
+metadata:
+  name: billing-service-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: billing-service
+  minReplicas: 2
+  maxReplicas: 10
+  minCPU: "500m"
+  maxCPU: "2000m"
+  targetUtilization: 0.7
+  podStartupSeconds: 20
+  resizeMode: InPlace          # pods/resize subresource (KEP-1287)
