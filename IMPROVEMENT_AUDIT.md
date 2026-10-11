@@ -160,3 +160,68 @@ real figure.
 - The instance is single-node and has no restart automation beyond k3s itself; it is a
   demonstration host, not a production deployment.
 - `aws/eks/` is kept for a paid account and has never run to completion.
+
+---
+
+## 1. A latency model the controller does not know (done 12 Oct 2026)
+
+**Question.** CHIMERA v5 sizes capacity with `p(u) = exp(-k(1-u))`, which is exactly the
+law the reported simulator generates violations from (exponential service times, slowdown
+`1/(1-u)`). Does its advantage survive when the simulator follows a different law?
+
+**What was done.** The simulator gained selectable service-time distributions
+(exponential, lognormal, gamma, bimodal; all with mean 0.1 s) and slowdown laws (`inverse`,
+`kingman`, `steep`): `--service-dist`, `--slowdown-model`. The held-out frontier sweep was
+re-run in eight scenarios (`src/scripts/robustness.py`, 2,205 runs each, 5 seeds). CHIMERA
+was not re-tuned for any of them. Full tables: `results/robustness/ROBUSTNESS.md`.
+
+**Result.**
+
+| Scenario | Trace-baseline wins at equal CPU | Mean gap (pp) | v5 against v4 (traces won, gap pp) |
+|---|---:|---:|---|
+| reported (exponential, inverse) | 42/42 | +5.90 | 9/9, +1.12 |
+| lognormal service times | 42/42 | +5.41 | 9/9, +0.91 |
+| gamma service times | 41/41 | +7.27 | 9/9, +1.01 |
+| kingman slowdown | 42/42 | +4.49 | 9/9, +0.47 |
+| steep slowdown | 42/42 | +3.30 | 9/9, +0.09 |
+| lognormal + steep | 42/42 | +3.07 | 9/9, +0.09 |
+| bimodal service times | 38/42 | +4.40 | 3/9, -0.06 |
+| bimodal + kingman | 37/42 | +2.87 | 1/9, -0.17 |
+
+**Reading.**
+
+1. **The advantage over the baselines is not an artefact of the matching model.** It holds
+   on every trace against every baseline in six of the eight scenarios, with a smaller
+   margin when the slowdown law changes (+3.1 to +4.5 pp against +5.9).
+2. **Under bimodal service times CHIMERA is no longer ahead of AAPA everywhere.** It loses
+   to AAPA at equal CPU on 4 of 9 traces (by 0.08 to 0.72 pp) and to VPA on one. It still
+   wins against HPA, HPA+VPA and the MagicScaler-inspired scaler on every trace.
+3. **Risk sizing is the model-dependent part.** v5 is v4 plus risk sizing. Its gain over
+   v4 is about +1 pp while the slowdown law matches, falls to +0.09 pp under the steep
+   law, and turns slightly negative under bimodal service times. The rest of the design
+   (cascade, joint control, replica band), which v4 already has, is what carries the
+   robust part of the advantage.
+
+**What this changes in the claims.**
+
+- "Wins every trace-baseline comparison" must be stated for the reported latency model,
+  with the robustness table next to it.
+- Risk-optimal sizing should be presented as helping when the latency model is roughly
+  right (about +1 pp), and as neutral to slightly harmful otherwise. It is not the main
+  source of the advantage.
+
+**Checks.**
+
+- The `reported` scenario reproduces the v5 result with the same pipeline (42/42).
+- Each distribution's mean was verified numerically (0.100 s in all four).
+- Both test suites pass after the simulator change; the default model is unchanged, and
+  `results_v5.csv` was not regenerated.
+
+**Still open.**
+
+- All scenarios are still analytic slowdown laws in the same simulator. A real service has
+  none of these exactly; that is what the live replay (item 3) is for.
+- KOSMOS was not included in the robustness sweep.
+- `k` is still learned as SLO / mean service time. A model-free alternative (learning the
+  violation curve from observed latencies) is the natural fix for point 3 and has not been
+  tried.
