@@ -1,0 +1,15 @@
+{
+  "commands": [
+    "set -e",
+    "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml PATH=/usr/local/bin:$PATH HOME=/root",
+    "cd /opt/chimera && git pull -q --ff-only && git log --oneline -1",
+    "systemctl start docker",
+    "docker build -q -t chimera-controller:latest -f k8s/Dockerfile .",
+    "docker save chimera-controller:latest | k3s ctr images import - >/dev/null",
+    "systemctl stop docker.socket docker",
+    "kubectl -n kube-system rollout restart deploy/chimera-controller",
+    "kubectl -n kube-system rollout status deploy/chimera-controller --timeout=180s",
+    "sleep 20; kubectl -n kube-system logs deploy/chimera-controller --tail=3",
+    "kubectl get chas"
+  ]
+}
