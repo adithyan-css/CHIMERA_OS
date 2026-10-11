@@ -110,3 +110,6 @@ tools/
 # Deployment logs carry the AWS account id
 results/live_eks/deploy.log
 results/live_ec2/deploy.log
+
+# Raw third-party logs (downloaded; only the derived per-minute counts are tracked)
+dataset/external_raw/
