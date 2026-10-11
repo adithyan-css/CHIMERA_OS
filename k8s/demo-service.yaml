@@ -14,14 +14,16 @@ spec:
     spec:
       containers:
         - name: web
-          # Every request burns CPU, so load shows up in container_cpu_usage_seconds_total
+          # Every request burns CPU, so load shows up in container_cpu_usage_seconds_total.
+          # 512Mi: under open-loop load Apache forks many workers, and 128Mi got the
+          # container OOM-killed (found in the first replay smoke test).
           image: registry.k8s.io/hpa-example
           ports: [{containerPort: 80}]
           resizePolicy:
             - {resourceName: cpu, restartPolicy: NotRequired}
           resources:
-            requests: {cpu: 500m, memory: 128Mi}
-            limits: {cpu: 500m, memory: 128Mi}
+            requests: {cpu: 500m, memory: 512Mi}
+            limits: {cpu: 500m, memory: 512Mi}
 ---
 apiVersion: v1
 kind: Service

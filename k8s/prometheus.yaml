@@ -59,6 +59,12 @@ data:
             regex: (.+)
             target_label: __metrics_path__
             replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+      # Request-rate source for the trace-replay experiments (k8s/replay/). The target is
+      # simply down when no replay is running.
+      - job_name: loadgen
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['loadgen.default.svc:8000']
 ---
 apiVersion: apps/v1
 kind: Deployment

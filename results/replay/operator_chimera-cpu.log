@@ -1,0 +1,135 @@
+2026-10-11 22:36:47,375 - chimera-operator - INFO - default/billing-service-scaler: demand=0.001 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:37:01,188 - chimera-operator - INFO - default/billing-service-scaler: demand=0.000 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:37:16,204 - chimera-operator - INFO - default/billing-service-scaler: demand=0.004 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:37:31,345 - chimera-operator - INFO - default/billing-service-scaler: demand=0.004 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:37:46,225 - chimera-operator - INFO - default/billing-service-scaler: demand=0.000 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:38:01,231 - chimera-operator - INFO - default/billing-service-scaler: demand=0.000 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:38:16,234 - chimera-operator - INFO - default/billing-service-scaler: demand=0.077 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:38:31,261 - chimera-operator - INFO - default/billing-service-scaler: demand=0.149 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:38:46,270 - chimera-operator - INFO - default/billing-service-scaler: demand=0.317 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:39:01,284 - chimera-operator - INFO - default/billing-service-scaler: demand=0.530 cores, replicas=2 ready=2 cpu/pod=0.50 -> hold
+2026-10-11 22:39:06,286 - chimera-operator - INFO - default/billing-service-scaler: demand=0.579 cores, replicas=2 ready=2 cpu/pod=0.50 -> fast: cpu 0.50->0.70
+2026-10-11 22:39:16,286 - chimera-operator - INFO - default/billing-service-scaler: demand=0.531 cores, replicas=2 ready=2 cpu/pod=0.70 -> hold
+2026-10-11 22:39:31,308 - chimera-operator - INFO - default/billing-service-scaler: demand=0.604 cores, replicas=2 ready=2 cpu/pod=0.70 -> hold
+2026-10-11 22:39:46,301 - chimera-operator - INFO - default/billing-service-scaler: demand=0.721 cores, replicas=2 ready=2 cpu/pod=0.70 -> hold
+2026-10-11 22:40:01,322 - chimera-operator - INFO - default/billing-service-scaler: demand=0.518 cores, replicas=2 ready=2 cpu/pod=0.70 -> hold
+2026-10-11 22:40:16,321 - chimera-operator - INFO - default/billing-service-scaler: demand=0.600 cores, replicas=2 ready=2 cpu/pod=0.70 -> hold
+2026-10-11 22:40:31,344 - chimera-operator - INFO - default/billing-service-scaler: demand=0.748 cores, replicas=2 ready=2 cpu/pod=0.70 -> hold
+2026-10-11 22:40:46,362 - chimera-operator - INFO - default/billing-service-scaler: demand=1.023 cores, replicas=2 ready=2 cpu/pod=0.70 -> hold
+2026-10-11 22:40:51,379 - chimera-operator - INFO - default/billing-service-scaler: demand=0.937 cores, replicas=2 ready=2 cpu/pod=0.70 -> fast: cpu 0.70->1.11
+2026-10-11 22:41:01,379 - chimera-operator - INFO - default/billing-service-scaler: demand=1.018 cores, replicas=2 ready=2 cpu/pod=1.11 -> hold
+2026-10-11 22:41:06,380 - chimera-operator - INFO - default/billing-service-scaler: demand=1.470 cores, replicas=2 ready=2 cpu/pod=1.11 -> fast: cpu 1.11->1.67
+2026-10-11 22:41:16,387 - chimera-operator - INFO - default/billing-service-scaler: demand=1.509 cores, replicas=2 ready=2 cpu/pod=1.67 -> replicas 2->3
+2026-10-11 22:41:31,380 - chimera-operator - INFO - default/billing-service-scaler: demand=2.301 cores, replicas=3 ready=3 cpu/pod=1.67 -> replicas 3->4
+2026-10-11 22:41:41,388 - chimera-operator - INFO - default/billing-service-scaler: demand=2.036 cores, replicas=4 ready=4 cpu/pod=1.67 -> fast release: cpu 1.67->1.19
+2026-10-11 22:41:46,395 - chimera-operator - INFO - default/billing-service-scaler: demand=2.293 cores, replicas=4 ready=4 cpu/pod=1.19 -> hold
+2026-10-11 22:42:01,399 - chimera-operator - INFO - default/billing-service-scaler: demand=1.075 cores, replicas=4 ready=4 cpu/pod=1.19 -> hold
+2026-10-11 22:42:11,411 - chimera-operator - INFO - default/billing-service-scaler: demand=1.070 cores, replicas=4 ready=4 cpu/pod=1.19 -> fast release: cpu 1.19->0.81
+2026-10-11 22:42:16,432 - chimera-operator - INFO - default/billing-service-scaler: demand=1.075 cores, replicas=4 ready=4 cpu/pod=0.81 -> hold
+2026-10-11 22:42:31,419 - chimera-operator - INFO - default/billing-service-scaler: demand=0.801 cores, replicas=4 ready=4 cpu/pod=0.81 -> hold
+2026-10-11 22:42:46,425 - chimera-operator - INFO - default/billing-service-scaler: demand=0.845 cores, replicas=4 ready=4 cpu/pod=0.81 -> hold
+2026-10-11 22:43:01,438 - chimera-operator - INFO - default/billing-service-scaler: demand=0.781 cores, replicas=4 ready=4 cpu/pod=0.81 -> drift detected: margin reset
+2026-10-11 22:43:16,462 - chimera-operator - INFO - default/billing-service-scaler: demand=0.888 cores, replicas=4 ready=4 cpu/pod=0.81 -> hold
+2026-10-11 22:43:31,465 - chimera-operator - INFO - default/billing-service-scaler: demand=0.778 cores, replicas=4 ready=4 cpu/pod=0.81 -> hold
+2026-10-11 22:43:41,480 - chimera-operator - INFO - default/billing-service-scaler: demand=0.656 cores, replicas=4 ready=4 cpu/pod=0.81 -> fast release: cpu 0.81->0.50
+2026-10-11 22:43:46,481 - chimera-operator - INFO - default/billing-service-scaler: demand=0.601 cores, replicas=4 ready=4 cpu/pod=0.50 -> replicas 4->3
+2026-10-11 22:44:01,482 - chimera-operator - INFO - default/billing-service-scaler: demand=0.461 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:44:16,506 - chimera-operator - INFO - default/billing-service-scaler: demand=0.577 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:44:31,500 - chimera-operator - INFO - default/billing-service-scaler: demand=0.599 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:44:46,515 - chimera-operator - INFO - default/billing-service-scaler: demand=0.615 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:45:01,523 - chimera-operator - INFO - default/billing-service-scaler: demand=0.635 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:45:16,531 - chimera-operator - INFO - default/billing-service-scaler: demand=0.668 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:45:26,551 - chimera-operator - INFO - default/billing-service-scaler: demand=0.754 cores, replicas=3 ready=3 cpu/pod=0.50 -> fast: cpu 0.50->0.87
+2026-10-11 22:45:31,554 - chimera-operator - INFO - default/billing-service-scaler: demand=0.682 cores, replicas=3 ready=3 cpu/pod=0.87 -> hold
+2026-10-11 22:45:46,569 - chimera-operator - INFO - default/billing-service-scaler: demand=1.042 cores, replicas=3 ready=3 cpu/pod=0.87 -> hold
+2026-10-11 22:46:01,568 - chimera-operator - INFO - default/billing-service-scaler: demand=0.948 cores, replicas=3 ready=3 cpu/pod=0.87 -> hold
+2026-10-11 22:46:16,587 - chimera-operator - INFO - default/billing-service-scaler: demand=0.915 cores, replicas=3 ready=3 cpu/pod=0.87 -> hold
+2026-10-11 22:46:31,598 - chimera-operator - INFO - default/billing-service-scaler: demand=0.540 cores, replicas=3 ready=3 cpu/pod=0.87 -> hold
+2026-10-11 22:46:36,606 - chimera-operator - INFO - default/billing-service-scaler: demand=0.427 cores, replicas=3 ready=3 cpu/pod=0.87 -> fast release: cpu 0.87->0.50
+2026-10-11 22:46:46,613 - chimera-operator - INFO - default/billing-service-scaler: demand=0.320 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:47:01,615 - chimera-operator - INFO - default/billing-service-scaler: demand=0.227 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:47:16,628 - chimera-operator - INFO - default/billing-service-scaler: demand=0.351 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:47:31,640 - chimera-operator - INFO - default/billing-service-scaler: demand=0.384 cores, replicas=3 ready=3 cpu/pod=0.50 -> hold
+2026-10-11 22:47:41,635 - chimera-operator - INFO - default/billing-service-scaler: demand=0.568 cores, replicas=3 ready=3 cpu/pod=0.50 -> fast: cpu 0.50->0.70
+2026-10-11 22:47:46,647 - chimera-operator - INFO - default/billing-service-scaler: demand=0.690 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:48:01,664 - chimera-operator - INFO - default/billing-service-scaler: demand=0.669 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:48:16,667 - chimera-operator - INFO - default/billing-service-scaler: demand=0.571 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:48:31,678 - chimera-operator - INFO - default/billing-service-scaler: demand=0.549 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:48:46,692 - chimera-operator - INFO - default/billing-service-scaler: demand=0.634 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:49:01,689 - chimera-operator - INFO - default/billing-service-scaler: demand=0.543 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:49:16,717 - chimera-operator - INFO - default/billing-service-scaler: demand=0.581 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:49:31,711 - chimera-operator - INFO - default/billing-service-scaler: demand=0.730 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:49:46,738 - chimera-operator - INFO - default/billing-service-scaler: demand=1.095 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:49:56,731 - chimera-operator - INFO - default/billing-service-scaler: demand=1.136 cores, replicas=3 ready=3 cpu/pod=0.70 -> fast: cpu 0.70->0.92
+2026-10-11 22:50:01,737 - chimera-operator - INFO - default/billing-service-scaler: demand=0.862 cores, replicas=3 ready=3 cpu/pod=0.92 -> hold
+2026-10-11 22:50:16,758 - chimera-operator - INFO - default/billing-service-scaler: demand=0.901 cores, replicas=3 ready=3 cpu/pod=0.92 -> hold
+2026-10-11 22:50:31,766 - chimera-operator - INFO - default/billing-service-scaler: demand=0.900 cores, replicas=3 ready=3 cpu/pod=0.92 -> hold
+2026-10-11 22:50:41,774 - chimera-operator - INFO - default/billing-service-scaler: demand=0.720 cores, replicas=3 ready=3 cpu/pod=0.92 -> fast release: cpu 0.92->0.70
+2026-10-11 22:50:46,767 - chimera-operator - INFO - default/billing-service-scaler: demand=0.839 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:51:01,786 - chimera-operator - INFO - default/billing-service-scaler: demand=0.763 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:51:16,807 - chimera-operator - INFO - default/billing-service-scaler: demand=0.680 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:51:31,802 - chimera-operator - INFO - default/billing-service-scaler: demand=0.620 cores, replicas=3 ready=3 cpu/pod=0.70 -> hold
+2026-10-11 22:51:41,835 - chimera-operator - INFO - default/billing-service-scaler: demand=0.625 cores, replicas=3 ready=3 cpu/pod=0.70 -> fast release: cpu 0.70->0.52
+2026-10-11 22:51:46,825 - chimera-operator - INFO - default/billing-service-scaler: demand=0.740 cores, replicas=3 ready=3 cpu/pod=0.53 -> hold
+2026-10-11 22:52:01,848 - chimera-operator - INFO - default/billing-service-scaler: demand=0.718 cores, replicas=3 ready=3 cpu/pod=0.53 -> drift detected: margin reset
+2026-10-11 22:52:16,841 - chimera-operator - INFO - default/billing-service-scaler: demand=1.067 cores, replicas=3 ready=3 cpu/pod=0.53 -> hold
+2026-10-11 22:52:21,850 - chimera-operator - INFO - default/billing-service-scaler: demand=1.063 cores, replicas=3 ready=3 cpu/pod=0.53 -> fast: cpu 0.53->0.80
+2026-10-11 22:52:31,850 - chimera-operator - INFO - default/billing-service-scaler: demand=0.920 cores, replicas=3 ready=3 cpu/pod=0.80 -> hold
+2026-10-11 22:52:46,860 - chimera-operator - INFO - default/billing-service-scaler: demand=0.792 cores, replicas=3 ready=3 cpu/pod=0.80 -> hold
+2026-10-11 22:52:56,875 - chimera-operator - INFO - default/billing-service-scaler: demand=0.588 cores, replicas=3 ready=3 cpu/pod=0.80 -> fast release: cpu 0.80->0.51
+2026-10-11 22:53:01,884 - chimera-operator - INFO - default/billing-service-scaler: demand=0.552 cores, replicas=3 ready=3 cpu/pod=0.51 -> hold
+2026-10-11 22:53:16,891 - chimera-operator - INFO - default/billing-service-scaler: demand=0.467 cores, replicas=3 ready=3 cpu/pod=0.51 -> replicas 3->2
+2026-10-11 22:53:31,892 - chimera-operator - INFO - default/billing-service-scaler: demand=0.401 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:53:46,906 - chimera-operator - INFO - default/billing-service-scaler: demand=0.377 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:54:01,911 - chimera-operator - INFO - default/billing-service-scaler: demand=0.391 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:54:16,927 - chimera-operator - INFO - default/billing-service-scaler: demand=0.437 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:54:31,940 - chimera-operator - INFO - default/billing-service-scaler: demand=0.393 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:54:46,947 - chimera-operator - INFO - default/billing-service-scaler: demand=0.420 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:55:01,961 - chimera-operator - INFO - default/billing-service-scaler: demand=0.354 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:55:16,967 - chimera-operator - INFO - default/billing-service-scaler: demand=0.437 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:55:31,988 - chimera-operator - INFO - default/billing-service-scaler: demand=0.418 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:55:46,994 - chimera-operator - INFO - default/billing-service-scaler: demand=0.441 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:56:02,013 - chimera-operator - INFO - default/billing-service-scaler: demand=0.349 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:56:17,004 - chimera-operator - INFO - default/billing-service-scaler: demand=0.398 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:56:32,031 - chimera-operator - INFO - default/billing-service-scaler: demand=0.326 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:56:47,029 - chimera-operator - INFO - default/billing-service-scaler: demand=0.384 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:57:02,043 - chimera-operator - INFO - default/billing-service-scaler: demand=0.343 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:57:17,055 - chimera-operator - INFO - default/billing-service-scaler: demand=0.420 cores, replicas=2 ready=2 cpu/pod=0.51 -> hold
+2026-10-11 22:57:27,070 - chimera-operator - INFO - default/billing-service-scaler: demand=0.645 cores, replicas=2 ready=2 cpu/pod=0.51 -> fast: cpu 0.51->0.76
+2026-10-11 22:57:32,070 - chimera-operator - INFO - default/billing-service-scaler: demand=0.613 cores, replicas=2 ready=2 cpu/pod=0.76 -> hold
+2026-10-11 22:57:42,083 - chimera-operator - INFO - default/billing-service-scaler: demand=0.984 cores, replicas=2 ready=2 cpu/pod=0.76 -> fast: cpu 0.76->1.11
+2026-10-11 22:57:47,083 - chimera-operator - INFO - default/billing-service-scaler: demand=1.053 cores, replicas=2 ready=2 cpu/pod=1.11 -> hold
+2026-10-11 22:58:02,090 - chimera-operator - INFO - default/billing-service-scaler: demand=1.014 cores, replicas=2 ready=2 cpu/pod=1.11 -> hold
+2026-10-11 22:58:07,093 - chimera-operator - INFO - default/billing-service-scaler: demand=1.658 cores, replicas=2 ready=2 cpu/pod=1.11 -> fast: cpu 1.11->1.84
+2026-10-11 22:58:17,105 - chimera-operator - INFO - default/billing-service-scaler: demand=1.657 cores, replicas=2 ready=2 cpu/pod=1.84 -> replicas 2->3
+2026-10-11 22:58:32,104 - chimera-operator - INFO - default/billing-service-scaler: demand=2.147 cores, replicas=3 ready=3 cpu/pod=1.84 -> hold
+2026-10-11 22:58:47,123 - chimera-operator - INFO - default/billing-service-scaler: demand=3.332 cores, replicas=3 ready=3 cpu/pod=1.84 -> replicas 3->5
+2026-10-11 22:59:02,160 - chimera-operator - INFO - default/billing-service-scaler: demand=4.336 cores, replicas=5 ready=5 cpu/pod=1.84 -> replicas 5->6
+2026-10-11 22:59:17,150 - chimera-operator - INFO - default/billing-service-scaler: demand=5.815 cores, replicas=6 ready=6 cpu/pod=1.84 -> replicas 6->8
+2026-10-11 22:59:32,171 - chimera-operator - INFO - default/billing-service-scaler: demand=5.432 cores, replicas=8 ready=6 cpu/pod=1.84 -> hold
+2026-10-11 22:59:47,168 - chimera-operator - INFO - default/billing-service-scaler: demand=5.607 cores, replicas=8 ready=6 cpu/pod=1.84 -> hold
+2026-10-11 23:00:02,174 - chimera-operator - INFO - default/billing-service-scaler: demand=4.960 cores, replicas=8 ready=6 cpu/pod=1.84 -> hold
+2026-10-11 23:00:17,191 - chimera-operator - INFO - default/billing-service-scaler: demand=4.878 cores, replicas=8 ready=6 cpu/pod=1.84 -> hold
+2026-10-11 23:00:32,204 - chimera-operator - INFO - default/billing-service-scaler: demand=3.748 cores, replicas=8 ready=6 cpu/pod=1.84 -> hold
+2026-10-11 23:00:42,238 - chimera-operator - INFO - default/billing-service-scaler: demand=3.019 cores, replicas=8 ready=6 cpu/pod=1.84 -> fast release: cpu 1.84->1.32
+2026-10-11 23:00:47,220 - chimera-operator - INFO - default/billing-service-scaler: demand=2.878 cores, replicas=8 ready=8 cpu/pod=1.32 -> drift detected: margin reset
+2026-10-11 23:00:57,218 - chimera-operator - INFO - default/billing-service-scaler: demand=2.249 cores, replicas=8 ready=8 cpu/pod=1.32 -> fast release: cpu 1.32->0.69
+2026-10-11 23:01:02,223 - chimera-operator - INFO - default/billing-service-scaler: demand=2.101 cores, replicas=8 ready=8 cpu/pod=0.69 -> hold
+2026-10-11 23:01:17,232 - chimera-operator - INFO - default/billing-service-scaler: demand=2.178 cores, replicas=8 ready=8 cpu/pod=0.69 -> hold
+2026-10-11 23:01:32,255 - chimera-operator - INFO - default/billing-service-scaler: demand=1.926 cores, replicas=8 ready=8 cpu/pod=0.69 -> hold
+2026-10-11 23:01:47,273 - chimera-operator - INFO - default/billing-service-scaler: demand=1.892 cores, replicas=8 ready=8 cpu/pod=0.69 -> hold
+2026-10-11 23:01:57,270 - chimera-operator - INFO - default/billing-service-scaler: demand=1.806 cores, replicas=8 ready=8 cpu/pod=0.69 -> fast release: cpu 0.69->0.57
+2026-10-11 23:02:02,286 - chimera-operator - INFO - default/billing-service-scaler: demand=1.668 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:02:17,284 - chimera-operator - INFO - default/billing-service-scaler: demand=1.758 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:02:32,291 - chimera-operator - INFO - default/billing-service-scaler: demand=1.525 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:02:47,310 - chimera-operator - INFO - default/billing-service-scaler: demand=1.760 cores, replicas=8 ready=8 cpu/pod=0.57 -> drift detected: margin reset
+2026-10-11 23:03:02,313 - chimera-operator - INFO - default/billing-service-scaler: demand=1.525 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:03:17,334 - chimera-operator - INFO - default/billing-service-scaler: demand=1.700 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:03:32,337 - chimera-operator - INFO - default/billing-service-scaler: demand=1.676 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:03:47,342 - chimera-operator - INFO - default/billing-service-scaler: demand=1.448 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:04:02,366 - chimera-operator - INFO - default/billing-service-scaler: demand=1.351 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:04:17,361 - chimera-operator - INFO - default/billing-service-scaler: demand=1.487 cores, replicas=8 ready=8 cpu/pod=0.57 -> hold
+2026-10-11 23:04:32,374 - chimera-operator - INFO - default/billing-service-scaler: demand=1.205 cores, replicas=8 ready=8 cpu/pod=0.57 -> replicas 8->6
+2026-10-11 23:04:47,383 - chimera-operator - INFO - default/billing-service-scaler: demand=1.233 cores, replicas=6 ready=6 cpu/pod=0.57 -> hold
+2026-10-11 23:05:02,402 - chimera-operator - INFO - default/billing-service-scaler: demand=1.009 cores, replicas=6 ready=6 cpu/pod=0.57 -> hold
+2026-10-11 23:05:17,419 - chimera-operator - INFO - default/billing-service-scaler: demand=1.123 cores, replicas=6 ready=6 cpu/pod=0.57 -> drift detected: margin reset

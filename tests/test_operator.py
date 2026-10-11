@@ -263,6 +263,21 @@ class TestOperatorCore(unittest.TestCase):
         calm = TargetState(Spec(cpu_per_request=0.05)).step(obs(0, replicas=2, ready=2, cpu=1.0, usage=0.2, rate=10.0))
         self.assertAlmostEqual(calm.demand_cores, 0.5)             # the faster signal leads when it is higher
 
+    def test_no_scale_in_straight_after_scale_out(self):
+        """Seen in the replay smoke test: a pod added while a backlog drained was removed
+        45 s later when the demand estimate fell back."""
+        st = TargetState(Spec(max_replicas=10, max_cpu=2.0))
+        d, t = None, 0
+        while t < 600 and (d is None or d.new_replicas is None):
+            d = st.step(obs(t, cpu=1.9, usage=3.7))
+            t += 15
+        self.assertIsNotNone(d.new_replicas)
+        n, t_out = d.new_replicas, t - 15
+        while t < t_out + 120:
+            d2 = st.step(obs(t, replicas=n, ready=n, cpu=0.5, usage=0.3))
+            self.assertIsNone(d2.new_replicas, f"scaled in {t - t_out:.0f} s after scaling out")
+            t += 15
+
     def test_stale_upper_bound_does_not_shrink_capacity_below_demand(self):
         """A fresh operator sees a jump: the forecast bound from before the jump is below
         the demand observed now. Sizing must still cover the observed demand."""

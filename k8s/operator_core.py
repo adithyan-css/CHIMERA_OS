@@ -46,6 +46,9 @@ class Spec:
     pod_startup_seconds: float = 20.0
     cpu_per_request: Optional[float] = None   # cores per req/s; learned online if None
     scale_down_cooldown: float = 300.0
+    # no scale-in this soon after a scale-out: on a real cluster the demand estimate
+    # overshoots while a backlog drains, and the pod just added would be removed again
+    scale_in_after_scale_out: float = 120.0
     vertical_cooldown: float = 60.0
     v_thresh: float = 0.05
     saturation_boost: float = 1.5
@@ -180,6 +183,7 @@ class TargetState:
         self.cores_per_req: Optional[float] = spec.cpu_per_request
         self.x_star_smoothed: Optional[np.ndarray] = None
         self.last_scale_down = -math.inf
+        self.last_scale_up = -math.inf
         self.last_vertical = -math.inf
         self.last_demand: Optional[float] = None
         self._last_hi: Optional[float] = None
@@ -270,7 +274,10 @@ class TargetState:
         new_replicas = None
         if dh > 0:
             applied_dh = max(0, min(dh, c.h_max - obs.replicas))
-        elif dh < 0 and obs.now - self.last_scale_down >= s.scale_down_cooldown:
+            if applied_dh:
+                self.last_scale_up = obs.now
+        elif (dh < 0 and obs.now - self.last_scale_down >= s.scale_down_cooldown
+              and obs.now - self.last_scale_up >= s.scale_in_after_scale_out):
             applied_dh = -min(-dh, obs.replicas - c.h_min)
             if applied_dh < 0:
                 self.last_scale_down = obs.now
