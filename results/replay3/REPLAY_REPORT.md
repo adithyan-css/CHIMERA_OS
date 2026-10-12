@@ -12,6 +12,8 @@ Demand trace: 24 minutes; 12 from the real Azure trace w_0005 (minutes 70-82, me
 | hpa-50 | 23.5 % (21.9 - 26.4) | 10.00 | 102.4 (92.1 - 108.5) | 0 | 11 | 0 |
 | hpa-35 | 16.3 % (11.2 - 22.5) | 2.16 | 124.3 (120.2 - 128.5) | 0 | 10 | 0 |
 | chimera-rate | 32.1 % (26.2 - 43.1) | 10.00 | 80.9 (76.3 - 89.8) | 17 | 13 | 0 |
+| chimera-rate-35 | 14.6 % (12.1 - 18.7) | 4.15 | 93.6 (83.8 - 110.2) | 14 | 9 | 0 |
+| chimera-rate-25 | 7.0 % (6.6 - 7.7) | 0.42 | 108.1 (102.3 - 111.1) | 13 | 8 | 0 |
 
 Violation rate at other latency thresholds (mean over seeds):
 
@@ -21,6 +23,8 @@ Violation rate at other latency thresholds (mean over seeds):
 | hpa-50 | 23.5 % | 17.8 % | 14.9 % | 13.3 % |
 | hpa-35 | 16.3 % | 8.6 % | 5.4 % | 4.4 % |
 | chimera-rate | 32.1 % | 25.3 % | 20.9 % | 18.4 % |
+| chimera-rate-35 | 14.6 % | 9.5 % | 7.1 % | 5.8 % |
+| chimera-rate-25 | 7.0 % | 4.3 % | 3.2 % | 2.8 % |
 
 ## chimera-rate against the HPA frontier at equal CPU
 
@@ -34,6 +38,30 @@ The HPA's violation rate interpolated between its settings at the CPU CHIMERA us
 
 Inside the HPA's cost range on 1 of 3 seeds: mean gap -1.9 pp, CHIMERA better on 0 of 1. With this few seeds no significance test is meaningful.
 
+## chimera-rate-35 against the HPA frontier at equal CPU
+
+The HPA's violation rate interpolated between its settings at the CPU CHIMERA used, seed by seed (same request stream). Gap = HPA minus CHIMERA; positive means CHIMERA has fewer violations at the same cost. 'outside' means CHIMERA's cost is outside the range the HPA settings span.
+
+| Seed | CHIMERA: violations / core-min | HPA points (violations / core-min) | HPA at CHIMERA's cost | Gap (pp) |
+|---:|---|---|---:|---:|
+| 1 | 13.1 % / 83.8 | 55.2 % / 90.6; 22.1 % / 108.5; 15.2 % / 124.3 | 55.2 % (outside) | +42.2 (outside) |
+| 2 | 18.7 % / 110.2 | 47.4 % / 82.7; 26.4 % / 106.7; 22.5 % / 128.5 | 25.8 % | +7.1 |
+| 3 | 12.1 % / 86.8 | 44.1 % / 82.6; 21.9 % / 92.1; 11.2 % / 120.2 | 34.4 % | +22.3 |
+
+Inside the HPA's cost range on 2 of 3 seeds: mean gap +14.7 pp, CHIMERA better on 2 of 2. With this few seeds no significance test is meaningful.
+
+## chimera-rate-25 against the HPA frontier at equal CPU
+
+The HPA's violation rate interpolated between its settings at the CPU CHIMERA used, seed by seed (same request stream). Gap = HPA minus CHIMERA; positive means CHIMERA has fewer violations at the same cost. 'outside' means CHIMERA's cost is outside the range the HPA settings span.
+
+| Seed | CHIMERA: violations / core-min | HPA points (violations / core-min) | HPA at CHIMERA's cost | Gap (pp) |
+|---:|---|---|---:|---:|
+| 1 | 6.7 % / 111.1 | 55.2 % / 90.6; 22.1 % / 108.5; 15.2 % / 124.3 | 21.0 % | +14.3 |
+| 2 | 6.6 % / 110.8 | 47.4 % / 82.7; 26.4 % / 106.7; 22.5 % / 128.5 | 25.7 % | +19.1 |
+| 3 | 7.7 % / 102.3 | 44.1 % / 82.6; 21.9 % / 92.1; 11.2 % / 120.2 | 18.0 % | +10.4 |
+
+Inside the HPA's cost range on 3 of 3 seeds: mean gap +14.6 pp, CHIMERA better on 3 of 3. With this few seeds no significance test is meaningful.
+
 ## Every run
 
 | Seed | Controller | SLO violations | mean (s) | p95 (s) | CPU (core-min) | Max replicas | Max CPU/pod | Requests | Timeouts |
@@ -42,11 +70,17 @@ Inside the HPA's cost range on 1 of 3 seeds: mean gap -1.9 pp, CHIMERA better on
 | 1 | hpa-50 | 22.13 % | 1.268 | 10.00 | 108.5 | 18 | 0.5 | 22598 | 2261 |
 | 1 | hpa-35 | 15.22 % | 0.658 | 4.85 | 124.3 | 20 | 0.5 | 22715 | 849 |
 | 1 | chimera-rate | 26.83 % | 1.385 | 10.00 | 76.6 | 10 | 1.0 | 22421 | 2061 |
+| 1 | chimera-rate-35 | 13.09 % | 0.595 | 3.10 | 83.8 | 10 | 0.929 | 22849 | 841 |
+| 1 | chimera-rate-25 | 6.71 % | 0.250 | 0.38 | 111.1 | 10 | 0.972 | 22864 | 95 |
 | 2 | hpa-70 | 47.44 % | 3.803 | 10.00 | 82.7 | 14 | 0.5 | 22406 | 7659 |
 | 2 | hpa-50 | 26.41 % | 1.590 | 10.00 | 106.7 | 17 | 0.5 | 22591 | 2723 |
 | 2 | hpa-35 | 22.45 % | 0.419 | 0.94 | 128.5 | 20 | 0.5 | 22654 | 211 |
 | 2 | chimera-rate | 43.10 % | 2.401 | 10.00 | 89.8 | 10 | 0.908 | 22031 | 4228 |
+| 2 | chimera-rate-35 | 18.69 % | 0.494 | 2.00 | 110.2 | 10 | 0.886 | 22657 | 278 |
+| 2 | chimera-rate-25 | 6.60 % | 0.327 | 0.40 | 110.8 | 10 | 1.0 | 22815 | 282 |
 | 3 | hpa-70 | 44.09 % | 3.491 | 10.00 | 82.6 | 14 | 0.5 | 22280 | 7336 |
 | 3 | hpa-50 | 21.93 % | 1.037 | 10.00 | 92.1 | 16 | 0.5 | 22688 | 1623 |
 | 3 | hpa-35 | 11.19 % | 0.458 | 0.70 | 120.2 | 20 | 0.5 | 22819 | 521 |
 | 3 | chimera-rate | 26.24 % | 1.343 | 10.00 | 76.3 | 10 | 0.972 | 22503 | 1903 |
+| 3 | chimera-rate-35 | 12.11 % | 0.693 | 7.34 | 86.8 | 10 | 1.0 | 22793 | 967 |
+| 3 | chimera-rate-25 | 7.65 % | 0.366 | 0.48 | 102.3 | 10 | 0.932 | 22845 | 388 |

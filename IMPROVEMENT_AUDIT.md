@@ -697,3 +697,78 @@ rendered and inspected: no unresolved references, two small overfull boxes.
 a specific venue's template or page limit. Related work for five of the cited papers is
 abstract-level (W2). It has not been proof-read by anyone else. The markdown draft was
 removed in favour of this one.
+
+## W1. Live comparison with repeats and a cost frontier on both sides (done)
+
+**Weak point.** One run per controller and two HPA settings: neither a frontier nor a
+sample.
+
+**What was done.** `k8s/replay/run_replay.py` was rebuilt for repeated runs and run on the
+kind cluster (Kubernetes 1.33.1): the HPA at 70 %, 50 % and 35 % CPU targets and CHIMERA at
+settings 0.46 (its default), 0.35 and 0.25, three seeds each, 18 runs of about 31 minutes.
+Both sides were limited to the same ten cores (HPA 20 x 500m; CHIMERA 10 x up to 1000m).
+CPU cost is taken from the limits the kubelet actually applied. The order of controllers
+was rotated between seeds. CHIMERA used a request-rate signal. No run restarted a
+container.
+
+**Result, mean of three seeds** (`results/replay3/REPLAY_REPORT.md`):
+
+| Controller | Requests over 0.3 s (range) | Over 1 s | CPU (core-min) |
+|---|---:|---:|---:|
+| HPA, 70 % | 48.9 % (44.1 - 55.2) | 39.3 % | 85.3 |
+| HPA, 50 % | 23.5 % (21.9 - 26.4) | 14.9 % | 102.4 |
+| HPA, 35 % | 16.3 % (11.2 - 22.5) | 5.4 % | 124.3 |
+| CHIMERA, 0.46 | 32.1 % (26.2 - 43.1) | 20.9 % | 80.9 |
+| CHIMERA, 0.35 | 14.6 % (12.1 - 18.7) | 7.1 % | 93.6 |
+| CHIMERA, 0.25 | 7.0 % (6.6 - 7.7) | 3.2 % | 108.1 |
+
+A run dominates another run of the same seed when it used no more CPU and had fewer
+violations.
+
+- **7 of the 9 HPA runs were dominated by a CHIMERA run with the same seed. None of the 9
+  CHIMERA runs was dominated by an HPA run.**
+- For the 6 CHIMERA runs whose cost lay inside the range the HPA settings span,
+  interpolating the HPA at the same cost gave CHIMERA fewer violations in 5 (gaps +14.3,
+  +7.1, +19.1, +22.3, +10.4 and -1.9 points; mean +11.9).
+- CHIMERA at 0.35 missed the objective less often than the HPA at its most generous
+  setting (14.6 % against 16.3 %) with 25 % less CPU; at 0.25 it had less than half the
+  violations (7.0 %) with 13 % less CPU.
+
+**One run was repeated, and the first attempt is kept.** Seed 2, CHIMERA at 0.25, first
+gave 50.9 % violations at 141.9 core-minutes. In that run the service was slow whatever it
+was given: median latency 0.31 s with four to ten cores allocated for at most three cores
+of demand, and 20,540 requests issued where every other run issued between 22,031 and
+22,864. A slow
+load generator and a slow service at low utilisation point to interference on the host,
+not to a control decision. The repeat gave 6.6 % at 110.8 core-minutes, in line with the
+other seeds (6.7 % and 7.7 %). The first attempt is in
+`results/replay3/seed2/first_attempt_chimera-rate-25/`; counting it instead of the repeat,
+7 of 9 HPA runs are still dominated and 1 of 9 CHIMERA runs is. The paper states both.
+No other run was repeated. That includes the two other CHIMERA runs of seed 2, which
+were worse than their counterparts in seeds 1 and 3 (43.1 % at the default setting, and
+110 core-minutes at 0.35 where the other seeds used about 85) but issued a normal number of
+requests; they are counted as measured.
+
+**Reading.** On this service and trace the real-cluster result agrees with the simulation
+in direction: at matched cost CHIMERA misses the objective less often than the HPA. It is
+the first evidence in the project that does not come from the simulator.
+
+**Limits: indicative, not conclusive.**
+
+- Three seeds: no significance test is possible, and the spread between seeds is large
+  (CHIMERA at its default ranged from 26 % to 43 %).
+- One service, one 24-minute trace, one laptop node. The host can interfere, as one run
+  showed.
+- Only the HPA is compared. VPA, AAPA and KOSMOS have no operator here.
+- Every controller missed the 0.3 s objective far more often than in simulation; the
+  simulator's latency law is kinder than this service. Absolute violation rates from the
+  simulator should not be read as predictions for a real deployment.
+- CHIMERA was given the cost per request (measured beforehand); the HPA needs no such
+  input.
+- The weakest CHIMERA point is its default setting on seed 2 (43.1 % at 89.8 core-minutes),
+  where the HPA frontier at the same cost would have been 1.9 points better.
+
+**Also in this pass.** The operator gained settings by suffix (`chimera-rate-35`), the
+load generator records violation rates at four latency thresholds, and
+`paper/make_replay_tex.py` generates the paper's real-cluster paragraph and table from the
+result files, with wording that follows the measured outcome.

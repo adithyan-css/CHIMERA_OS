@@ -112,15 +112,15 @@ def replay():
         h = sorted((r["core_minutes"], 100 * r["slo_violation_rate"]) for r in res
                    if r["seed"] == s and r["mode"].startswith("hpa"))
         ax.plot([p[0] for p in h], [p[1] for p in h], color=C_VPA, lw=1.0, marker="D", ms=3,
-                label="HPA at 70, 50, 35 % (one line per seed)" if i == 0 else None)
-        for r in res:
-            if r["seed"] == s and r["mode"].startswith("chimera"):
-                ax.plot(r["core_minutes"], 100 * r["slo_violation_rate"], color=C_CHIMERA, marker="o", ms=5, ls="",
-                        label="CHIMERA (one point per seed)" if i == 0 else None, zorder=4)
+                label="HPA at 70, 50, 35 %" if i == 0 else None)
+        c = sorted((r["core_minutes"], 100 * r["slo_violation_rate"]) for r in res
+                   if r["seed"] == s and r["mode"].startswith("chimera"))
+        ax.plot([p[0] for p in c], [p[1] for p in c], color=C_CHIMERA, lw=1.4, marker="o", ms=4,
+                label="CHIMERA at 0.46, 0.35, 0.25" if i == 0 else None, zorder=4)
     clean(ax)
     ax.set_xlabel("CPU allocated (core-minutes)", color=C_MUTED)
-    ax.set_ylabel("Requests over the latency objective (%)", color=C_MUTED)
-    ax.legend(frameon=False, fontsize=6.5)
+    ax.set_ylabel("Requests over the objective (%)", color=C_MUTED)
+    ax.legend(frameon=False, fontsize=6, loc="upper right")
     fig.tight_layout()
     fig.savefig(OUT / "fig_replay.pdf")
     plt.close(fig)

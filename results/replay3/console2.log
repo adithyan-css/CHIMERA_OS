@@ -1,1 +1,184 @@
 === seed 1, chimera-rate-35 ===
+  [  -155s] replicas=2 cpu/pod=0.5 allocated=1.0
+  [   -95s] replicas=2 cpu/pod=0.677 allocated=1.354
+  [   -35s] replicas=3 cpu/pod=0.677 allocated=2.031
+  [    25s] replicas=3 cpu/pod=0.677 allocated=2.031
+  [    85s] replicas=4 cpu/pod=0.601 allocated=2.404
+  [   145s] replicas=4 cpu/pod=0.601 allocated=2.404
+  [   205s] replicas=3 cpu/pod=0.5 allocated=1.5
+  [   265s] replicas=3 cpu/pod=0.662 allocated=1.986
+  [   325s] replicas=4 cpu/pod=0.612 allocated=2.448
+  [   385s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   445s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   505s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   565s] replicas=4 cpu/pod=0.682 allocated=2.728
+  [   625s] replicas=4 cpu/pod=0.565 allocated=2.26
+  [   685s] replicas=4 cpu/pod=0.565 allocated=2.26
+  [   745s] replicas=3 cpu/pod=0.565 allocated=1.695
+  [   805s] replicas=3 cpu/pod=0.565 allocated=1.695
+  [   865s] replicas=3 cpu/pod=0.565 allocated=1.695
+  [   925s] replicas=3 cpu/pod=0.565 allocated=1.695
+  [   985s] replicas=4 cpu/pod=0.83 allocated=2.99
+  [  1045s] replicas=10 cpu/pod=0.83 allocated=7.97
+  [  1105s] replicas=10 cpu/pod=0.83 allocated=8.3
+  [  1165s] replicas=10 cpu/pod=0.83 allocated=8.3
+  [  1225s] replicas=10 cpu/pod=0.701 allocated=7.01
+  [  1285s] replicas=10 cpu/pod=0.701 allocated=7.01
+  [  1345s] replicas=8 cpu/pod=0.523 allocated=4.184
+  [  1405s] replicas=8 cpu/pod=0.523 allocated=4.184
+  [  1465s] replicas=8 cpu/pod=0.523 allocated=4.184
+  -> SLO violations 13.09 %, p99 10.00 s, 83.85 core-min
+=== seed 1, chimera-rate-25 ===
+  [  -155s] replicas=2 cpu/pod=0.5 allocated=1.0
+  [   -95s] replicas=4 cpu/pod=0.68 allocated=2.72
+  [   -35s] replicas=4 cpu/pod=0.68 allocated=2.72
+  [    25s] replicas=4 cpu/pod=0.68 allocated=2.72
+  [    85s] replicas=5 cpu/pod=0.755 allocated=3.775
+  [   145s] replicas=5 cpu/pod=0.755 allocated=3.775
+  [   205s] replicas=5 cpu/pod=0.512 allocated=2.56
+  [   265s] replicas=5 cpu/pod=0.512 allocated=2.56
+  [   325s] replicas=5 cpu/pod=0.741 allocated=3.705
+  [   385s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   445s] replicas=4 cpu/pod=0.701 allocated=2.804
+  [   505s] replicas=4 cpu/pod=0.744 allocated=2.976
+  [   565s] replicas=5 cpu/pod=0.744 allocated=3.72
+  [   625s] replicas=5 cpu/pod=0.622 allocated=3.11
+  [   685s] replicas=5 cpu/pod=0.622 allocated=3.11
+  [   745s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   805s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   865s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   925s] replicas=4 cpu/pod=0.5 allocated=2.0
+  [   985s] replicas=6 cpu/pod=0.967 allocated=4.868
+  [  1045s] replicas=10 cpu/pod=0.967 allocated=9.67
+  [  1105s] replicas=10 cpu/pod=0.967 allocated=9.67
+  [  1165s] replicas=10 cpu/pod=0.967 allocated=9.67
+  [  1225s] replicas=10 cpu/pod=0.967 allocated=9.67
+  [  1285s] replicas=10 cpu/pod=0.805 allocated=8.05
+  [  1345s] replicas=10 cpu/pod=0.805 allocated=8.05
+  [  1405s] replicas=10 cpu/pod=0.805 allocated=8.05
+  [  1465s] replicas=10 cpu/pod=0.805 allocated=8.05
+  -> SLO violations 6.71 %, p99 6.81 s, 111.07 core-min
+report: results\replay3\REPLAY_REPORT.md
+=== seed 2, chimera-rate-35 ===
+  [  -155s] replicas=2 cpu/pod=0.5 allocated=1.0
+  [   -95s] replicas=3 cpu/pod=0.757 allocated=2.271
+  [   -35s] replicas=4 cpu/pod=0.757 allocated=3.028
+  [    25s] replicas=5 cpu/pod=0.757 allocated=3.785
+  [    85s] replicas=5 cpu/pod=0.757 allocated=3.785
+  [   145s] replicas=6 cpu/pod=0.624 allocated=3.744
+  [   205s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   265s] replicas=4 cpu/pod=0.718 allocated=2.872
+  [   325s] replicas=4 cpu/pod=0.718 allocated=2.872
+  [   385s] replicas=4 cpu/pod=0.512 allocated=2.048
+  [   445s] replicas=4 cpu/pod=0.746 allocated=2.984
+  [   505s] replicas=4 cpu/pod=0.607 allocated=2.428
+  [   565s] replicas=7 cpu/pod=0.629 allocated=4.403
+  [   625s] replicas=7 cpu/pod=0.5 allocated=3.5
+  [   685s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   745s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   805s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   865s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   925s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   985s] replicas=4 cpu/pod=0.886 allocated=3.544
+  [  1045s] replicas=10 cpu/pod=0.886 allocated=8.86
+  [  1105s] replicas=10 cpu/pod=0.886 allocated=8.86
+  [  1165s] replicas=10 cpu/pod=0.886 allocated=8.86
+  [  1225s] replicas=10 cpu/pod=0.886 allocated=8.86
+  [  1285s] replicas=10 cpu/pod=0.713 allocated=7.13
+  [  1345s] replicas=10 cpu/pod=0.713 allocated=7.13
+  [  1405s] replicas=10 cpu/pod=0.567 allocated=5.67
+  [  1465s] replicas=8 cpu/pod=0.567 allocated=4.536
+  -> SLO violations 18.69 %, p99 10.00 s, 110.16 core-min
+=== seed 2, chimera-rate-25 ===
+  [  -155s] replicas=2 cpu/pod=0.5 allocated=1.0
+  [   -95s] replicas=5 cpu/pod=0.793 allocated=3.672
+  [   -35s] replicas=5 cpu/pod=0.712 allocated=3.56
+  [    25s] replicas=6 cpu/pod=0.712 allocated=4.06
+  [    85s] replicas=6 cpu/pod=0.712 allocated=4.272
+  [   145s] replicas=7 cpu/pod=0.712 allocated=4.984
+  [   205s] replicas=7 cpu/pod=0.557 allocated=3.899
+  [   265s] replicas=4 cpu/pod=0.783 allocated=3.132
+  [   325s] replicas=5 cpu/pod=0.783 allocated=3.915
+  [   385s] replicas=5 cpu/pod=0.526 allocated=2.63
+  [   445s] replicas=6 cpu/pod=0.69 allocated=4.14
+  [   505s] replicas=6 cpu/pod=0.756 allocated=4.536
+  [   565s] replicas=10 cpu/pod=1.0 allocated=10.0
+  [   625s] replicas=10 cpu/pod=0.815 allocated=8.15
+  [   685s] replicas=10 cpu/pod=0.815 allocated=8.15
+  [   745s] replicas=10 cpu/pod=0.627 allocated=6.27
+  [   805s] replicas=8 cpu/pod=0.508 allocated=4.064
+  [   867s] replicas=8 cpu/pod=0.508 allocated=4.064
+  [   928s] replicas=8 cpu/pod=0.508 allocated=4.064
+  [   988s] replicas=10 cpu/pod=0.735 allocated=6.88
+  [  1102s] replicas=10 cpu/pod=0.976 allocated=9.76
+  [  1174s] replicas=10 cpu/pod=0.976 allocated=9.76
+  [  1234s] replicas=10 cpu/pod=0.976 allocated=9.76
+  [  1298s] replicas=10 cpu/pod=0.976 allocated=9.76
+  [  1363s] replicas=10 cpu/pod=0.976 allocated=9.76
+  [  1433s] replicas=10 cpu/pod=0.976 allocated=9.76
+  [  1493s] replicas=10 cpu/pod=0.976 allocated=9.76
+  -> SLO violations 50.87 %, p99 2.01 s, 141.94 core-min
+report: results\replay3\REPLAY_REPORT.md
+=== seed 3, chimera-rate-35 ===
+  [  -155s] replicas=2 cpu/pod=0.5 allocated=1.0
+  [   -95s] replicas=3 cpu/pod=0.625 allocated=1.875
+  [   -35s] replicas=3 cpu/pod=0.625 allocated=1.875
+  [    25s] replicas=3 cpu/pod=0.814 allocated=2.442
+  [    85s] replicas=4 cpu/pod=0.814 allocated=2.942
+  [   145s] replicas=4 cpu/pod=0.653 allocated=2.612
+  [   205s] replicas=3 cpu/pod=0.5 allocated=1.5
+  [   265s] replicas=3 cpu/pod=0.5 allocated=1.5
+  [   325s] replicas=3 cpu/pod=0.661 allocated=1.983
+  [   385s] replicas=3 cpu/pod=0.5 allocated=1.5
+  [   445s] replicas=3 cpu/pod=0.5 allocated=1.5
+  [   505s] replicas=3 cpu/pod=0.739 allocated=2.217
+  [   565s] replicas=8 cpu/pod=0.781 allocated=6.248
+  [   625s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   685s] replicas=3 cpu/pod=0.808 allocated=2.424
+  [   745s] replicas=3 cpu/pod=0.667 allocated=2.001
+  [   805s] replicas=3 cpu/pod=0.565 allocated=1.695
+  [   865s] replicas=3 cpu/pod=0.565 allocated=1.695
+  [   925s] replicas=3 cpu/pod=0.565 allocated=1.695
+  [   985s] replicas=5 cpu/pod=0.757 allocated=3.271
+  [  1045s] replicas=10 cpu/pod=1.0 allocated=10.0
+  [  1105s] replicas=10 cpu/pod=0.831 allocated=8.31
+  [  1165s] replicas=10 cpu/pod=0.831 allocated=8.31
+  [  1225s] replicas=10 cpu/pod=0.682 allocated=6.82
+  [  1285s] replicas=10 cpu/pod=0.543 allocated=5.43
+  [  1345s] replicas=8 cpu/pod=0.543 allocated=4.344
+  [  1405s] replicas=8 cpu/pod=0.543 allocated=4.344
+  [  1465s] replicas=8 cpu/pod=0.543 allocated=4.344
+  -> SLO violations 12.11 %, p99 10.00 s, 86.75 core-min
+=== seed 3, chimera-rate-25 ===
+  [  -155s] replicas=2 cpu/pod=0.5 allocated=1.0
+  [   -95s] replicas=4 cpu/pod=0.775 allocated=3.1
+  [   -35s] replicas=4 cpu/pod=0.645 allocated=2.58
+  [    25s] replicas=4 cpu/pod=0.932 allocated=3.728
+  [    85s] replicas=5 cpu/pod=0.692 allocated=3.46
+  [   145s] replicas=5 cpu/pod=0.692 allocated=3.46
+  [   205s] replicas=5 cpu/pod=0.579 allocated=2.895
+  [   265s] replicas=4 cpu/pod=0.579 allocated=2.316
+  [   325s] replicas=4 cpu/pod=0.579 allocated=2.316
+  [   385s] replicas=4 cpu/pod=0.579 allocated=2.316
+  [   445s] replicas=4 cpu/pod=0.579 allocated=2.316
+  [   505s] replicas=4 cpu/pod=0.931 allocated=3.372
+  [   565s] replicas=7 cpu/pod=0.589 allocated=4.123
+  [   625s] replicas=7 cpu/pod=0.5 allocated=3.5
+  [   685s] replicas=4 cpu/pod=0.697 allocated=2.788
+  [   745s] replicas=4 cpu/pod=0.504 allocated=2.016
+  [   805s] replicas=4 cpu/pod=0.504 allocated=2.016
+  [   865s] replicas=4 cpu/pod=0.504 allocated=2.016
+  [   925s] replicas=4 cpu/pod=0.504 allocated=2.016
+  [   985s] replicas=6 cpu/pod=0.833 allocated=3.999
+  [  1045s] replicas=10 cpu/pod=0.833 allocated=8.33
+  [  1105s] replicas=10 cpu/pod=0.833 allocated=8.33
+  [  1165s] replicas=10 cpu/pod=0.833 allocated=8.33
+  [  1225s] replicas=10 cpu/pod=0.833 allocated=8.33
+  [  1285s] replicas=10 cpu/pod=0.833 allocated=8.33
+  [  1345s] replicas=10 cpu/pod=0.684 allocated=6.84
+  [  1405s] replicas=10 cpu/pod=0.571 allocated=5.71
+  [  1465s] replicas=8 cpu/pod=0.571 allocated=4.568
+  -> SLO violations 7.65 %, p99 10.00 s, 102.3 core-min
+report: results\replay3\REPLAY_REPORT.md
+report: results\replay3\REPLAY_REPORT.md
+replay_exit=0
