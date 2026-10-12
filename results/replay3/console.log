@@ -155,3 +155,18 @@ report: results\replay3\REPLAY_REPORT.md
   [   -35s] replicas=5 cpu/pod=0.5 allocated=2.5
   [    25s] replicas=6 cpu/pod=0.5 allocated=3.0
   [    85s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   145s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   205s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   265s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   325s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   385s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   445s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   505s] replicas=6 cpu/pod=0.5 allocated=3.0
+  [   565s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   625s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   685s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   745s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   805s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   865s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   925s] replicas=8 cpu/pod=0.5 allocated=4.0
+  [   985s] replicas=6 cpu/pod=0.5 allocated=3.0
