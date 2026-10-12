@@ -3,7 +3,13 @@
 Three parts, about 15 minutes in total. Part 1 needs nothing but Python. Part 2 needs
 Docker Desktop running.
 
-## Shortest way: the scripts in `demo/`
+## Easiest: one guided script
+
+Double-click `demo\RUN_DEMO.cmd` (or run `.\demo\RUN_DEMO.cmd` in a terminal). It checks the
+cluster, runs each part in order, opens the two watch windows by itself, and at every step
+prints what to say and what to point at. Press a key to move to the next step.
+
+## Step by step: the scripts in `demo/`
 
 Open a terminal (PowerShell or Command Prompt) in the project folder. Each script sets up
 what it needs, so nothing has to be typed before it.
