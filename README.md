@@ -47,9 +47,23 @@ p < 0.001). The one loss is to the MagicScaler-style scaler on one Azure trace, 
 - Under bimodal service times CHIMERA loses to AAPA at equal CPU on 4 of 9 traces.
 - The risk-priced capacity rule adds about 1 pp when the latency law matches its
   assumption and nothing when it does not.
-- On a real cluster (one run per controller) CHIMERA had the fewest violations but the
-  highest cost against the Kubernetes HPA: 28.6 % at 81.8 core-min against 35.5 % at 77.1.
-  That run does not establish an advantage at matched cost.
+- On a real cluster the comparison is small (three seeds, one service, one trace, against
+  the Kubernetes HPA only) and is indicative, not a significance result.
+
+**On a real cluster** (`results/replay3/REPLAY_REPORT.md`; Kubernetes 1.33, measured
+latency, three seeds, both sides limited to ten cores). Mean share of requests over the
+0.3 s objective, and CPU in core-minutes:
+
+| HPA target | Violations | CPU | CHIMERA setting | Violations | CPU |
+|---|---:|---:|---|---:|---:|
+| 70 % | 48.9 % | 85.3 | 0.46 (default) | 32.1 % | 80.9 |
+| 50 % | 23.5 % | 102.4 | 0.35 | 14.6 % | 93.6 |
+| 35 % | 16.3 % | 124.3 | 0.25 | 7.0 % | 108.1 |
+
+7 of the 9 HPA runs were dominated by a CHIMERA run with the same seed (no more CPU, fewer
+violations); none of the 9 CHIMERA runs was dominated by an HPA run. One CHIMERA run was
+repeated after host interference; both attempts are kept and both counts are reported in
+`IMPROVEMENT_AUDIT.md` (W1).
 
 **Corrections to earlier versions of this README.**
 

@@ -105,7 +105,7 @@ def main():
             f"One CHIMERA run (seed {f0['seed']}, setting {setting}) was repeated. In the first attempt the "
             f"service was slow whatever it was given (median latency {f0['p50']:.2f}\\,s with four to ten cores "
             f"allocated for at most three cores of demand, and {f0['requests']} requests issued where the other "
-            f"runs issued about 22\\,600), which points to interference on the host and not to a control "
+            f"runs issued between 22\\,000 and 22\\,900), which points to interference on the host and not to a control "
             f"decision; it had {100 * f0['slo_violation_rate']:.1f}\\,\\% violations. Counting that attempt "
             f"instead of the repeat, {a_h} of {nh} HPA runs are dominated and {a_c} of {nc} CHIMERA runs. "
             f"Both attempts are in the repository.")
