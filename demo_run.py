@@ -8,7 +8,7 @@ the SAME code path as the full evaluation (src/scripts/run_full_evaluation.py:
 run_simulation), so every difference in the output comes from the control law:
 
     CHIMERA          joint horizontal + vertical control, delay-aware
-    CHIMERA (no SA)  the same controller with delay-state augmentation switched off
+    CHIMERA (H only) the same controller with CPU resizing switched off (replicas only)
     AAPA             the predictive, horizontal-only autoscaler this project builds on
     HPA              Kubernetes' standard reactive horizontal autoscaler
 
@@ -21,7 +21,7 @@ Usage (PowerShell, from the project root):
     $env:PYTHONPATH="."; python demo_run.py --no-color
 
 Runtime is roughly 10-20 seconds (it trains the trace's forecaster, then runs four
-simulations). The final section reads the saved evaluation from results/results_v5.csv
+simulations). The final section reads the saved evaluation from results/results_v6.csv
 -- it does not re-run it.
 """
 
@@ -72,7 +72,7 @@ TEST_WINDOW = (70, 100)                 # only these minutes are scored
 WARMUP = 20                             # unscored minutes before the window (same as the final protocol)
 BOUNDS = {k: CONFIGS['CHIMERA'][k] for k in ('v_min', 'v_max', 'h_min', 'h_max')}
 RUNS = [("CHIMERA", "CHIMERA", "CHIMERA"),
-        ("CHIMERA_NO_SA", "CHIMERA (no SA)", "CHIMERA_w/o_State_Augmentation"),
+        ("CHIMERA_NO_SA", "CHIMERA (H only)", "CHIMERA_w/o_Joint_H_V"),
         ("AAPA", "AAPA", "AAPA"),
         ("HPA", "HPA", "HPA")]
 
@@ -198,10 +198,10 @@ def show_results(st: Style, runs: dict) -> None:
     d_slo = no_sa["slo"] - ch["slo"]
     d_cpu = (no_sa["cpu_min"] / ch["cpu_min"] - 1) * 100
     print()
-    print(f"  {st.amber('Ablation:')} with delay-state augmentation switched off the controller "
-          f"re-orders capacity")
-    print(f"  that is already booting: {d_slo:+.2f} points of SLO and "
-          f"{st.bold(f'{d_cpu:+.0f}% CPU')} on this trace.")
+    print(f"  {st.amber('Ablation:')} with CPU resizing switched off (replicas only) the same "
+          f"controller")
+    print(f"  spends {st.bold(f'{d_cpu:+.0f}% CPU')} for {d_slo:+.2f} points of SLO on this trace: "
+          f"the fast actuator is what makes it cheap.")
     print(st.dim("  CPU-min = cores x minutes actually allocated. pod-min ignores pod size, so"))
     print(st.dim("  compare cost on CPU-min, not pod-min."))
 
@@ -259,7 +259,7 @@ def show_dapca(st: Style, runs: dict, limit: int = 8) -> None:
 # ----------------------------------------------------------------------------
 # Section 6 -- the full evaluation, read straight off disk
 # ----------------------------------------------------------------------------
-RESULTS_CSV = ROOT / "results" / "results_v5.csv"
+RESULTS_CSV = ROOT / "results" / "results_v6.csv"
 
 # What each system is *capable* of. Descriptive, not measured.
 CAPABILITY = {
@@ -347,7 +347,7 @@ def show_comparison(st: Style) -> None:
                 print(f"  {CAPABILITY[c][0]}: {d['slo']*100:.2f}% vs our {ch['slo']*100:.2f}% SLO, "
                       f"at {d['cpu']:.0f} vs {ch['cpu']:.0f} CPU-min, p99 {d['p99']:.1f} s vs {ch['p99']:.1f} s.")
     print(st.dim("  Cost at equal SLO is compared properly by the frontier sweep:"))
-    print(st.dim("  results/REPORT_v5.md and results/figures/v5/frontier_real.png"))
+    print(st.dim("  results/REPORT_v6.md and results/figures/v6/frontier_real.png"))
 
 
 # ----------------------------------------------------------------------------
@@ -363,6 +363,10 @@ def main() -> None:
     ap.add_argument("--no-table", action="store_true",
                     help="skip the comparison table at the end")
     args = ap.parse_args()
+    try:
+        "\u2581\u2588".encode(sys.stdout.encoding or "ascii")
+    except (UnicodeEncodeError, LookupError):
+        args.ascii = True
 
     st = Style(enabled=not args.no_color)
 
@@ -415,7 +419,7 @@ def main() -> None:
 
     rule(st)
     print(f"  Full evaluation, statistics and cost/SLO frontier: "
-          f"{st.cyan('results/REPORT_v5.md')}")
+          f"{st.cyan('results/REPORT_v6.md')}")
     print()
 
 
