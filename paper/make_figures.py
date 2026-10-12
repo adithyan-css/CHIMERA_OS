@@ -126,38 +126,38 @@ def replay():
 
 
 def architecture():
-    fig, ax = plt.subplots(figsize=(3.45, 2.5))
+    fig, ax = plt.subplots(figsize=(3.45, 2.75))
     ax.set_xlim(0, 10)
-    ax.set_ylim(0, 7.2)
+    ax.set_ylim(0, 8)
     ax.axis("off")
 
-    def box(x, y, w, h, text, fc="#ffffff", ec=C_TEXT, fs=6.6):
-        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.04,rounding_size=0.12", fc=fc, ec=ec, lw=0.7))
-        ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs, color=C_TEXT)
+    def box(x, y, w, h, text, fc="#ffffff", fs=5.4):
+        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02,rounding_size=0.1", fc=fc, ec=C_TEXT, lw=0.6))
+        ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs, color=C_TEXT, linespacing=1.15)
 
-    def arrow(a, b, text=None, off=(0, 0.14)):
-        ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-|>", mutation_scale=7, lw=0.7, color=C_TEXT))
-        if text:
-            ax.text((a[0] + b[0]) / 2 + off[0], (a[1] + b[1]) / 2 + off[1], text, ha="center", fontsize=5.6, color=C_MUTED)
+    def arrow(a, b):
+        ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-|>", mutation_scale=6, lw=0.6, color=C_TEXT,
+                                     shrinkA=0, shrinkB=0))
 
-    ax.text(0.1, 6.95, "Outer loop, every 15 s: owns replicas", fontsize=6.8, color=C_TEXT, fontweight="bold")
-    box(0.1, 5.5, 2.2, 1.1, "Forecast\nCQR + conformal\nscenarios")
-    box(2.8, 5.5, 2.2, 1.1, "Risk-priced\ncapacity $c^*$")
-    box(5.5, 5.5, 2.0, 1.1, "Target split\n+ replica band")
-    box(8.0, 5.5, 1.9, 1.1, "LQR with\nin-flight state")
-    arrow((2.3, 6.05), (2.8, 6.05))
-    arrow((5.0, 6.05), (5.5, 6.05))
-    arrow((7.5, 6.05), (8.0, 6.05))
+    ax.text(0.05, 7.7, "Outer loop, every 15 s: owns replicas", fontsize=6.2, color=C_TEXT, fontweight="bold")
+    xs, w = [0.05, 2.55, 5.05, 7.55], 2.2
+    for x, t in zip(xs, ["Forecast and\nconformal\nscenarios", "Risk-priced\ncapacity", "Target split,\nreplica band",
+                         "Regulator with\nin-flight state"]):
+        box(x, 6.1, w, 1.3, t)
+    for x in xs[:-1]:
+        arrow((x + w, 6.75), (x + w + 0.3, 6.75))
 
-    ax.text(0.1, 4.55, "Inner loop, every 5 s: owns CPU per pod", fontsize=6.8, color=C_TEXT, fontweight="bold")
-    box(0.1, 3.1, 3.4, 1.1, "Recompute $c^*$ for the\nreplicas serving now")
-    box(4.0, 3.1, 5.9, 1.1, "Raise at once past a dead-band or on a\nsignificant surge; release after two quiet ticks")
-    arrow((3.5, 3.65), (4.0, 3.65))
+    ax.text(0.05, 5.35, "Inner loop, every 5 s: owns CPU per pod", fontsize=6.2, color=C_TEXT, fontweight="bold")
+    box(0.05, 3.75, 3.1, 1.3, "Capacity for the\nreplicas serving now")
+    box(3.45, 3.75, 5.3, 1.3, "Raise at once past a dead-band or on a\nsignificant surge; release after two quiet ticks")
+    arrow((3.15, 4.4), (3.45, 4.4))
 
-    box(0.1, 0.5, 4.3, 1.5, "Replicas\nscale subresource\ntakes tens of seconds", fc="#f1f0ec")
-    box(5.6, 0.5, 4.3, 1.5, "CPU per pod\nin-place resize (KEP-1287)\ntakes about 0.1 s", fc="#f1f0ec")
-    arrow((8.9, 5.5), (2.6, 2.0), "replica changes", off=(-1.6, 1.05))
-    arrow((7.6, 3.1), (7.6, 2.0), "CPU changes", off=(1.0, 0))
+    box(0.05, 0.4, 4.6, 1.6, "CPU per pod\nin-place resize, about 0.1 s", fc="#f1f0ec", fs=5.8)
+    box(5.2, 0.4, 4.75, 1.6, "Replicas\nscale API, tens of seconds", fc="#f1f0ec", fs=5.8)
+    arrow((4.0, 3.75), (4.0, 2.0))
+    ax.text(4.15, 2.8, "CPU changes", fontsize=5.2, color=C_MUTED, va="center")
+    arrow((9.35, 6.1), (9.35, 2.0))
+    ax.text(9.2, 2.8, "replica\nchanges", fontsize=5.2, color=C_MUTED, va="center", ha="right")
     fig.savefig(OUT / "fig_architecture.pdf", bbox_inches="tight", pad_inches=0.02)
     plt.close(fig)
 
