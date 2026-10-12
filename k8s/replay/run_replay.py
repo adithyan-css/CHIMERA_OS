@@ -14,6 +14,7 @@ Controllers:
   chimera-rate  CHIMERA operator on a request-rate signal (30 s rate from the load
                 generator), pods 500m-1000m, up to 10 replicas
   chimera-cpu   the same on its default signal (1-minute CPU-usage rate)
+  chimera-rate-NN  CHIMERA at setting 0.NN instead of its default, for a CHIMERA frontier
 
 Both sides can reach the same 10 cores at most. The trace is given in cores of demand and
 converted to requests/second with the measured CPU cost of one request (--service-time),
@@ -64,6 +65,12 @@ def hpa_target(mode: str) -> int:
     return int(mode.split("-")[1]) if "-" in mode else 70
 
 
+def chimera_target(mode: str, default: float) -> float:
+    """chimera-rate-35 runs CHIMERA at setting 0.35; without a suffix, at the default."""
+    tail = mode.rsplit("-", 1)[-1]
+    return int(tail) / 100.0 if tail.isdigit() else default
+
+
 def demand_trace():
     """24 minutes of demand in cores: 12 minutes of a real Azure Functions trace (w_0005,
     minutes 70-82, mean scaled to 0.6 cores so that the common starting allocation of
@@ -100,9 +107,9 @@ def install_controller(mode: str, args):
         return
     spec = {"scaleTargetRef": {"apiVersion": "apps/v1", "kind": "Deployment", "name": DEPLOY},
             "minReplicas": 2, "maxReplicas": CHIMERA_MAX_REPLICAS, "minCPU": "500m", "maxCPU": CHIMERA_MAX_CPU,
-            "targetUtilization": args.target_utilization, "podStartupSeconds": 20, "resizeMode": "InPlace",
+            "targetUtilization": chimera_target(mode, args.target_utilization), "podStartupSeconds": 20, "resizeMode": "InPlace",
             "targetSLOMilliseconds": 1000 * args.slo, "serviceTimeMilliseconds": 1000 * args.service_time}
-    if mode == "chimera-rate":
+    if mode.startswith("chimera-rate"):
         # The CPU cost of a request is given, not learned: learning it from a 1-minute CPU
         # rate and a 30-second request rate underestimates it while load is rising.
         spec["metrics"] = {"requestRateQuery": RATE_QUERY, "cpuPerRequest": args.service_time}

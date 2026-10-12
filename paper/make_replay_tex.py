@@ -43,42 +43,60 @@ def main():
         v1 = 100 * float(np.mean([res[(m, s)]["violations_at"]["1.0"] for s in seeds]))
         rows.append(f"{label} & {np.mean(v):.1f} & {min(v):.1f}--{max(v):.1f} & {v1:.1f} & {np.mean(c):.1f} \\\\")
 
-    gaps, inside = [], 0
+    # Per seed: which HPA settings CHIMERA dominates (no more CPU and fewer violations),
+    # which dominate it, and, when its cost lies inside the HPA's range, the gap to the
+    # HPA frontier interpolated at that cost.
+    gaps, inside, dominates, dominated = [], 0, [], []
     for s in seeds:
         pts = sorted((res[(h, s)]["core_minutes"], 100 * res[(h, s)]["slo_violation_rate"]) for h in HPAS)
         x, y = [p[0] for p in pts], [p[1] for p in pts]
         cc, cv = res[(CH, s)]["core_minutes"], 100 * res[(CH, s)]["slo_violation_rate"]
+        dominates.append(sum(1 for a, b in pts if cc <= a and cv < b))
+        dominated.append(sum(1 for a, b in pts if a <= cc and b < cv))
         if x[0] <= cc <= x[-1]:
             inside += 1
             gaps.append(float(np.interp(cc, x, y)) - cv)
     wins = sum(g > 0 for g in gaps)
     cv, cc = mean(CH, "slo_violation_rate", 100), mean(CH, "core_minutes")
-    best_h = min(HPAS, key=lambda h: mean(h, "slo_violation_rate"))
-    hv, hc = mean(best_h, "slo_violation_rate", 100), mean(best_h, "core_minutes")
-    cheaper = [h for h in HPAS if mean(h, "core_minutes") <= cc]
     seedw = "seed" if n == 1 else "seeds"
+    h70v, h70c = mean("hpa-70", "slo_violation_rate", 100), mean("hpa-70", "core_minutes")
+    h50v, h50c = mean("hpa-50", "slo_violation_rate", 100), mean("hpa-50", "core_minutes")
+    h35v, h35c = mean("hpa-35", "slo_violation_rate", 100), mean("hpa-35", "core_minutes")
+    n_dom = sum(d > 0 for d in dominates)
+    n_domd = sum(d > 0 for d in dominated)
 
-    if inside == 0:
-        verdict = (f"CHIMERA's CPU cost fell outside the range spanned by the three HPA settings on every seed, so the "
-                   f"two cannot be compared at equal cost; at its own operating point it had {cv:.1f}\\,\\% violations "
-                   f"for {cc:.1f} core-minutes.")
-        short = "does not allow a comparison at matched cost"
-    else:
+    parts = []
+    if n_dom:
+        parts.append(f"On {n_dom} of {n} {seedw} CHIMERA dominated at least one HPA setting: it used no more CPU and "
+                     f"had fewer violations.")
+    if n_domd:
+        parts.append(f"On {n_domd} of {n} {seedw} at least one HPA setting dominated CHIMERA.")
+    if inside:
         mg = float(np.mean(gaps))
-        if wins == len(gaps) and inside == n:
-            verdict = (f"Interpolating the HPA's violation rate between its settings at the CPU CHIMERA used, seed by "
-                       f"seed, CHIMERA had fewer violations on all {n} {seedw}, by {mg:.1f} points on average.")
-            short = f"shows fewer violations than the HPA at matched cost on all {n} {seedw}, by {mg:.1f} points"
-        elif wins == 0:
-            verdict = (f"Interpolating the HPA's violation rate between its settings at the CPU CHIMERA used, seed by "
-                       f"seed, the HPA had fewer violations on all {len(gaps)} comparable {seedw}, by {-mg:.1f} points "
-                       f"on average: on this service and trace CHIMERA did not beat a well-chosen HPA setting.")
-            short = f"shows the HPA ahead at matched cost, by {-mg:.1f} points"
+        parts.append(f"Where CHIMERA's cost lay inside the range the HPA settings span ({inside} of {n} {seedw}), "
+                     f"interpolating the HPA's violation rate at that cost gave CHIMERA fewer violations on {wins} of "
+                     f"{inside}, with a mean gap of {mg:+.1f} points.")
+    else:
+        parts.append("CHIMERA's cost lay below the cheapest HPA setting on every seed, so the HPA frontier cannot be "
+                     "interpolated at that cost.")
+    parts.append(f"On average CHIMERA used {cc:.1f} core-minutes for {cv:.1f}\\,\\% violations; the HPA needed "
+                 f"{h70c:.1f} for {h70v:.1f}\\,\\% at a 70\\,\\% target, {h50c:.1f} for {h50v:.1f}\\,\\% at 50\\,\\%, and "
+                 f"{h35c:.1f} for {h35v:.1f}\\,\\% at 35\\,\\%.")
+    verdict = " ".join(parts)
+
+    if n_dom == n and n_domd == 0:
+        if cv < h50v:
+            short = (f"shows it using less CPU than every HPA setting tried while missing the objective less often "
+                     f"than the two cheaper ones, on all {n} {seedw}")
         else:
-            verdict = (f"Interpolating the HPA's violation rate between its settings at the CPU CHIMERA used, CHIMERA "
-                       f"had fewer violations on {wins} of {len(gaps)} comparable {seedw} (mean gap {mg:+.1f} points; "
-                       f"its cost was inside the HPA's range on {inside} of {n}): the result is mixed.")
-            short = f"is mixed at matched cost ({wins} of {len(gaps)} {seedw} in CHIMERA's favour)"
+            short = (f"shows it dominating the HPA at its default 70\\,\\% target on all {n} {seedw} (less CPU, fewer "
+                     f"violations), while more expensive HPA settings reach lower violation rates")
+    elif n_domd == n and n_dom == 0:
+        short = f"shows a well-chosen HPA setting dominating it on all {n} {seedw}"
+    elif inside and wins == inside and n_domd == 0:
+        short = f"shows fewer violations than the HPA at matched cost on the {inside} comparable {seedw}"
+    else:
+        short = (f"is mixed: it dominated an HPA setting on {n_dom} of {n} {seedw} and was dominated on {n_domd}")
 
     body = (
         "An open-loop load generator replayed a 24-minute demand trace (12 minutes of an Azure trace, then a "
