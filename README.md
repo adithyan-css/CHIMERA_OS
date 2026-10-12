@@ -11,17 +11,18 @@ It extends the AAPA baseline (arXiv:2507.05653) from horizontal-only to a coordi
 
 ## Results (CHIMERA v6)
 
-Full tables: `results/REPORT_v6.md` (held-out set), `results/REPORT_ext.md` (ten external
-real traces), `results/robustness/ROBUSTNESS.md` (other latency models),
+Full tables: `results/REPORT_v6.md` (held-out set), `results/REPORT_hw.md` (ten serverless
+traces), `results/REPORT_ext.md` (ten web-server traces), `results/robustness/ROBUSTNESS.md` (other latency models),
 `results/replay/REPLAY_REPORT.md` (live cluster). What changed since v5 and why:
-`IMPROVEMENT_AUDIT.md`. Draft paper: `paper/CHIMERA_paper.md`.
+`IMPROVEMENT_AUDIT.md`. Paper: `paper/chimera.pdf` (source `paper/chimera.tex`).
 
 **Equal CPU, the fair comparison.** Each baseline's SLO violation rate is interpolated on
 its own cost/SLO frontier at CHIMERA's CPU cost, trace by trace.
 
 | Evaluation set | Trace-baseline comparisons won | Mean advantage over AAPA | over KOSMOS |
 |---|---:|---:|---:|
-| Ten external real traces (NASA, ClarkNet web logs; used in no design step) | 60 of 60 | +2.0 pp | +1.3 pp |
+| Ten production serverless functions (Huawei 2023; used in no design step) | 57 of 57 | +2.0 pp | +2.4 pp |
+| Ten web-server windows (NASA, ClarkNet; used in no design step) | 60 of 60 | +2.0 pp | +1.3 pp |
 | Held-out set (5 Azure Functions traces, 4 unseen synthetic shapes) | 47 of 48 | +3.3 pp | +5.8 pp |
 
 All baselines are significantly behind on both sets (Wilcoxon, Holm-corrected,

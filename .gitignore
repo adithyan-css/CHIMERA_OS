@@ -113,3 +113,8 @@ results/live_ec2/deploy.log
 
 # Raw third-party logs (downloaded; only the derived per-minute counts are tracked)
 dataset/external_raw/
+
+# LaTeX build products
+paper/*.aux
+paper/*.log
+paper/*.out

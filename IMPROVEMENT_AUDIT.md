@@ -606,3 +606,94 @@ it boots faster than assumed; sizing below observed demand on a cold start; the 
 demand estimate falling below measured CPU; a configured cost per request overwritten by
 learning; scale-in straight after scale-out. Baseline and protocol errors found and
 corrected: stale KOSMOS gains; external traces scaled past the baselines' replica limit.
+
+---
+
+# Second pass (12 Oct 2026): the four weak points
+
+## W4. Real serverless traces (done)
+
+**Weak point.** The fresh real traces were 1995 web-server logs, not serverless workloads.
+
+**What was done.** The Azure Functions archives are still not downloadable (2019 and 2021:
+HTTP 403 and 409). The Huawei production FaaS release is: `requests_minute.zip` (40.2 MB,
+CC BY 4.0, from the links in github.com/sir-lab/data-release; Huawei private cloud, 200
+functions, requests per minute over 141 days; Joosen et al., SoCC 2023).
+`dataset/tools/huawei_to_traces.py` builds ten traces by a rule written before any run:
+the first released day with index 30 or more, minutes 600-699, and the ten lowest function
+IDs with no missing minute and at least 60 requests per minute. The functions differ in
+volume by five orders of magnitude, so each window is scaled so that its busiest minute is
+12 requests/second, the largest peak the horizontal-only baselines can serve at the
+cheapest sweep setting (the lesson of the first web-trace attempt, applied up front).
+
+**Result** (`results/REPORT_hw.md`; 900 main runs, 3,150 sweep runs; unchanged controllers).
+
+| vs | Traces won at equal CPU | Mean gap (pp) | p (Holm) |
+|---|---:|---:|---:|
+| AAPA | 10/10 | +2.02 | <0.001 |
+| HPA | 10/10 | +3.99 | <0.001 |
+| HPA+VPA | 10/10 | +2.72 | <0.001 |
+| KOSMOS | 10/10 | +2.38 | <0.001 |
+| MagicScaler-style | 10/10 | +4.37 | <0.001 |
+| VPA | 9/9 | +1.77 | <0.001 |
+
+57 of 57 per-trace frontier comparisons won. Default settings: CHIMERA 6.06 % violations at
+251 core-min; AAPA 9.18 % at 230; KOSMOS 6.16 % at 364 (not significantly different from
+CHIMERA in violations, p = 0.41, for 45 % more CPU).
+
+**Reading.** With the web traces this makes twenty real traces from three sites that no
+design step used: 117 of 117 comparisons won at equal CPU. Risk sizing again adds little
+(v6 against v4: +0.17 pp, better on 5 of 9 traces).
+
+**Limits.** One 100-minute window per function, one day, one provider. Rates are rescaled
+to a common peak, so absolute volumes are not the production ones. Still simulation.
+
+## W2. Literature review (done, to a documented but not systematic standard)
+
+**Weak point.** Abstract-level only; no systematic search.
+
+**What was done.**
+
+- Full texts read for the points being compared: Themis (arXiv HTML), Ship et al. and
+  MagicScaler (PDF text extracted and searched), AAPA (arXiv HTML).
+- The search protocol is written down: every query, and the screening criterion
+  (`final_research_package/literature.md`, "Search protocol").
+- Two further targeted searches for 2025-2026 work on in-place resize and on conformal
+  methods in autoscaling.
+
+**What it changed.**
+
+1. **BACC (arXiv, May 2026) already uses adaptive conformal inference inside a horizontal
+   autoscaler.** CHIMERA can no longer be described as the first conformal autoscaler; the
+   paper says so.
+2. Themis, read in full: no model of replicas in flight, no prediction intervals, decisions
+   by dynamic programming over profiled latency. The comparison in the paper is now
+   specific.
+3. Ship et al., read in full: no replica start-up delay, no in-place resize, demand rates
+   given; a planned allocation, not a feedback loop.
+4. MagicScaler, read in full for these points: instances only; no vertical scaling or
+   start-up time in the text.
+5. AAPA: full author list retrieved; no venue is stated on the arXiv record, so the "HPEC
+   2025" venue in the August files is unconfirmed and was dropped.
+6. Added: Autothrottle (NSDI 2024), MAS-H2 (2026), the Huawei trace paper.
+
+**Limits.** Still one search engine and no citation chasing; KOSMOS's full text could not
+be read by machine (the comparison rests on its abstract and project README); Autopilot,
+SHOWAR, Autothrottle and BACC are abstract-level. The file lists exactly what remains.
+
+## W3. Manuscript (done)
+
+**Weak point.** An unformatted draft with no figures placed.
+
+**What was done.** `paper/chimera.tex` and `paper/chimera.pdf`: six pages in the IEEE
+conference format, with an architecture figure, a three-panel frontier figure, a
+robustness figure, six tables, numbered references and cross-references. Figures are
+generated from the result files (`paper/make_figures.py`); the real-cluster paragraph and
+table are generated from the replay results (`paper/make_replay_tex.py`), so the text
+cannot drift from the data. LaTeX (MiKTeX) was installed to build it. The pages were
+rendered and inspected: no unresolved references, two small overfull boxes.
+
+**What it is not.** The author block is a placeholder. The class is generic IEEEtran, not
+a specific venue's template or page limit. Related work for five of the cited papers is
+abstract-level (W2). It has not been proof-read by anyone else. The markdown draft was
+removed in favour of this one.

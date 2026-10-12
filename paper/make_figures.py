@@ -80,8 +80,9 @@ def robustness():
         m = re.match(r"\| (\w+) \| (\w+) \| (\w+) \| [^|]+\| (\d+)/(\d+) \| ([+-][\d.]+) \| [^|]+\| (\d+)/(\d+), ([+-][\d.]+) \|", line)
         if m:
             rows.append((m.group(2), m.group(3), int(m.group(4)), int(m.group(5)), float(m.group(6)), float(m.group(9))))
-    names = {"inverse": "1/(1-u)", "kingman": "1+u/(2(1-u))", "steep": "1/(1-u$^4$)"}
-    lab = [f"{d}\n{names[s]}" for d, s, *_ in rows]
+    dist = {"exponential": "exp", "lognormal": "logn", "gamma4": "gamma", "bimodal": "bimod"}
+    law = {"inverse": "A", "kingman": "B", "steep": "C"}
+    lab = [f"{dist[d]}, {law[s]}" for d, s, *_ in rows]
     x = np.arange(len(rows))
     fig, ax = plt.subplots(figsize=(3.45, 2.3))
     ax.bar(x - 0.2, [r[4] for r in rows], 0.38, color=C_CHIMERA, label="against the six baselines (mean)")
@@ -91,7 +92,7 @@ def robustness():
     ax.axhline(0, color=C_TEXT, lw=0.5)
     clean(ax)
     ax.set_xticks(x)
-    ax.set_xticklabels(lab, fontsize=5.3)
+    ax.set_xticklabels(lab, fontsize=6, rotation=35, ha="right")
     ax.set_ylabel("SLO advantage at equal CPU (pp)", color=C_MUTED)
     ax.legend(frameon=False, fontsize=6, loc="upper right")
     fig.tight_layout()
@@ -148,8 +149,8 @@ def architecture():
         arrow((x + w, 6.75), (x + w + 0.3, 6.75))
 
     ax.text(0.05, 5.35, "Inner loop, every 5 s: owns CPU per pod", fontsize=6.2, color=C_TEXT, fontweight="bold")
-    box(0.05, 3.75, 3.1, 1.3, "Capacity for the\nreplicas serving now")
-    box(3.45, 3.75, 5.3, 1.3, "Raise at once past a dead-band or on a\nsignificant surge; release after two quiet ticks")
+    box(0.05, 3.75, 3.1, 1.3, "Capacity for\nthe replicas\nserving now")
+    box(3.45, 3.75, 5.3, 1.3, "Raise at once past a dead-band\nor on a significant surge;\nrelease after two quiet ticks")
     arrow((3.15, 4.4), (3.45, 4.4))
 
     box(0.05, 0.4, 4.6, 1.6, "CPU per pod\nin-place resize, about 0.1 s", fc="#f1f0ec", fs=5.8)
