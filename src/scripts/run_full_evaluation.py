@@ -439,6 +439,25 @@ def get_external_workloads() -> List[Dict[str, Any]]:
     return out
 
 
+SERVERLESS_PEAK_RPS = 12.0   # busiest minute of each window, after scaling
+
+
+def get_serverless_workloads() -> List[Dict[str, Any]]:
+    """Ten production serverless-function traces from the Huawei Private Cloud FaaS release
+    2023 (dataset/tools/huawei_to_traces.py: functions and window fixed by rule). The
+    functions differ in volume by five orders of magnitude, so each window is scaled so
+    that its busiest minute is 12 requests/second: the largest peak the horizontal-only
+    baselines can still serve at the cheapest sweep setting. Never used in any design
+    round."""
+    out = []
+    for f in sorted(Path("dataset/external_huawei").glob("*.json")):
+        data = json.load(open(f))
+        rpm = np.array(data["request_trace"]["requests_per_minute"], dtype=float)
+        out.append({'id': 'real_hw_' + data['function_id'].split('_')[1],
+                    'trace': rpm * (SERVERLESS_PEAK_RPS * 60.0 / rpm.max()), 'type': 'UNKNOWN'})
+    return out
+
+
 def get_dev_workloads() -> List[Dict[str, Any]]:
     """Real traces (scored on the dev window) plus synthetic shapes that do NOT appear in
     the test set. Never used for reported results."""
@@ -902,6 +921,8 @@ def main():
                          '--seeds from HOLDOUT_SEEDS)')
     ap.add_argument('--external', action='store_true',
                     help='ten real web-server traces from the Internet Traffic Archive (never used in design)')
+    ap.add_argument('--serverless', action='store_true',
+                    help='ten production serverless traces from the Huawei 2023 release (never used in design)')
     ap.add_argument('--warmup', type=int, default=0,
                     help='unscored warm-up minutes before the window (0 = start cold at the window)')
     ap.add_argument('--service-dist', choices=sorted(SERVICE_DISTS), default='exponential',
@@ -915,7 +936,9 @@ def main():
         sys.exit("Refusing to overwrite the Review-2 verified results file.")
 
     logger.info("Starting CHIMERA evaluation harness...")
-    if args.external:
+    if args.serverless:
+        workloads = get_serverless_workloads()
+    elif args.external:
         workloads = get_external_workloads()
     elif args.holdout:
         workloads = get_holdout_workloads()

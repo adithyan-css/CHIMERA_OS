@@ -118,6 +118,8 @@ def main():
                       slo_violation_rate=(sum(1 for l in lats if l > SLO) / len(lats)) if lats else None,
                       mean=sum(lats) / len(lats) if lats else None,
                       p50=pct(lats, 0.50), p95=pct(lats, 0.95), p99=pct(lats, 0.99),
+                      violations_at={str(th): (sum(1 for l in lats if l > th) / len(lats)) if lats else None
+                                     for th in (0.3, 0.5, 1.0, 2.0)},
                       per_minute=per_min)
     print("RESULT " + json.dumps(result), flush=True)
     while True:
