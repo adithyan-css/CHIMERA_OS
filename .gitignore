@@ -118,3 +118,7 @@ dataset/external_raw/
 paper/*.aux
 paper/*.log
 paper/*.out
+explainer/*.aux
+explainer/*.log
+explainer/*.out
+explainer/*.toc
