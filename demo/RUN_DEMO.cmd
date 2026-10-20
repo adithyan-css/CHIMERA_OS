@@ -22,6 +22,10 @@ if errorlevel 1 (
 kubectl apply -f k8s\example-autoscaler.yaml >nul
 kubectl scale deploy/load-generator --replicas=0 >nul
 echo.
+echo  Starting fresh pods so the restart counter begins at 0 (about 30 seconds)...
+kubectl rollout restart deploy/billing-service >nul
+kubectl rollout status deploy/billing-service --timeout=180s
+echo.
 echo  SAY: "This is a real Kubernetes 1.33 cluster. The CHIMERA operator is
 echo        running in it and manages a small web service."
 echo.
