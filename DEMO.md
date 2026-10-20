@@ -24,7 +24,7 @@ what it needs, so nothing has to be typed before it.
 | Part 2, window C | `.\demo\5_load_off.cmd` | removes the load |
 
 Start A and B first, then run C. After about two minutes window B shows the CPU of the
-same two pods rising (for example 500m to 676m) with RESTARTS at 0; after the load is
+same two pods rising (for example 500m to about 1100m) with RESTARTS at 0; after the load is
 removed it returns to 500m. Stop A and B with Ctrl+C.
 
 The rest of this file gives the same steps as individual commands for **Git Bash**, with

@@ -12,6 +12,6 @@ spec:
   maxReplicas: 10
   minCPU: "500m"
   maxCPU: "2000m"
-  targetUtilization: 0.7
+  targetUtilization: 0.46       # CHIMERA's evaluated default (the paper uses 0.46)
   podStartupSeconds: 20
   resizeMode: InPlace          # pods/resize subresource (KEP-1287)
