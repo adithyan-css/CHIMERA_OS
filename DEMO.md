@@ -9,6 +9,23 @@ Double-click `demo\RUN_DEMO.cmd` (or run `.\demo\RUN_DEMO.cmd` in a terminal). I
 cluster, runs each part in order, opens the two watch windows by itself, and at every step
 prints what to say and what to point at. Press a key to move to the next step.
 
+## Presenter notes for `RUN_DEMO.cmd`
+
+The script shows only step titles on screen. Press a key to move to the next step. What to
+watch for and what to say:
+
+| On screen | Wait | What to watch | What to say |
+|---|---|---|---|
+| [0] Kubernetes cluster | about 30 s | the node is `Ready` | "This is a real Kubernetes 1.33 cluster. The CHIMERA operator runs inside it and manages a small web service." |
+| [1] Simulation | about 20 s | section 3 results table; section 4 timelines | "Same real trace, same seed. CHIMERA has the fewest slow requests. Without CPU resizing it needs about 40 % more CPU. The HPA can only change the number of pods; CHIMERA changes the CPU of each pod." |
+| [2] two windows open | - | window B: two pods, 500m, RESTARTS 0 | "Two pods with half a core each." |
+| [2] Load applied | 1-2 min | window A: `fast: cpu 0.50->...`; window B: CPU of the same pods rises to about 1100m, RESTARTS stays 0 | "It resized the running pods in place: no restart, no new pod. That takes 0.1 s." |
+| [3] adding a pod | about 1 min | window A: `replicas 2->3`; window B: a third pod appears and gets the same CPU | "CPU first, because it is fast. Only when the pods reach their CPU limit does it add a pod, which takes tens of seconds, and it remembers the pod is starting so it does not order it twice." |
+| [4] load removed | about 1 min | window B: CPU back to 500m; window A: `fast release` | "It gives the CPU back as soon as the load is gone. The extra pod is removed more slowly, because pods are expensive to re-add." |
+| [5] Results | - | the paper opens | Fig. 2 (three real trace sets) and Table VI with Fig. 4 (real cluster against the HPA). |
+
+At the end, press Ctrl+C in windows A and B, answer `Y`, and close the windows.
+
 ## Step by step: the scripts in `demo/`
 
 Open a terminal (PowerShell or Command Prompt) in the project folder. Each script sets up

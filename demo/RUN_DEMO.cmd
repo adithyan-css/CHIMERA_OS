@@ -1,113 +1,77 @@
 @echo off
-rem Guided lab demo. Double-click this file, or run .\demo\RUN_DEMO.cmd, and follow the
-rem prompts. It opens two extra windows by itself and tells you what to look at.
-title CHIMERA demo - guide
+rem CHIMERA live demonstration. Run from the project folder or double-click.
+rem Talking points for the presenter are in DEMO.md, not on screen.
+title CHIMERA - live demonstration
 cd /d "%~dp0.."
 set KUBECONFIG=%~dp0..\tools\kubeconfig-chimera
 
 echo ======================================================================
-echo  CHIMERA lab demo
+echo  CHIMERA: joint horizontal and vertical pod autoscaling
 echo ======================================================================
 echo.
-echo  STEP 0  Checking that the cluster is up (Docker Desktop must be running)
+echo  [0] Kubernetes cluster
 echo.
 kubectl get nodes
 if errorlevel 1 (
   echo.
-  echo  The cluster is not reachable. Start Docker Desktop, wait for
-  echo  "Engine running", then run this file again.
+  echo  The cluster is not reachable. Start Docker Desktop and run this again.
   pause
   exit /b 1
 )
 kubectl apply -f k8s\example-autoscaler.yaml >nul
 kubectl scale deploy/load-generator --replicas=0 >nul
-echo.
-echo  Starting fresh pods so the restart counter begins at 0 (about 30 seconds)...
 kubectl rollout restart deploy/billing-service >nul
-kubectl rollout status deploy/billing-service --timeout=180s
-echo.
-echo  SAY: "This is a real Kubernetes 1.33 cluster. The CHIMERA operator is
-echo        running in it and manages a small web service."
+kubectl rollout status deploy/billing-service --timeout=180s >nul
 echo.
 pause
 
 echo.
 echo ======================================================================
-echo  STEP 1  The controller in simulation (about 20 seconds)
+echo  [1] Simulation: CHIMERA, AAPA and HPA on the same real trace
 echo ======================================================================
-echo  SAY: "Same real trace, same random seed, four controllers."
 echo.
 set PYTHONPATH=.
 python demo_run.py
 echo.
-echo  POINT AT: section 3 (CHIMERA has the fewest violations; "H only" needs
-echo            about 40 percent more CPU) and section 4 (HPA moves replicas,
-echo            CHIMERA moves CPU per pod).
-echo.
 pause
 
 echo.
 echo ======================================================================
-echo  STEP 2  The operator on the real cluster
+echo  [2] Live cluster: in-place CPU resize under load
 echo ======================================================================
-echo  Two windows open now. Put them side by side:
-echo    "A - operator decisions"   what the operator decides, live
-echo    "B - pods and CPU"         the pods, their CPU and restart count
-echo.
 start "A - operator decisions" cmd /k "%~dp02_operator_log.cmd"
 start "B - pods and CPU" cmd /k "%~dp03_watch_pods.cmd"
-echo  SAY: "Both pods have 500m of CPU and zero restarts."
 echo.
 pause
-
 echo.
-echo  Putting load on the service...
-kubectl scale deploy/load-generator --replicas=5
-echo.
-echo  WAIT about two minutes. Watch window B: the CPU column goes up on the
-echo  SAME pods and RESTARTS stays 0. Window A prints "fast: cpu 0.50 -^> ...".
-echo  SAY: "It resized the running pods in place. No restart, no new pod."
+echo  Load applied.
+kubectl scale deploy/load-generator --replicas=5 >nul
 echo.
 pause
 
 echo.
 echo ======================================================================
-echo  STEP 2b  When resizing is not enough, it adds a pod
+echo  [3] Live cluster: adding a pod when resizing is not enough
+echo      (CPU per pod capped at 1 core, load increased)
 echo ======================================================================
-echo  Now each pod is capped at 1 core and the load is raised. Two pods can
-echo  no longer carry it by resizing alone, so the slow actuator is used.
 kubectl patch chimeraautoscaler billing-service-scaler --type merge -p "{\"spec\":{\"maxCPU\":\"1000m\"}}" >nul
-kubectl scale deploy/load-generator --replicas=8
-echo.
-echo  WAIT about one minute. Window A prints "fast: cpu ..." first and then
-echo  "replicas 2-^>3". Window B shows a THIRD pod appear; once it is ready, all
-echo  three pods get the same CPU.
-echo  SAY: "CPU first, because it takes 0.1 s. Only when the pods are at their
-echo        CPU limit does it add a pod, which takes tens of seconds. And it
-echo        remembers the pod is starting, so it does not order it twice."
+kubectl scale deploy/load-generator --replicas=8 >nul
 echo.
 pause
 
 echo.
-echo  Removing the load...
-kubectl scale deploy/load-generator --replicas=0
+echo ======================================================================
+echo  [4] Live cluster: load removed, CPU released
+echo ======================================================================
+kubectl scale deploy/load-generator --replicas=0 >nul
 kubectl patch chimeraautoscaler billing-service-scaler --type merge -p "{\"spec\":{\"maxCPU\":\"2000m\"}}" >nul
 echo.
-echo  WAIT about one minute. Window B goes back to 500m; window A prints
-echo  "fast release". The third pod is removed more slowly (a few minutes):
-echo  pods are expensive to re-add, so scale-in is deliberately cautious.
-echo  SAY: "It gives the CPU back as soon as the load is gone."
-echo.
 pause
 
 echo.
 echo ======================================================================
-echo  STEP 3  The evidence
+echo  [5] Results
 echo ======================================================================
-echo  Opening the paper. Show Fig. 2 (three real trace sets) and Table VI
-echo  with Fig. 4 (the real-cluster comparison with the Kubernetes HPA).
-echo.
 start "" "%~dp0..\paper\chimera.pdf"
-echo  Close windows A and B when you are done (Ctrl+C, then Y).
 echo.
 pause
