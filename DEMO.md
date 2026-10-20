@@ -118,6 +118,20 @@ kubectl scale deploy/load-generator --replicas=0
 
 Within about two minutes the CPU goes back to 500m (`fast release` in window A).
 
+To show it adding a pod as well, put a cap on CPU per pod and raise the load (the guided
+script does this as step 2b):
+
+```bash
+kubectl patch chimeraautoscaler billing-service-scaler --type merge -p '{"spec":{"maxCPU":"1000m"}}'
+```
+
+```bash
+kubectl scale deploy/load-generator --replicas=8
+```
+
+Within about a minute window A prints `fast: cpu ...` and then `replicas 2->3`, and window
+B shows a third pod. Afterwards set `maxCPU` back to `2000m`.
+
 To show the same thing as a pass/fail report instead (11 minutes, unattended):
 
 ```bash

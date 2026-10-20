@@ -71,11 +71,31 @@ echo.
 pause
 
 echo.
+echo ======================================================================
+echo  STEP 2b  When resizing is not enough, it adds a pod
+echo ======================================================================
+echo  Now each pod is capped at 1 core and the load is raised. Two pods can
+echo  no longer carry it by resizing alone, so the slow actuator is used.
+kubectl patch chimeraautoscaler billing-service-scaler --type merge -p "{\"spec\":{\"maxCPU\":\"1000m\"}}" >nul
+kubectl scale deploy/load-generator --replicas=8
+echo.
+echo  WAIT about one minute. Window A prints "fast: cpu ..." first and then
+echo  "replicas 2-^>3". Window B shows a THIRD pod appear; once it is ready, all
+echo  three pods get the same CPU.
+echo  SAY: "CPU first, because it takes 0.1 s. Only when the pods are at their
+echo        CPU limit does it add a pod, which takes tens of seconds. And it
+echo        remembers the pod is starting, so it does not order it twice."
+echo.
+pause
+
+echo.
 echo  Removing the load...
 kubectl scale deploy/load-generator --replicas=0
+kubectl patch chimeraautoscaler billing-service-scaler --type merge -p "{\"spec\":{\"maxCPU\":\"2000m\"}}" >nul
 echo.
 echo  WAIT about one minute. Window B goes back to 500m; window A prints
-echo  "fast release".
+echo  "fast release". The third pod is removed more slowly (a few minutes):
+echo  pods are expensive to re-add, so scale-in is deliberately cautious.
 echo  SAY: "It gives the CPU back as soon as the load is gone."
 echo.
 pause
